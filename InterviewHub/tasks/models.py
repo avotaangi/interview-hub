@@ -30,7 +30,7 @@ class MultipleChoiceQuestion(models.Model):
 
     class Meta:
         verbose_name = 'Задание с выбором ответа'  # Название таблицы в единственном числе
-        verbose_name_plural = 'Задания с выбором ответов'  # Название таблицы во множественном числе
+        verbose_name_plural = 'Задания с выбором ответа'  # Название таблицы во множественном числе
 
 
 class CodeQuestion(models.Model):
@@ -42,22 +42,3 @@ class CodeQuestion(models.Model):
     class Meta:
         verbose_name = 'Задание с написанием кода'  # Название таблицы в единственном числе
         verbose_name_plural = 'Задания с написанием кода'  # Название таблицы во множественном числе
-
-
-class TestTask(models.Model):
-    selection = models.ForeignKey('selections.CompanySelection', on_delete=models.CASCADE,
-                                  verbose_name='Отбор компании')
-    start_time = models.DateTimeField(verbose_name='Время начала')
-    end_time = models.DateTimeField(verbose_name='Время окончания')
-    duration = models.IntegerField(verbose_name='Длительность')
-
-    result_choices = [
-        ('Принято', 'Принято'),
-        ('Отклонено', 'Отклонено')
-    ]
-    result = models.CharField(max_length=20, choices=result_choices, verbose_name='Результат')
-    recording_url = models.URLField(null=True, blank=True, verbose_name='URL записи')
-
-    class Meta:
-        verbose_name = 'Тестовое задание'  # Название таблицы в единственном числе
-        verbose_name_plural = 'Тестовые задания'  # Название таблицы во множественном числе

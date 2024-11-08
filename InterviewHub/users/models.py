@@ -1,10 +1,12 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class User(AbstractUser):
     phone = models.CharField(max_length=20, null=True, blank=True, verbose_name='Телефон')
-    avatar_url = models.URLField(max_length=255, null=True, blank=True, verbose_name='URL аватара')
+    avatar = models.ImageField(upload_to='user_avatar/', null=True, blank=True,
+                             verbose_name='Аватар пользователя')  # New field
 
     gender_choices = [
         ('Мужской', 'Мужской'),
@@ -32,3 +34,35 @@ class Candidate(models.Model):
     class Meta:
         verbose_name = 'Кандидат'  # Название таблицы в единственном числе
         verbose_name_plural = 'Кандидаты'  # Название таблицы во множественном числе
+
+
+class Company(models.Model):
+    name = models.CharField(max_length=255, verbose_name='Название компании')
+    description = models.TextField(null=True, blank=True, verbose_name='Описание компании')
+    location = models.CharField(max_length=255, verbose_name='Местоположение')
+    established_date = models.DateField(null=True, blank=True, verbose_name='Дата основания', default=timezone.now)
+    logo = models.ImageField(upload_to='company_logos/', null=True, blank=True,
+                             verbose_name='Логотип компании')  # New field
+
+    class Meta:
+        verbose_name = 'Компания'
+        verbose_name_plural = 'Компании'
+
+
+
+    def __str__(self):
+        return self.name
+
+
+class Interviewer(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name='Компания')
+    position = models.CharField(max_length=255, verbose_name='Должность')
+    name = models.CharField(max_length=100, verbose_name='ФИО')
+    email = models.EmailField(max_length=100, verbose_name='Электронная почта')
+
+    class Meta:
+        verbose_name = 'Интервьюер'  # Название в единственном числе
+        verbose_name_plural = 'Интервьюеры'  # Название во множественном числе
+
+    def __str__(self):
+        return self.name

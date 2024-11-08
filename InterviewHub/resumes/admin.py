@@ -31,7 +31,6 @@ class JobAdmin(admin.ModelAdmin):
     list_filter = ('company', 'position', 'start_date')  # Фильтрация по компании, позиции и дате начала
     search_fields = ('resume__candidate__user__email', 'company', 'position')
     raw_id_fields = ('resume',)  # Для ForeignKey
-    readonly_fields = ('start_date', 'end_date')  # Поля дат только для чтения
     date_hierarchy = 'start_date'  # Иерархия по дате начала работы
 
     @admin.display(description='Responsibilities (short)')

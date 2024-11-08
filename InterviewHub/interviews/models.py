@@ -1,7 +1,6 @@
 from django.db import models
 from selections.models import CompanySelection
 from tasks.models import TaskItem
-from django.utils import timezone
 
 class Interview(models.Model):
     interview_status_choices = [
@@ -46,5 +45,5 @@ class InterviewTaskItem(models.Model):
     candidate_answer = models.TextField(verbose_name='Ответ кандидата')
 
     class Meta:
-        verbose_name = 'Элемент задания интервью'  # Название таблицы в единственном числе
-        verbose_name_plural = 'Элементы задания интервью'  # Название таблицы во множественном числе
+        verbose_name = 'Элемент задания к интервью'  # Название таблицы в единственном числе
+        verbose_name_plural = 'Элементы задания к интервью'  # Название таблицы во множественном числе
