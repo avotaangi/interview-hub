@@ -169,5 +169,5 @@ cython_debug/
 # и добавить в глобальный файл gitignore или объединить с этим файлом. Для более радикального
 # варианта (не рекомендуется) вы можете раскомментировать следующее, чтобы игнорировать всю папку idea.
 .idea/
-
+InterviewHub/.env
 # Конец https://www.toptal.com/developers/gitignore/api/django

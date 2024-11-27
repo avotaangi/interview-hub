@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import dotenv_values
+
+config = dotenv_values(".env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -82,11 +85,11 @@ WSGI_APPLICATION = 'InterviewHub.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'interviewHub',  # Имя базы данных, созданной через pgAdmin
-        'USER': 'postgres',  # Имя пользователя базы данных, указанного при создании
-        'PASSWORD': '1357',  # Пароль пользователя базы данных
-        'HOST': 'localhost',  # Адрес сервера базы данных
-        'PORT': '5432',  # Порт PostgreSQL, обычно 5432
+        'NAME': config['PG_DB_NAME'],  # Имя базы данных, созданной через pgAdmin
+        'USER': config['PG_USER'],  # Имя пользователя базы данных, указанного при создании
+        'PASSWORD': config['PG_PASSWORD'],  # Пароль пользователя базы данных
+        'HOST': config['PG_HOST'],  # Адрес сервера базы данных
+        'PORT': config['PG_PORT'],  # Порт PostgreSQL, обычно 5432
     }
 }
 
