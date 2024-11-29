@@ -2,24 +2,42 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+
 
 class User(AbstractUser):
-    phone = models.CharField(max_length=20, null=True, blank=True, verbose_name='Телефон')
-    avatar = models.ImageField(upload_to='user_avatar/', null=True, blank=True,
-                             verbose_name='Аватар пользователя')  # New field
-
+    phone = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        unique=True,
+        verbose_name='Телефон'
+    )
+    avatar = models.ImageField(
+        upload_to='user/avatar/',
+        null=True,
+        blank=True,
+        verbose_name='Аватар пользователя'
+    )
     gender_choices = [
         ('Мужской', 'Мужской'),
         ('Женский', 'Женский')
     ]
-    gender = models.CharField(max_length=10, choices=gender_choices, null=True, blank=True, verbose_name='Пол')
+    gender = models.CharField(
+        max_length=10,
+        choices=gender_choices,
+        null=True,
+        blank=True,
+        verbose_name='Пол'
+    )
 
     def __str__(self):
-        return self.email  # Добавляем метод __str__ для лучшего представления
+        return self.email
 
     class Meta:
-        verbose_name = 'Пользователь'  # Название таблицы в единственном числе
-        verbose_name_plural = 'Пользователи'  # Название таблицы во множественном числе
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
 
 class Candidate(models.Model):
@@ -47,8 +65,6 @@ class Company(models.Model):
     class Meta:
         verbose_name = 'Компания'
         verbose_name_plural = 'Компании'
-
-
 
     def __str__(self):
         return self.name
