@@ -1,28 +1,18 @@
+from rest_framework.decorators import action
+from rest_framework.viewsets import ViewSet
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from django.contrib.auth import authenticate
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from .serializers import RegisterSerializer, UserSerializer
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from .serializers import RegisterSerializer
+from ..serializers import RegisterSerializer
 
 
-class RegisterView(APIView):
+class AuthViewSet(ViewSet):
+    @action(detail=False, methods=['post'])
     @swagger_auto_schema(
         operation_summary="Регистрация пользователя",
-        operation_description=(
-                "Эндпоинт для регистрации нового пользователя. "
-                "Требуется указать имя пользователя (username), email, пароль, телефон, аватар, имя, фамилию и пол."
-        ),
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
@@ -47,10 +37,7 @@ class RegisterView(APIView):
             400: openapi.Response(description="Ошибка валидации данных."),
         }
     )
-    def post(self, request):
-        """
-        Регистрация нового пользователя.
-        """
+    def register(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -60,18 +47,9 @@ class RegisterView(APIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class LoginView(APIView):
-    """
-    Кастомный эндпоинт для логина по email, username или phone.
-    """
-
+    @action(detail=False, methods=['post'])
     @swagger_auto_schema(
         operation_summary="Логин пользователя",
-        operation_description=(
-                "Эндпоинт для авторизации. Можно использовать email, username или phone в качестве логина, "
-                "а также пароль для аутентификации."
-        ),
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
@@ -93,7 +71,7 @@ class LoginView(APIView):
             401: openapi.Response(description="Неверные учетные данные.")
         }
     )
-    def post(self, request):
+    def login(self, request):
         login = request.data.get('login')
         password = request.data.get('password')
 
@@ -103,11 +81,8 @@ class LoginView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Попытка найти пользователя по login (email, username или phone)
-
         user = authenticate(request, username=login, password=password)
-
-        if user is not None:
+        if user:
             refresh = RefreshToken.for_user(user)
             return Response(
                 {
@@ -122,13 +97,49 @@ class LoginView(APIView):
             status=status.HTTP_401_UNAUTHORIZED
         )
 
+    @action(detail=False, methods=['post'])
+    @swagger_auto_schema(
+        operation_summary="Обновление токенов",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "refresh": openapi.Schema(type=openapi.TYPE_STRING, description="Refresh-токен для обновления токенов")
+            },
+            required=["refresh"],
+        ),
+        responses={
+            200: openapi.Response(
+                description="Токен успешно обновлен.",
+                examples={
+                    "application/json": {
+                        "access": "string"
+                    }
+                }
+            ),
+            401: openapi.Response(description="Невалидный или истекший refresh-токен.")
+        }
+    )
+    def refresh(self, request):
+        refresh_token = request.data.get("refresh")
+        if not refresh_token:
+            return Response({"detail": "Не указан refresh-токен."}, status=status.HTTP_400_BAD_REQUEST)
 
-class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+        try:
+            refresh = RefreshToken(refresh_token)
+            new_access = refresh.access_token
+            return Response(
+                {"access": str(new_access)},
+                status=status.HTTP_200_OK
+            )
+        except TokenError as e:
+            return Response(
+                {"detail": "Невалидный или истекший refresh-токен.", "error": str(e)},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
 
+    @action(detail=False, methods=['post'])
     @swagger_auto_schema(
         operation_summary="Выход из системы",
-        operation_description="Позволяет пользователю выйти из системы, делая его refresh-токен недействительным.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
@@ -141,40 +152,11 @@ class LogoutView(APIView):
             400: openapi.Response(description="Ошибка в запросе."),
         }
     )
-    def post(self, request):
+    def logout(self, request):
         try:
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
-            token.blacklist()  # Этот метод теперь работает
+            token.blacklist()
             return Response({"message": "Вы успешно вышли из системы."}, status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class CurrentUserView(APIView):
-    """
-    Эндпоинт для получения информации о текущем пользователе.
-    """
-    permission_classes = [IsAuthenticated]
-
-    @swagger_auto_schema(
-        operation_summary="Получение данных текущего пользователя",
-        operation_description="Эндпоинт возвращает информацию о текущем авторизованном пользователе.",
-        responses={
-            200: openapi.Response(
-                description="Успешный ответ с данными пользователя.",
-                schema=UserSerializer
-            ),
-            401: openapi.Response(
-                description="Неавторизованный доступ.",
-                examples={"application/json": {"detail": "Учетные данные не были предоставлены."}}
-            ),
-        },
-    )
-    def get(self, request):
-        """
-        Возвращает данные текущего авторизованного пользователя.
-        """
-        user = request.user
-        serializer = UserSerializer(user)
-        return Response(serializer.data, status=200)
