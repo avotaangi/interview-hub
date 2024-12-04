@@ -71,14 +71,13 @@ class Company(models.Model):
 
 
 class Interviewer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     company = models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name='Компания')
     position = models.CharField(max_length=255, verbose_name='Должность')
-    name = models.CharField(max_length=100, verbose_name='ФИО')
-    email = models.EmailField(max_length=100, verbose_name='Электронная почта')
 
     class Meta:
         verbose_name = 'Интервьюер'  # Название в единственном числе
         verbose_name_plural = 'Интервьюеры'  # Название во множественном числе
 
     def __str__(self):
-        return self.name
+        return self.user.name

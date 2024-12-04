@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Company, Candidate, Interviewer
 from django.contrib.auth.password_validation import validate_password
 
 
@@ -50,3 +50,22 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'phone', 'avatar', 'first_name', 'last_name', 'gender']
+
+
+class CandidateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Candidate
+        fields = '__all__'
+
+
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = '__all__'
+
+
+class InterviewerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interviewer
+        fields = '__all__'
+

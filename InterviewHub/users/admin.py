@@ -44,8 +44,8 @@ class CompanyAdmin(admin.ModelAdmin):
 
 @admin.register(Interviewer)
 class InterviewerAdmin(admin.ModelAdmin):
-    list_display = ('company__name', 'position', 'email', 'name')
+    list_display = ('company__name', 'position', 'user__email', 'user__first_name')
     list_filter = ('company__name', 'position')
-    search_fields = ('company__name', 'position', 'name', 'email')
-    list_display_links = ('name', 'email')
+    search_fields = ('company__name', 'position', 'user__first_name', 'user__email')
+    list_display_links = ('user__first_name', 'user__email')
     raw_id_fields = ('company',)
