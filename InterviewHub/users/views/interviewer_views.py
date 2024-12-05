@@ -20,7 +20,7 @@ from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from ..models import Interviewer
-from ..serializers import InterviewerSerializer
+from ..serializers.inteview_serializer import InterviewerSerializer
 
 
 class StandardResultsSetPagination(PageNumberPagination):
