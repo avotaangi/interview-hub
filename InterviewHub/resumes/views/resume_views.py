@@ -179,14 +179,40 @@ class ResumeViewSet(viewsets.ModelViewSet):
         operation_summary="Получить последние резюме",
         operation_description="Получить все резюме, созданные за последние 30 дней.",
         responses={200: ResumeSerializer(many=True)},
-        manual_parameters=[
-            openapi.Parameter(
-                name="id",
-                in_=openapi.IN_PATH,
+        properties={
+            "candidate": openapi.Schema(
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее резюме"
+                description="ID кандидата, которому принадлежит резюме.",
+                example=1
             ),
-        ]
+            "desired_position": openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="Желаемая должность кандидата.",
+                example="Software Developer"
+            ),
+            "desired_salary": openapi.Schema(
+                type=openapi.TYPE_INTEGER,
+                description="Желаемая зарплата кандидата.",
+                example=60000
+            ),
+            "skills": openapi.Schema(
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Items(type=openapi.TYPE_INTEGER),
+                description="Список ID навыков, которые кандидат хочет указать.",
+                example=[1, 2, 3]
+            ),
+            "job_experiences": openapi.Schema(
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Items(type=openapi.TYPE_INTEGER),
+                description="Список ID опыта работы, который кандидат хочет указать.",
+                example=[5, 8]
+            ),
+            "additional_info": openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="Дополнительная информация о кандидате.",
+                example="Ищу удаленную работу, готов к переезду."
+            )
+        }
     )
     @action(methods=['GET'], detail=False)
     def recent_resumes(self, request):
