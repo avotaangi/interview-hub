@@ -30,38 +30,6 @@ class CandidateViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Получить список кандидатов",
         operation_description="Получить список всех кандидатов с поддержкой фильтров, поиска и пагинации.",
-        manual_parameters=[
-            openapi.Parameter(
-                name='page',
-                in_=openapi.IN_QUERY,
-                description='Номер страницы',
-                type=openapi.TYPE_INTEGER
-            ),
-            openapi.Parameter(
-                name='page_size',
-                in_=openapi.IN_QUERY,
-                description='Количество элементов на странице',
-                type=openapi.TYPE_INTEGER
-            ),
-            openapi.Parameter(
-                name='search',
-                in_=openapi.IN_QUERY,
-                description='Поиск по email, городу или соцсетям',
-                type=openapi.TYPE_STRING
-            ),
-            openapi.Parameter(
-                name='user__email',
-                in_=openapi.IN_QUERY,
-                description='Фильтр по email пользователя',
-                type=openapi.TYPE_STRING
-            ),
-            openapi.Parameter(
-                name='city',
-                in_=openapi.IN_QUERY,
-                description='Фильтр по городу',
-                type=openapi.TYPE_STRING
-            ),
-        ],
         responses={
             200: openapi.Response(
                 description="Успешное получение списка кандидатов",
@@ -73,10 +41,15 @@ class CandidateViewSet(viewsets.ModelViewSet):
                         "results": [
                             {
                                 "id": 1,
-                                "user": 1,
+                                "user": {
+                                    "id": 1,
+                                    "email": "example@example.com",
+                                    "first_name": "Иван",
+                                    "last_name": "Иванов"
+                                },
                                 "birth_date": "1990-01-01",
                                 "city": "Москва",
-                                "social_media": "https://facebook.com/profile"
+                                "social_media": "https://vk.ru/profile"
                             }
                         ]
                     }
@@ -94,7 +67,7 @@ class CandidateViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=['user', 'city'],
             properties={
-                'user': openapi.Schema(
+                'user_id': openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     example=1,
                     description="ID пользователя, связанного с кандидатом."
@@ -158,7 +131,33 @@ class CandidateViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Обновить информацию о кандидате",
         operation_description="Полностью обновить запись кандидата.",
-        request_body=CandidateSerializer,
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['user', 'city'],
+            properties={
+                'user_id': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    example=1,
+                    description="ID пользователя, связанного с кандидатом."
+                ),
+                'birth_date': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format='date',
+                    example="1990-01-01",
+                    description="Дата рождения кандидата в формате YYYY-MM-DD."
+                ),
+                'city': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    example="Москва",
+                    description="Город проживания кандидата."
+                ),
+                'social_media': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    example="https://linkedin.com/in/example",
+                    description="Ссылка на социальные сети кандидата."
+                ),
+            }
+        ),
         responses={
             200: CandidateSerializer,
             400: "Неверный запрос",
@@ -179,7 +178,33 @@ class CandidateViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Частично обновить информацию о кандидате",
         operation_description="Частично обновить данные кандидата.",
-        request_body=CandidateSerializer,
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['user', 'city'],
+            properties={
+                'user_id': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    example=1,
+                    description="ID пользователя, связанного с кандидатом."
+                ),
+                'birth_date': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format='date',
+                    example="1990-01-01",
+                    description="Дата рождения кандидата в формате YYYY-MM-DD."
+                ),
+                'city': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    example="Москва",
+                    description="Город проживания кандидата."
+                ),
+                'social_media': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    example="https://linkedin.com/in/example",
+                    description="Ссылка на социальные сети кандидата."
+                ),
+            }
+        ),
         responses={
             200: CandidateSerializer,
             400: "Неверный запрос",
