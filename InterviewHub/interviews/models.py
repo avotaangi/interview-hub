@@ -1,6 +1,7 @@
 from django.db import models
 from selections.models import CompanySelection
 from tasks.models import TaskItem
+from simple_history.models import HistoricalRecords
 
 class Interview(models.Model):
     interview_status_choices = [
@@ -19,6 +20,7 @@ class Interview(models.Model):
     notes = models.TextField(null=True, blank=True, verbose_name='Примечания')
     hard_skills_rate = models.IntegerField(null=True, blank=True, verbose_name='Оценка хард скиллов')
     soft_skills_rate = models.IntegerField(null=True, blank=True, verbose_name='Оценка софт скиллов')
+    history = HistoricalRecords()
 
     result_choices = [
         ('Принято', 'Принято'),
@@ -43,6 +45,7 @@ class InterviewTaskItem(models.Model):
     interview = models.ForeignKey(Interview, on_delete=models.CASCADE, verbose_name='Интервью')
     task_item = models.ForeignKey(TaskItem, on_delete=models.CASCADE, verbose_name='Задание')
     candidate_answer = models.TextField(verbose_name='Ответ кандидата')
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = 'Элемент задания к интервью'  # Название таблицы в единственном числе
