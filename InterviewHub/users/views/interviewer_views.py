@@ -117,14 +117,14 @@ class InterviewerViewSet(viewsets.ModelViewSet):
         operation_description="Создать запись нового интервьюера с указанием пользователя, компании и должности.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
-            required=['user', 'company', 'position'],
+            required=['user_id', 'company_id', 'position'],
             properties={
-                'user': openapi.Schema(
+                'user_id': openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     example=1,
                     description="ID пользователя, связанного с интервьюером."
                 ),
-                'company': openapi.Schema(
+                'company_id': openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     example=2,
                     description="ID компании, в которой работает интервьюер."
@@ -142,8 +142,15 @@ class InterviewerViewSet(viewsets.ModelViewSet):
                 examples={
                     "application/json": {
                         "id": 1,
-                        "user": 1,
-                        "company": 2,
+                        "user": {
+                            "id": 1,
+                            "name": "Иван Иванов",
+                            "email": "ivan@example.com"
+                        },
+                        "company": {
+                            "id": 2,
+                            "name": "Example Company"
+                        },
                         "position": "Senior Developer"
                     }
                 }
@@ -176,7 +183,27 @@ class InterviewerViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Обновить информацию об интервьюере",
         operation_description="Полностью обновить запись интервьюера.",
-        request_body=InterviewerSerializer,
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['user_id', 'company_id', 'position'],
+            properties={
+                'user_id': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    example=1,
+                    description="ID пользователя, связанного с интервьюером."
+                ),
+                'company_id': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    example=2,
+                    description="ID компании, в которой работает интервьюер."
+                ),
+                'position': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    example="Senior Developer",
+                    description="Должность интервьюера."
+                ),
+            }
+        ),
         responses={
             200: InterviewerSerializer,
             400: "Неверный запрос",
@@ -197,7 +224,27 @@ class InterviewerViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Частично обновить информацию об интервьюере",
         operation_description="Частично обновить данные интервьюера.",
-        request_body=InterviewerSerializer,
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['user_id', 'company_id', 'position'],
+            properties={
+                'user_id': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    example=1,
+                    description="ID пользователя, связанного с интервьюером."
+                ),
+                'company_id': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    example=2,
+                    description="ID компании, в которой работает интервьюер."
+                ),
+                'position': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    example="Senior Developer",
+                    description="Должность интервьюера."
+                ),
+            }
+        ),
         responses={
             200: InterviewerSerializer,
             400: "Неверный запрос",
