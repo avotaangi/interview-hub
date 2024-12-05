@@ -7,7 +7,7 @@ from drf_yasg import openapi
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from ..models import Candidate
-from ..serializers import CandidateSerializer
+from ..serializers.candidate_serializer import CandidateSerializer
 
 
 class StandardResultsSetPagination(PageNumberPagination):

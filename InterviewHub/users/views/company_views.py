@@ -4,7 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from ..models import Company
-from ..serializers import CompanySerializer
+from ..serializers.company_serializer import CompanySerializer
 
 
 class StandardResultsSetPagination(PageNumberPagination):

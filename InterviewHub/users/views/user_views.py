@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from drf_yasg.utils import swagger_auto_schema
-from ..serializers import UserSerializer
+from ..serializers.user_serializer import UserSerializer
 
 
 class UserViewSet(ViewSet):

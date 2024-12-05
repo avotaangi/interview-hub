@@ -7,7 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.contrib.auth import authenticate
-from ..serializers import RegisterSerializer
+from ..serializers.auth_serializer import RegisterSerializer
 
 
 class AuthViewSet(ViewSet):
