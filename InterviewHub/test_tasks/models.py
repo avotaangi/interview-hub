@@ -1,4 +1,5 @@
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 
 class TestTask(models.Model):
@@ -14,6 +15,7 @@ class TestTask(models.Model):
     ]
     result = models.CharField(null=True, blank=True, max_length=20, choices=result_choices, verbose_name='Результат')
     recording_url = models.URLField(null=True, blank=True, verbose_name='URL записи')
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = 'Тестовое задание'  # Название таблицы в единственном числе
@@ -25,6 +27,7 @@ class TestTaskItem(models.Model):
     task_item = models.ForeignKey('tasks.TaskItem', on_delete=models.CASCADE, verbose_name='Элемент задания')
     candidate_answer = models.TextField(verbose_name='Ответ кандидата')
     interviewer_comment = models.TextField(null=True, blank=True, verbose_name='Комментарий интервьюера')
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"Элемент задания: {self.task_item} - Тестовое задание: {self.test_task}"

@@ -1,10 +1,12 @@
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 
 class TaskItem(models.Model):
     title = models.CharField(max_length=255, verbose_name='Название задания')
     complexity = models.IntegerField(verbose_name='Сложность')
     task_condition = models.TextField(verbose_name='Условие задания')
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.title
@@ -17,6 +19,7 @@ class TaskItem(models.Model):
 class OpenQuestion(models.Model):
     task_item = models.ForeignKey(TaskItem, on_delete=models.CASCADE, verbose_name='Элемент задания')
     correct_answer = models.TextField(verbose_name='Правильный ответ')
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = 'Задание с открытым ответом'  # Название таблицы в единственном числе
@@ -27,6 +30,7 @@ class MultipleChoiceQuestion(models.Model):
     task_item = models.ForeignKey(TaskItem, on_delete=models.CASCADE, verbose_name='Элемент задания')
     answer_text = models.CharField(max_length=255, verbose_name='Текст ответа')
     is_correct_answer = models.BooleanField(verbose_name='Правильный ответ')
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = 'Задание с выбором ответа'  # Название таблицы в единственном числе
@@ -38,6 +42,7 @@ class CodeQuestion(models.Model):
     language = models.CharField(max_length=255, verbose_name='Язык программирования')
     is_code_run = models.BooleanField(default=False, verbose_name='Код выполнен')
     code_snippet = models.TextField(verbose_name='Код')
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = 'Задание с написанием кода'  # Название таблицы в единственном числе
