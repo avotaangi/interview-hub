@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from ..models import Skill
-from ..serializers import SkillSerializer
+from ..serializers.skill_serializers import SkillSerializer
 
 
 class StandardResultsSetPagination(PageNumberPagination):

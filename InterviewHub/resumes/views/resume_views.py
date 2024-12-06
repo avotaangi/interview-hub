@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from django.utils import timezone
 from ..models import Resume, Skill, JobExperience
-from ..serializers import ResumeSerializer
+from ..serializers.resume_serializers import ResumeSerializer
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -52,7 +52,7 @@ class ResumeViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["candidate", "desired_position", "desired_salary"],
             properties={
-                "candidate": openapi.Schema(
+                "candidate_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     description="ID кандидата, которому принадлежит резюме.",
                     example=1
@@ -67,13 +67,13 @@ class ResumeViewSet(viewsets.ModelViewSet):
                     description="Желаемая зарплата кандидата.",
                     example=60000
                 ),
-                "skills": openapi.Schema(
+                "skills_data": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
                     items=openapi.Items(type=openapi.TYPE_INTEGER),
                     description="Список ID навыков, которые кандидат хочет указать.",
                     example=[1, 2, 3]
                 ),
-                "job_experiences": openapi.Schema(
+                "job_experiences_data": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
                     items=openapi.Items(type=openapi.TYPE_INTEGER),
                     description="Список ID опыта работы, который кандидат хочет указать.",
@@ -127,7 +127,44 @@ class ResumeViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Обновить резюме",
         operation_description="Полностью обновить информацию о резюме.",
-        request_body=ResumeSerializer,
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=["candidate", "desired_position", "desired_salary"],
+            properties={
+                "candidate_id": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="ID кандидата, которому принадлежит резюме.",
+                    example=1
+                ),
+                "desired_position": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Желаемая должность кандидата.",
+                    example="Software Developer"
+                ),
+                "desired_salary": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="Желаемая зарплата кандидата.",
+                    example=60000
+                ),
+                "skills_data": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Items(type=openapi.TYPE_INTEGER),
+                    description="Список ID навыков, которые кандидат хочет указать.",
+                    example=[1, 2, 3]
+                ),
+                "job_experiences_data": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Items(type=openapi.TYPE_INTEGER),
+                    description="Список ID опыта работы, который кандидат хочет указать.",
+                    example=[5, 8]
+                ),
+                "additional_info": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Дополнительная информация о кандидате.",
+                    example="Ищу удаленную работу, готов к переезду."
+                )
+            }
+        ),
         responses={200: ResumeSerializer, 400: "Ошибка валидации", 404: "Резюме не найдено"},
         manual_parameters=[
             openapi.Parameter(
@@ -144,7 +181,44 @@ class ResumeViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Частично обновить резюме",
         operation_description="Частично обновить информацию о резюме.",
-        request_body=ResumeSerializer,
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=["candidate", "desired_position", "desired_salary"],
+            properties={
+                "candidate_id": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="ID кандидата, которому принадлежит резюме.",
+                    example=1
+                ),
+                "desired_position": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Желаемая должность кандидата.",
+                    example="Software Developer"
+                ),
+                "desired_salary": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="Желаемая зарплата кандидата.",
+                    example=60000
+                ),
+                "skills_data": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Items(type=openapi.TYPE_INTEGER),
+                    description="Список ID навыков, которые кандидат хочет указать.",
+                    example=[1, 2, 3]
+                ),
+                "job_experiences_data": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Items(type=openapi.TYPE_INTEGER),
+                    description="Список ID опыта работы, который кандидат хочет указать.",
+                    example=[5, 8]
+                ),
+                "additional_info": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Дополнительная информация о кандидате.",
+                    example="Ищу удаленную работу, готов к переезду."
+                )
+            }
+        ),
         responses={200: ResumeSerializer, 400: "Ошибка валидации", 404: "Резюме не найдено"},
         manual_parameters=[
             openapi.Parameter(

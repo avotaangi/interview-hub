@@ -5,7 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from ..models import JobExperience
-from ..serializers import JobSerializer
+from ..serializers.job_serializers import JobExperienceSerializer
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -16,7 +16,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 class JobViewSet(viewsets.ModelViewSet):
     queryset = JobExperience.objects.all()
-    serializer_class = JobSerializer
+    serializer_class = JobExperienceSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['company', 'position', 'start_date', 'end_date']
