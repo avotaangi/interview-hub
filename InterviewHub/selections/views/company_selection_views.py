@@ -8,7 +8,7 @@ from drf_yasg import openapi
 from rest_framework.response import Response
 
 from ..models import CompanySelection
-from ..serializers import CompanySelectionSerializer
+from ..serializers.company_selection_serializers import CompanySelectionSerializer
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -65,8 +65,8 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["interviewer", "resume", "status"],
             properties={
-                "interviewer": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
-                "resume": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
+                "interviewer_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
+                "resume_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
                 "status": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Статус отбора",
@@ -130,8 +130,8 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["interviewer", "resume", "status"],
             properties={
-                "interviewer": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
-                "resume": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
+                "interviewer_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
+                "resume_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
                 "status": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Статус отбора",
@@ -173,8 +173,8 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "interviewer": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
-                "resume": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
+                "interviewer_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
+                "resume_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
                 "status": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Статус отбора",
