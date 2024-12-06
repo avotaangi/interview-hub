@@ -12,32 +12,52 @@ from ..serializers.auth_serializer import RegisterSerializer
 
 class AuthViewSet(ViewSet):
     permission_classes = [AllowAny]
-    @action(detail=False, methods=['post'])
+
+    @action(detail=False, methods=["post"])
     @swagger_auto_schema(
         operation_summary="Регистрация пользователя",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'username': openapi.Schema(type=openapi.TYPE_STRING, description='Имя пользователя (уникальное)'),
-                'email': openapi.Schema(type=openapi.TYPE_STRING, description='Электронная почта (уникальная)'),
-                'password': openapi.Schema(type=openapi.TYPE_STRING, description='Пароль'),
-                'password_confirm': openapi.Schema(type=openapi.TYPE_STRING, description='Подтверждение пароля'),
-                'phone': openapi.Schema(type=openapi.TYPE_STRING, description='Телефон (уникальный)'),
-                'avatar': openapi.Schema(type=openapi.TYPE_FILE, description='Изображение аватара (необязательно)'),
-                'first_name': openapi.Schema(type=openapi.TYPE_STRING, description='Имя'),
-                'last_name': openapi.Schema(type=openapi.TYPE_STRING, description='Фамилия'),
-                'gender': openapi.Schema(
+                "username": openapi.Schema(
                     type=openapi.TYPE_STRING,
-                    enum=['Мужской', 'Женский'],
-                    description='Пол'
+                    description="Имя пользователя (уникальное)",
+                ),
+                "email": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Электронная почта (уникальная)",
+                ),
+                "password": openapi.Schema(
+                    type=openapi.TYPE_STRING, description="Пароль"
+                ),
+                "password_confirm": openapi.Schema(
+                    type=openapi.TYPE_STRING, description="Подтверждение пароля"
+                ),
+                "phone": openapi.Schema(
+                    type=openapi.TYPE_STRING, description="Телефон (уникальный)"
+                ),
+                "avatar": openapi.Schema(
+                    type=openapi.TYPE_FILE,
+                    description="Изображение аватара (необязательно)",
+                ),
+                "first_name": openapi.Schema(
+                    type=openapi.TYPE_STRING, description="Имя"
+                ),
+                "last_name": openapi.Schema(
+                    type=openapi.TYPE_STRING, description="Фамилия"
+                ),
+                "gender": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    enum=["Мужской", "Женский"],
+                    description="Пол",
                 ),
             },
-            required=['username', 'email', 'password', 'password_confirm'],
+            required=["username", "email", "password", "password_confirm"],
         ),
         responses={
             201: openapi.Response(description="Пользователь успешно зарегистрирован."),
             400: openapi.Response(description="Ошибка валидации данных."),
-        }
+        },
     )
     def register(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -45,42 +65,47 @@ class AuthViewSet(ViewSet):
             serializer.save()
             return Response(
                 {"message": "Пользователь успешно зарегистрирован."},
-                status=status.HTTP_201_CREATED
+                status=status.HTTP_201_CREATED,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=["post"])
     @swagger_auto_schema(
         operation_summary="Логин пользователя",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'login': openapi.Schema(type=openapi.TYPE_STRING, description='Email, username или номер телефона'),
-                'password': openapi.Schema(type=openapi.TYPE_STRING, description='Пароль'),
+                "login": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Email, username или номер телефона",
+                ),
+                "password": openapi.Schema(
+                    type=openapi.TYPE_STRING, description="Пароль"
+                ),
             },
-            required=['login', 'password'],
+            required=["login", "password"],
         ),
         responses={
             200: openapi.Response(
                 description="Авторизация успешна",
                 examples={
-                    'application/json': {
+                    "application/json": {
                         "refresh": "string",
                         "access": "string",
                     }
-                }
+                },
             ),
-            401: openapi.Response(description="Неверные учетные данные.")
-        }
+            401: openapi.Response(description="Неверные учетные данные."),
+        },
     )
     def login(self, request):
-        login = request.data.get('login')
-        password = request.data.get('password')
+        login = request.data.get("login")
+        password = request.data.get("password")
 
         if not login or not password:
             return Response(
                 {"detail": "Необходимо указать логин и пароль."},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         user = authenticate(request, username=login, password=password)
@@ -91,74 +116,77 @@ class AuthViewSet(ViewSet):
                     "refresh": str(refresh),
                     "access": str(refresh.access_token),
                 },
-                status=status.HTTP_200_OK
+                status=status.HTTP_200_OK,
             )
 
         return Response(
-            {"detail": "Неверные учетные данные."},
-            status=status.HTTP_401_UNAUTHORIZED
+            {"detail": "Неверные учетные данные."}, status=status.HTTP_401_UNAUTHORIZED
         )
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=["post"])
     @swagger_auto_schema(
         operation_summary="Обновление токенов",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "refresh": openapi.Schema(type=openapi.TYPE_STRING, description="Refresh-токен для обновления токенов")
+                "refresh": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Refresh-токен для обновления токенов",
+                )
             },
             required=["refresh"],
         ),
         responses={
             200: openapi.Response(
                 description="Токен успешно обновлен.",
-                examples={
-                    "application/json": {
-                        "access": "string"
-                    }
-                }
+                examples={"application/json": {"access": "string"}},
             ),
-            401: openapi.Response(description="Невалидный или истекший refresh-токен.")
-        }
+            401: openapi.Response(description="Невалидный или истекший refresh-токен."),
+        },
     )
     def refresh(self, request):
         refresh_token = request.data.get("refresh")
         if not refresh_token:
-            return Response({"detail": "Не указан refresh-токен."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Не указан refresh-токен."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
             refresh = RefreshToken(refresh_token)
             new_access = refresh.access_token
-            return Response(
-                {"access": str(new_access)},
-                status=status.HTTP_200_OK
-            )
+            return Response({"access": str(new_access)}, status=status.HTTP_200_OK)
         except TokenError as e:
             return Response(
                 {"detail": "Невалидный или истекший refresh-токен.", "error": str(e)},
-                status=status.HTTP_401_UNAUTHORIZED
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=["post"])
     @swagger_auto_schema(
         operation_summary="Выход из системы",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "refresh": openapi.Schema(type=openapi.TYPE_STRING, description="Refresh-токен")
+                "refresh": openapi.Schema(
+                    type=openapi.TYPE_STRING, description="Refresh-токен"
+                )
             },
             required=["refresh"],
         ),
         responses={
             205: openapi.Response(description="Выход выполнен успешно."),
             400: openapi.Response(description="Ошибка в запросе."),
-        }
+        },
     )
     def logout(self, request):
         try:
             refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
             token.blacklist()
-            return Response({"message": "Вы успешно вышли из системы."}, status=status.HTTP_205_RESET_CONTENT)
+            return Response(
+                {"message": "Вы успешно вышли из системы."},
+                status=status.HTTP_205_RESET_CONTENT,
+            )
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

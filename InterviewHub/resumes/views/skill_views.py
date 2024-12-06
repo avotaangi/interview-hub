@@ -12,7 +12,7 @@ from ..serializers.skill_serializers import SkillSerializer
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 100
 
 
@@ -21,8 +21,8 @@ class SkillViewSet(viewsets.ModelViewSet):
     serializer_class = SkillSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['name']
-    search_fields = ['name', 'description']
+    filterset_fields = ["name"]
+    search_fields = ["name", "description"]
 
     @swagger_auto_schema(
         operation_summary="Получить список навыков",
@@ -33,49 +33,67 @@ class SkillViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "count": openapi.Schema(type=openapi.TYPE_INTEGER, description="Общее количество элементов"),
-                        "next": openapi.Schema(type=openapi.TYPE_STRING, description="Ссылка на следующую страницу"),
-                        "previous": openapi.Schema(type=openapi.TYPE_STRING, description="Ссылка на предыдущую страницу"),
+                        "count": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="Общее количество элементов",
+                        ),
+                        "next": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на следующую страницу",
+                        ),
+                        "previous": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на предыдущую страницу",
+                        ),
                         "results": openapi.Schema(
                             type=openapi.TYPE_ARRAY,
                             items=openapi.Schema(
                                 type=openapi.TYPE_OBJECT,
                                 properties={
-                                    "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID навыка"),
-                                    "name": openapi.Schema(type=openapi.TYPE_STRING, description="Название навыка"),
-                                    "description": openapi.Schema(type=openapi.TYPE_STRING, description="Описание навыка")
-                                }
+                                    "id": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID навыка",
+                                    ),
+                                    "name": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Название навыка",
+                                    ),
+                                    "description": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Описание навыка",
+                                    ),
+                                },
                             ),
                         ),
                     },
                 ),
             ),
-            400: "Ошибка в запросе"
+            400: "Ошибка в запросе",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="name",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_STRING,
-                description="Поиск по названию навыка"
+                description="Поиск по названию навыка",
             ),
             openapi.Parameter(
                 name="search",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_STRING,
-                description="Поиск по описанию навыка"
+                description="Поиск по описанию навыка",
             ),
             openapi.Parameter(
                 name="page",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
-                description="Номер страницы для пагинации"
+                description="Номер страницы для пагинации",
             ),
             openapi.Parameter(
                 name="page_size",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
-                description="Количество элементов на странице"
+                description="Количество элементов на странице",
             ),
         ],
     )
@@ -89,9 +107,17 @@ class SkillViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["name"],
             properties={
-                "name": openapi.Schema(type=openapi.TYPE_STRING, description="Название навыка", example="Python"),
-                "description": openapi.Schema(type=openapi.TYPE_STRING, description="Описание навыка", example="Программирование на Python."),
-            }
+                "name": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Название навыка",
+                    example="Python",
+                ),
+                "description": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Описание навыка",
+                    example="Программирование на Python.",
+                ),
+            },
         ),
         responses={
             201: openapi.Response(
@@ -99,14 +125,20 @@ class SkillViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID навыка"),
-                        "name": openapi.Schema(type=openapi.TYPE_STRING, description="Название навыка"),
-                        "description": openapi.Schema(type=openapi.TYPE_STRING, description="Описание навыка")
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID навыка"
+                        ),
+                        "name": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название навыка"
+                        ),
+                        "description": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Описание навыка"
+                        ),
+                    },
+                ),
             ),
-            400: "Ошибка в запросе"
-        }
+            400: "Ошибка в запросе",
+        },
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -120,22 +152,28 @@ class SkillViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID навыка"),
-                        "name": openapi.Schema(type=openapi.TYPE_STRING, description="Название навыка"),
-                        "description": openapi.Schema(type=openapi.TYPE_STRING, description="Описание навыка")
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID навыка"
+                        ),
+                        "name": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название навыка"
+                        ),
+                        "description": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Описание навыка"
+                        ),
+                    },
+                ),
             ),
-            404: "Навык не найден"
+            404: "Навык не найден",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее навык"
+                description="Уникальное целое значение, идентифицирующее навык",
             ),
-        ]
+        ],
     )
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
@@ -147,9 +185,17 @@ class SkillViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["name"],
             properties={
-                "name": openapi.Schema(type=openapi.TYPE_STRING, description="Название навыка", example="Django"),
-                "description": openapi.Schema(type=openapi.TYPE_STRING, description="Описание навыка", example="Веб-фреймворк на Python."),
-            }
+                "name": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Название навыка",
+                    example="Django",
+                ),
+                "description": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Описание навыка",
+                    example="Веб-фреймворк на Python.",
+                ),
+            },
         ),
         responses={
             200: openapi.Response(
@@ -157,23 +203,29 @@ class SkillViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID навыка"),
-                        "name": openapi.Schema(type=openapi.TYPE_STRING, description="Название навыка"),
-                        "description": openapi.Schema(type=openapi.TYPE_STRING, description="Описание навыка")
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID навыка"
+                        ),
+                        "name": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название навыка"
+                        ),
+                        "description": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Описание навыка"
+                        ),
+                    },
+                ),
             ),
             400: "Ошибка в запросе",
-            404: "Навык не найден"
+            404: "Навык не найден",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее навык"
+                description="Уникальное целое значение, идентифицирующее навык",
             ),
-        ]
+        ],
     )
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
@@ -184,10 +236,17 @@ class SkillViewSet(viewsets.ModelViewSet):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "name": openapi.Schema(type=openapi.TYPE_STRING, description="Название навыка", example="FastAPI"),
-                "description": openapi.Schema(type=openapi.TYPE_STRING, description="Описание навыка",
-                                           example="Асинхронный веб-фреймворк."),
-            }
+                "name": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Название навыка",
+                    example="FastAPI",
+                ),
+                "description": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Описание навыка",
+                    example="Асинхронный веб-фреймворк.",
+                ),
+            },
         ),
         responses={
             200: openapi.Response(
@@ -195,23 +254,29 @@ class SkillViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID навыка"),
-                        "name": openapi.Schema(type=openapi.TYPE_STRING, description="Название навыка"),
-                        "description": openapi.Schema(type=openapi.TYPE_STRING, description="Описание навыка")
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID навыка"
+                        ),
+                        "name": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название навыка"
+                        ),
+                        "description": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Описание навыка"
+                        ),
+                    },
+                ),
             ),
             400: "Ошибка в запросе",
-            404: "Навык не найден"
+            404: "Навык не найден",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее навык"
+                description="Уникальное целое значение, идентифицирующее навык",
             ),
-        ]
+        ],
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
@@ -219,18 +284,15 @@ class SkillViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Удалить навык",
         operation_description="Удаляет навык по указанному ID.",
-        responses={
-            204: "Навык успешно удален",
-            404: "Навык не найден"
-        },
+        responses={204: "Навык успешно удален", 404: "Навык не найден"},
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее навык"
+                description="Уникальное целое значение, идентифицирующее навык",
             ),
-        ]
+        ],
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)

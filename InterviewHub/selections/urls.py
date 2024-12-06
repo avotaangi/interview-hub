@@ -4,6 +4,8 @@ from .views.company_selection_views import CompanySelectionViewSet
 
 # Создаем роутер для ViewSet
 router = DefaultRouter()
-router.register(r'company-selections', CompanySelectionViewSet, basename='company-selection')
+router.register(
+    r"company-selections", CompanySelectionViewSet, basename="company-selection"
+)
 
 urlpatterns = router.urls

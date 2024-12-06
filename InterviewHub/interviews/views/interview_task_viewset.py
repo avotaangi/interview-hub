@@ -11,7 +11,7 @@ from ..serializers.interview_task_serializer import InterviewTaskItemSerializer
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 100
 
 
@@ -20,7 +20,7 @@ class InterviewTaskItemViewSet(viewsets.ModelViewSet):
     serializer_class = InterviewTaskItemSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['interview', 'task_item']
+    filterset_fields = ["interview", "task_item"]
 
     @swagger_auto_schema(
         operation_summary="Получить список элементов заданий к интервью",
@@ -36,50 +36,71 @@ class InterviewTaskItemViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "count": openapi.Schema(type=openapi.TYPE_INTEGER, description="Общее количество элементов"),
-                        "next": openapi.Schema(type=openapi.TYPE_STRING, description="Ссылка на следующую страницу"),
-                        "previous": openapi.Schema(type=openapi.TYPE_STRING, description="Ссылка на предыдущую страницу"),
+                        "count": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="Общее количество элементов",
+                        ),
+                        "next": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на следующую страницу",
+                        ),
+                        "previous": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на предыдущую страницу",
+                        ),
                         "results": openapi.Schema(
                             type=openapi.TYPE_ARRAY,
                             items=openapi.Schema(
                                 type=openapi.TYPE_OBJECT,
                                 properties={
-                                    "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID элемента задания"),
-                                    "interview": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервью"),
-                                    "task_item": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                                    "candidate_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Ответ кандидата"),
-                                }
+                                    "id": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID элемента задания",
+                                    ),
+                                    "interview": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID интервью",
+                                    ),
+                                    "task_item": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID задания",
+                                    ),
+                                    "candidate_answer": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Ответ кандидата",
+                                    ),
+                                },
                             ),
                         ),
                     },
                 ),
             ),
-            400: "Ошибка в запросе"
+            400: "Ошибка в запросе",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="interview",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
-                description="Фильтр по ID интервью"
+                description="Фильтр по ID интервью",
             ),
             openapi.Parameter(
                 name="task_item",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
-                description="Фильтр по ID задания"
+                description="Фильтр по ID задания",
             ),
             openapi.Parameter(
                 name="page",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
-                description="Номер страницы для пагинации"
+                description="Номер страницы для пагинации",
             ),
             openapi.Parameter(
                 name="page_size",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
-                description="Количество элементов на странице"
+                description="Количество элементов на странице",
             ),
         ],
     )
@@ -94,10 +115,18 @@ class InterviewTaskItemViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["interview", "task_item", "candidate_answer"],
             properties={
-                "interview": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервью", example=1),
-                "task_item": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания", example=101),
-                "candidate_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Ответ кандидата", example="Ответ на задание."),
-            }
+                "interview": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID интервью", example=1
+                ),
+                "task_item": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID задания", example=101
+                ),
+                "candidate_answer": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Ответ кандидата",
+                    example="Ответ на задание.",
+                ),
+            },
         ),
         responses={
             201: openapi.Response(
@@ -105,14 +134,22 @@ class InterviewTaskItemViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID элемента задания"),
-                        "interview": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервью"),
-                        "task_item": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                        "candidate_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Ответ кандидата"),
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID элемента задания"
+                        ),
+                        "interview": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID интервью"
+                        ),
+                        "task_item": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID задания"
+                        ),
+                        "candidate_answer": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Ответ кандидата"
+                        ),
+                    },
+                ),
             ),
-            400: "Ошибка в запросе"
+            400: "Ошибка в запросе",
         },
     )
     def create(self, request, *args, **kwargs):
@@ -128,23 +165,31 @@ class InterviewTaskItemViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID элемента задания"),
-                        "interview": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервью"),
-                        "task_item": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                        "candidate_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Ответ кандидата"),
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID элемента задания"
+                        ),
+                        "interview": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID интервью"
+                        ),
+                        "task_item": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID задания"
+                        ),
+                        "candidate_answer": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Ответ кандидата"
+                        ),
+                    },
+                ),
             ),
-            404: "Элемент задания не найден"
+            404: "Элемент задания не найден",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальный идентификатор элемента задания"
+                description="Уникальный идентификатор элемента задания",
             ),
-        ]
+        ],
     )
     def retrieve(self, request, *args, **kwargs):
         """Возвращает элемент задания по ID."""
@@ -157,10 +202,18 @@ class InterviewTaskItemViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["interview", "task_item", "candidate_answer"],
             properties={
-                "interview": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервью", example=1),
-                "task_item": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания", example=102),
-                "candidate_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Обновленный ответ кандидата", example="Обновленный ответ."),
-            }
+                "interview": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID интервью", example=1
+                ),
+                "task_item": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID задания", example=102
+                ),
+                "candidate_answer": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Обновленный ответ кандидата",
+                    example="Обновленный ответ.",
+                ),
+            },
         ),
         responses={
             200: openapi.Response(
@@ -168,24 +221,33 @@ class InterviewTaskItemViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID элемента задания"),
-                        "interview": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервью"),
-                        "task_item": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                        "candidate_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Обновленный ответ кандидата"),
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID элемента задания"
+                        ),
+                        "interview": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID интервью"
+                        ),
+                        "task_item": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID задания"
+                        ),
+                        "candidate_answer": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Обновленный ответ кандидата",
+                        ),
+                    },
+                ),
             ),
             400: "Ошибка в запросе",
-            404: "Элемент задания не найден"
+            404: "Элемент задания не найден",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальный идентификатор элемента задания"
+                description="Уникальный идентификатор элемента задания",
             ),
-        ]
+        ],
     )
     def update(self, request, *args, **kwargs):
         """Полностью обновляет элемент задания к интервью."""
@@ -197,8 +259,12 @@ class InterviewTaskItemViewSet(viewsets.ModelViewSet):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "candidate_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Обновленный ответ кандидата", example="Новый ответ."),
-            }
+                "candidate_answer": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Обновленный ответ кандидата",
+                    example="Новый ответ.",
+                ),
+            },
         ),
         responses={
             200: openapi.Response(
@@ -206,24 +272,33 @@ class InterviewTaskItemViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID элемента задания"),
-                        "interview": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервью"),
-                        "task_item": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                        "candidate_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Обновленный ответ кандидата"),
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID элемента задания"
+                        ),
+                        "interview": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID интервью"
+                        ),
+                        "task_item": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID задания"
+                        ),
+                        "candidate_answer": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Обновленный ответ кандидата",
+                        ),
+                    },
+                ),
             ),
             400: "Ошибка в запросе",
-            404: "Элемент задания не найден"
+            404: "Элемент задания не найден",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальный идентификатор элемента задания"
+                description="Уникальный идентификатор элемента задания",
             ),
-        ]
+        ],
     )
     def partial_update(self, request, *args, **kwargs):
         """Частично обновляет элемент задания к интервью."""
@@ -234,16 +309,16 @@ class InterviewTaskItemViewSet(viewsets.ModelViewSet):
         operation_description="Удаляет элемент задания к интервью по его ID.",
         responses={
             204: "Элемент задания успешно удален",
-            404: "Элемент задания не найден"
+            404: "Элемент задания не найден",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальный идентификатор элемента задания"
+                description="Уникальный идентификатор элемента задания",
             ),
-        ]
+        ],
     )
     def destroy(self, request, *args, **kwargs):
         """Удаляет элемент задания к интервью по его ID."""

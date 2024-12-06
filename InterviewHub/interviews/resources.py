@@ -5,18 +5,44 @@ from .models import Interview, InterviewTaskItem
 
 class InterviewResource(resources.ModelResource):
     # Пример кастомизации поля, для вывода статуса интервью в строковом формате
-    status_display = Field(attribute='status', column_name='Статус',
-                           widget=resources.widgets.ForeignKeyWidget(Interview, 'status'))
+    status_display = Field(
+        attribute="status",
+        column_name="Статус",
+        widget=resources.widgets.ForeignKeyWidget(Interview, "status"),
+    )
 
     class Meta:
         model = Interview
         fields = (
-        'id', 'selection', 'start_time', 'end_time', 'duration', 'type', 'status_display', 'feedback', 'notes',
-        'hard_skills_rate', 'soft_skills_rate', 'result', 'recording_url')
+            "id",
+            "selection",
+            "start_time",
+            "end_time",
+            "duration",
+            "type",
+            "status_display",
+            "feedback",
+            "notes",
+            "hard_skills_rate",
+            "soft_skills_rate",
+            "result",
+            "recording_url",
+        )
         export_order = (
-        'id', 'selection', 'start_time', 'end_time', 'duration', 'type', 'status_display', 'feedback', 'notes',
-        'hard_skills_rate', 'soft_skills_rate', 'result', 'recording_url')
-
+            "id",
+            "selection",
+            "start_time",
+            "end_time",
+            "duration",
+            "type",
+            "status_display",
+            "feedback",
+            "notes",
+            "hard_skills_rate",
+            "soft_skills_rate",
+            "result",
+            "recording_url",
+        )
 
     def dehydrate_status_display(self, interview):
         """
@@ -38,13 +64,14 @@ class InterviewResource(resources.ModelResource):
 
 class InterviewTaskItemResource(resources.ModelResource):
     # Пример кастомизации поля, для вывода текста ответа кандидата
-    candidate_answer_display = Field(attribute='candidate_answer', column_name='Ответ кандидата')
+    candidate_answer_display = Field(
+        attribute="candidate_answer", column_name="Ответ кандидата"
+    )
 
     class Meta:
         model = InterviewTaskItem
-        fields = ('id', 'interview', 'task_item', 'candidate_answer_display')
-        export_order = ('id', 'interview', 'task_item', 'candidate_answer_display')
-
+        fields = ("id", "interview", "task_item", "candidate_answer_display")
+        export_order = ("id", "interview", "task_item", "candidate_answer_display")
 
     def dehydrate_candidate_answer_display(self, item):
         """
@@ -53,5 +80,5 @@ class InterviewTaskItemResource(resources.ModelResource):
         """
         answer = item.candidate_answer
         if len(answer) > 100:  # Ограничиваем длину ответа
-            return answer[:100] + '...'
+            return answer[:100] + "..."
         return answer

@@ -20,18 +20,25 @@ class InterviewAdmin(ImportExportModelAdmin):
         """
         queryset = super().get_export_queryset(request)
         # фильтруем только завершенные интервью
-        return queryset.filter(status='Запланировано')
+        return queryset.filter(status="Запланировано")
 
-    list_display = ('selection', 'start_time', 'end_time', 'status', 'result', 'short_feedback')
-    list_filter = ('status', 'result', 'start_time')
-    search_fields = ('selection__resume__candidate__user__email', 'status', 'result')
-    raw_id_fields = ('selection',)
-    date_hierarchy = 'start_time'
-    list_display_links = ('selection', 'start_time')
+    list_display = (
+        "selection",
+        "start_time",
+        "end_time",
+        "status",
+        "result",
+        "short_feedback",
+    )
+    list_filter = ("status", "result", "start_time")
+    search_fields = ("selection__resume__candidate__user__email", "status", "result")
+    raw_id_fields = ("selection",)
+    date_hierarchy = "start_time"
+    list_display_links = ("selection", "start_time")
 
-    @admin.display(description='Feedback')
+    @admin.display(description="Feedback")
     def short_feedback(self, obj):
-        return obj.feedback[:50] if obj.feedback else 'No feedback available'
+        return obj.feedback[:50] if obj.feedback else "No feedback available"
 
 
 # Админка для InterviewTaskItem
@@ -52,12 +59,17 @@ class InterviewTaskItemAdmin(ImportExportModelAdmin):
         # Пример: выбираем только те задания, которые не имеют ответа
         return queryset.filter(candidate_answer__isnull=False)
 
-    list_display = ('interview', 'task_item', 'short_candidate_answer')
-    list_filter = ('task_item',)
-    search_fields = ('interview__selection__resume__candidate__user__email', 'task_item__title')
-    raw_id_fields = ('interview', 'task_item')
-    readonly_fields = ('candidate_answer',)
+    list_display = ("interview", "task_item", "short_candidate_answer")
+    list_filter = ("task_item",)
+    search_fields = (
+        "interview__selection__resume__candidate__user__email",
+        "task_item__title",
+    )
+    raw_id_fields = ("interview", "task_item")
+    readonly_fields = ("candidate_answer",)
 
-    @admin.display(description='Candidate Answer')
+    @admin.display(description="Candidate Answer")
     def short_candidate_answer(self, obj):
-        return obj.candidate_answer[:50] if obj.candidate_answer else 'No answer provided'
+        return (
+            obj.candidate_answer[:50] if obj.candidate_answer else "No answer provided"
+        )

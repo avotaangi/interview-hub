@@ -11,7 +11,7 @@ from ..serializers.task_item_serializer import TaskItemSerializer
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 100
 
 
@@ -20,8 +20,8 @@ class TaskItemViewSet(viewsets.ModelViewSet):
     serializer_class = TaskItemSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['complexity']
-    search_fields = ['title', 'task_condition']
+    filterset_fields = ["complexity"]
+    search_fields = ["title", "task_condition"]
 
     @swagger_auto_schema(
         operation_summary="Получить список заданий",
@@ -32,50 +32,71 @@ class TaskItemViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "count": openapi.Schema(type=openapi.TYPE_INTEGER, description="Общее количество элементов"),
-                        "next": openapi.Schema(type=openapi.TYPE_STRING, description="Ссылка на следующую страницу"),
-                        "previous": openapi.Schema(type=openapi.TYPE_STRING, description="Ссылка на предыдущую страницу"),
+                        "count": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="Общее количество элементов",
+                        ),
+                        "next": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на следующую страницу",
+                        ),
+                        "previous": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на предыдущую страницу",
+                        ),
                         "results": openapi.Schema(
                             type=openapi.TYPE_ARRAY,
                             items=openapi.Schema(
                                 type=openapi.TYPE_OBJECT,
                                 properties={
-                                    "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                                    "title": openapi.Schema(type=openapi.TYPE_STRING, description="Название задания"),
-                                    "complexity": openapi.Schema(type=openapi.TYPE_INTEGER, description="Сложность задания"),
-                                    "task_condition": openapi.Schema(type=openapi.TYPE_STRING, description="Условие задания"),
-                                }
+                                    "id": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID задания",
+                                    ),
+                                    "title": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Название задания",
+                                    ),
+                                    "complexity": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="Сложность задания",
+                                    ),
+                                    "task_condition": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Условие задания",
+                                    ),
+                                },
                             ),
                         ),
                     },
                 ),
             ),
-            400: "Ошибка в запросе"
+            400: "Ошибка в запросе",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="page",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
-                description="Номер страницы для пагинации"
+                description="Номер страницы для пагинации",
             ),
             openapi.Parameter(
                 name="page_size",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
-                description="Количество элементов на странице"
+                description="Количество элементов на странице",
             ),
             openapi.Parameter(
                 name="complexity",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
-                description="Фильтр по сложности задания"
+                description="Фильтр по сложности задания",
             ),
             openapi.Parameter(
                 name="search",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_STRING,
-                description="Поиск по названию или условию задания"
+                description="Поиск по названию или условию задания",
             ),
         ],
     )
@@ -90,10 +111,22 @@ class TaskItemViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["title", "complexity", "task_condition"],
             properties={
-                "title": openapi.Schema(type=openapi.TYPE_STRING, description="Название задания", example="Алгоритм сортировки"),
-                "complexity": openapi.Schema(type=openapi.TYPE_INTEGER, description="Сложность задания", example=3),
-                "task_condition": openapi.Schema(type=openapi.TYPE_STRING, description="Условие задания", example="Написать алгоритм сортировки массива.")
-            }
+                "title": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Название задания",
+                    example="Алгоритм сортировки",
+                ),
+                "complexity": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="Сложность задания",
+                    example=3,
+                ),
+                "task_condition": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Условие задания",
+                    example="Написать алгоритм сортировки массива.",
+                ),
+            },
         ),
         responses={
             201: openapi.Response(
@@ -101,14 +134,22 @@ class TaskItemViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                        "title": openapi.Schema(type=openapi.TYPE_STRING, description="Название задания"),
-                        "complexity": openapi.Schema(type=openapi.TYPE_INTEGER, description="Сложность задания"),
-                        "task_condition": openapi.Schema(type=openapi.TYPE_STRING, description="Условие задания"),
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID задания"
+                        ),
+                        "title": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название задания"
+                        ),
+                        "complexity": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="Сложность задания"
+                        ),
+                        "task_condition": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Условие задания"
+                        ),
+                    },
+                ),
             ),
-            400: "Ошибка в запросе"
+            400: "Ошибка в запросе",
         },
     )
     def create(self, request, *args, **kwargs):
@@ -124,23 +165,31 @@ class TaskItemViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                        "title": openapi.Schema(type=openapi.TYPE_STRING, description="Название задания"),
-                        "complexity": openapi.Schema(type=openapi.TYPE_INTEGER, description="Сложность задания"),
-                        "task_condition": openapi.Schema(type=openapi.TYPE_STRING, description="Условие задания"),
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID задания"
+                        ),
+                        "title": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название задания"
+                        ),
+                        "complexity": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="Сложность задания"
+                        ),
+                        "task_condition": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Условие задания"
+                        ),
+                    },
+                ),
             ),
-            404: "Задание не найдено"
+            404: "Задание не найдено",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее задание"
+                description="Уникальное целое значение, идентифицирующее задание",
             ),
-        ]
+        ],
     )
     def retrieve(self, request, *args, **kwargs):
         """Получение конкретного задания по его ID."""
@@ -153,10 +202,22 @@ class TaskItemViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["title", "complexity", "task_condition"],
             properties={
-                "title": openapi.Schema(type=openapi.TYPE_STRING, description="Название задания", example="Алгоритм поиска"),
-                "complexity": openapi.Schema(type=openapi.TYPE_INTEGER, description="Сложность задания", example=2),
-                "task_condition": openapi.Schema(type=openapi.TYPE_STRING, description="Условие задания", example="Написать алгоритм поиска элемента в массиве.")
-            }
+                "title": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Название задания",
+                    example="Алгоритм поиска",
+                ),
+                "complexity": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="Сложность задания",
+                    example=2,
+                ),
+                "task_condition": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Условие задания",
+                    example="Написать алгоритм поиска элемента в массиве.",
+                ),
+            },
         ),
         responses={
             200: openapi.Response(
@@ -164,24 +225,32 @@ class TaskItemViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                        "title": openapi.Schema(type=openapi.TYPE_STRING, description="Название задания"),
-                        "complexity": openapi.Schema(type=openapi.TYPE_INTEGER, description="Сложность задания"),
-                        "task_condition": openapi.Schema(type=openapi.TYPE_STRING, description="Условие задания"),
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID задания"
+                        ),
+                        "title": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название задания"
+                        ),
+                        "complexity": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="Сложность задания"
+                        ),
+                        "task_condition": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Условие задания"
+                        ),
+                    },
+                ),
             ),
             400: "Ошибка в запросе",
-            404: "Задание не найдено"
+            404: "Задание не найдено",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее задание"
+                description="Уникальное целое значение, идентифицирующее задание",
             ),
-        ]
+        ],
     )
     def update(self, request, *args, **kwargs):
         """Полное обновление задания."""
@@ -193,10 +262,22 @@ class TaskItemViewSet(viewsets.ModelViewSet):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "title": openapi.Schema(type=openapi.TYPE_STRING, description="Название задания", example="Алгоритм поиска"),
-                "complexity": openapi.Schema(type=openapi.TYPE_INTEGER, description="Сложность задания", example=2),
-                "task_condition": openapi.Schema(type=openapi.TYPE_STRING, description="Условие задания", example="Обновите описание задания."),
-            }
+                "title": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Название задания",
+                    example="Алгоритм поиска",
+                ),
+                "complexity": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="Сложность задания",
+                    example=2,
+                ),
+                "task_condition": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Условие задания",
+                    example="Обновите описание задания.",
+                ),
+            },
         ),
         responses={
             200: openapi.Response(
@@ -204,24 +285,32 @@ class TaskItemViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                        "title": openapi.Schema(type=openapi.TYPE_STRING, description="Название задания"),
-                        "complexity": openapi.Schema(type=openapi.TYPE_INTEGER, description="Сложность задания"),
-                        "task_condition": openapi.Schema(type=openapi.TYPE_STRING, description="Условие задания"),
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID задания"
+                        ),
+                        "title": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название задания"
+                        ),
+                        "complexity": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="Сложность задания"
+                        ),
+                        "task_condition": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Условие задания"
+                        ),
+                    },
+                ),
             ),
             400: "Ошибка в запросе",
-            404: "Задание не найдено"
+            404: "Задание не найдено",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее задание"
+                description="Уникальное целое значение, идентифицирующее задание",
             ),
-        ]
+        ],
     )
     def partial_update(self, request, *args, **kwargs):
         """Частичное обновление задания."""
@@ -230,18 +319,15 @@ class TaskItemViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Удалить задание",
         operation_description="Удаляет задание по его ID.",
-        responses={
-            204: "Задание успешно удалено",
-            404: "Задание не найдено"
-        },
+        responses={204: "Задание успешно удалено", 404: "Задание не найдено"},
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее задание"
+                description="Уникальное целое значение, идентифицирующее задание",
             ),
-        ]
+        ],
     )
     def destroy(self, request, *args, **kwargs):
         """Удаление задания по его ID."""

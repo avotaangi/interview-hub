@@ -3,19 +3,21 @@ from django.utils.html import format_html
 
 from .models import User, Candidate, Company, Interviewer
 
+
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'first_name', 'last_name', 'gender', 'phone')
-    search_fields = ('email', 'first_name', 'last_name')
-    list_filter = ('gender',)  # Фильтрация по полу
-    readonly_fields = ('last_login',)  # Поле для чтения (последний вход)
-    date_hierarchy = 'date_joined'  # Иерархия по дате регистрации
+    list_display = ("email", "first_name", "last_name", "gender", "phone")
+    search_fields = ("email", "first_name", "last_name")
+    list_filter = ("gender",)  # Фильтрация по полу
+    readonly_fields = ("last_login",)  # Поле для чтения (последний вход)
+    date_hierarchy = "date_joined"  # Иерархия по дате регистрации
+
 
 @admin.register(Candidate)
 class CandidateAdmin(admin.ModelAdmin):
-    list_display = ('user', 'birth_date', 'city', 'social_media')
-    search_fields = ('user__email', 'city')
-    list_filter = ('city',)  # Фильтрация по городу
+    list_display = ("user", "birth_date", "city", "social_media")
+    search_fields = ("user__email", "city")
+    list_filter = ("city",)  # Фильтрация по городу
 
 
 class InterviewerInline(admin.TabularInline):
@@ -25,17 +27,25 @@ class InterviewerInline(admin.TabularInline):
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'location', 'established_date', 'display_interviewers', 'logo_preview')
-    list_filter = ('location', 'established_date')
-    search_fields = ('name', 'location')
+    list_display = (
+        "name",
+        "location",
+        "established_date",
+        "display_interviewers",
+        "logo_preview",
+    )
+    list_filter = ("location", "established_date")
+    search_fields = ("name", "location")
     inlines = [InterviewerInline]
-    date_hierarchy = 'established_date'
+    date_hierarchy = "established_date"
 
-    @admin.display(description='Interviewers')
+    @admin.display(description="Interviewers")
     def display_interviewers(self, obj):
-        return ", ".join([interviewer.user.first_name for interviewer in obj.interviewer_set.all()])
+        return ", ".join(
+            [interviewer.user.first_name for interviewer in obj.interviewer_set.all()]
+        )
 
-    @admin.display(description='Логотип компании')
+    @admin.display(description="Логотип компании")
     def logo_preview(self, obj):
         if obj.logo:
             return format_html('<img src="{}" width="50" height="50" />', obj.logo.url)
@@ -44,8 +54,8 @@ class CompanyAdmin(admin.ModelAdmin):
 
 @admin.register(Interviewer)
 class InterviewerAdmin(admin.ModelAdmin):
-    list_display = ('company__name', 'position', 'user__email', 'user__first_name')
-    list_filter = ('company__name', 'position')
-    search_fields = ('company__name', 'position', 'user__first_name', 'user__email')
-    list_display_links = ('user__first_name', 'user__email')
-    raw_id_fields = ('company',)
+    list_display = ("company__name", "position", "user__email", "user__first_name")
+    list_filter = ("company__name", "position")
+    search_fields = ("company__name", "position", "user__first_name", "user__email")
+    list_display_links = ("user__first_name", "user__email")
+    raw_id_fields = ("company",)

@@ -11,7 +11,7 @@ from ..serializers.open_question_serializer import OpenQuestionSerializer
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 100
 
 
@@ -20,7 +20,7 @@ class OpenQuestionViewSet(viewsets.ModelViewSet):
     serializer_class = OpenQuestionSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['task_item']
+    filterset_fields = ["task_item"]
 
     @swagger_auto_schema(
         operation_summary="Получить список заданий с открытым ответом",
@@ -31,43 +31,61 @@ class OpenQuestionViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "count": openapi.Schema(type=openapi.TYPE_INTEGER, description="Общее количество элементов"),
-                        "next": openapi.Schema(type=openapi.TYPE_STRING, description="Ссылка на следующую страницу"),
-                        "previous": openapi.Schema(type=openapi.TYPE_STRING, description="Ссылка на предыдущую страницу"),
+                        "count": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="Общее количество элементов",
+                        ),
+                        "next": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на следующую страницу",
+                        ),
+                        "previous": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на предыдущую страницу",
+                        ),
                         "results": openapi.Schema(
                             type=openapi.TYPE_ARRAY,
                             items=openapi.Schema(
                                 type=openapi.TYPE_OBJECT,
                                 properties={
-                                    "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                                    "task_item": openapi.Schema(type=openapi.TYPE_STRING, description="Название задания"),
-                                    "correct_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Правильный ответ"),
-                                }
+                                    "id": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID задания",
+                                    ),
+                                    "task_item": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Название задания",
+                                    ),
+                                    "correct_answer": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Правильный ответ",
+                                    ),
+                                },
                             ),
                         ),
                     },
                 ),
             ),
-            400: "Ошибка в запросе"
+            400: "Ошибка в запросе",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="task_item",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
-                description="ID задания, к которому привязаны задания с открытым ответом"
+                description="ID задания, к которому привязаны задания с открытым ответом",
             ),
             openapi.Parameter(
                 name="page",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
-                description="Номер страницы для пагинации"
+                description="Номер страницы для пагинации",
             ),
             openapi.Parameter(
                 name="page_size",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
-                description="Количество элементов на странице"
+                description="Количество элементов на странице",
             ),
         ],
     )
@@ -82,9 +100,15 @@ class OpenQuestionViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["task_item", "correct_answer"],
             properties={
-                "task_item": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания", example=1),
-                "correct_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Правильный ответ", example="42"),
-            }
+                "task_item": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID задания", example=1
+                ),
+                "correct_answer": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Правильный ответ",
+                    example="42",
+                ),
+            },
         ),
         responses={
             201: openapi.Response(
@@ -92,13 +116,19 @@ class OpenQuestionViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                        "task_item": openapi.Schema(type=openapi.TYPE_STRING, description="Название задания"),
-                        "correct_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Правильный ответ"),
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID задания"
+                        ),
+                        "task_item": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название задания"
+                        ),
+                        "correct_answer": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Правильный ответ"
+                        ),
+                    },
+                ),
             ),
-            400: "Ошибка в запросе"
+            400: "Ошибка в запросе",
         },
     )
     def create(self, request, *args, **kwargs):
@@ -114,22 +144,28 @@ class OpenQuestionViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                        "task_item": openapi.Schema(type=openapi.TYPE_STRING, description="Название задания"),
-                        "correct_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Правильный ответ"),
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID задания"
+                        ),
+                        "task_item": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название задания"
+                        ),
+                        "correct_answer": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Правильный ответ"
+                        ),
+                    },
+                ),
             ),
-            404: "Задание не найдено"
+            404: "Задание не найдено",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее задание"
+                description="Уникальное целое значение, идентифицирующее задание",
             ),
-        ]
+        ],
     )
     def retrieve(self, request, *args, **kwargs):
         """Получение задания с открытым ответом по ID."""
@@ -142,9 +178,15 @@ class OpenQuestionViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["task_item", "correct_answer"],
             properties={
-                "task_item": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания", example=1),
-                "correct_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Правильный ответ", example="43"),
-            }
+                "task_item": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID задания", example=1
+                ),
+                "correct_answer": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Правильный ответ",
+                    example="43",
+                ),
+            },
         ),
         responses={
             200: openapi.Response(
@@ -152,23 +194,29 @@ class OpenQuestionViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                        "task_item": openapi.Schema(type=openapi.TYPE_STRING, description="Название задания"),
-                        "correct_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Правильный ответ"),
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID задания"
+                        ),
+                        "task_item": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название задания"
+                        ),
+                        "correct_answer": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Правильный ответ"
+                        ),
+                    },
+                ),
             ),
             400: "Ошибка в запросе",
-            404: "Задание не найдено"
+            404: "Задание не найдено",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее задание"
+                description="Уникальное целое значение, идентифицирующее задание",
             ),
-        ]
+        ],
     )
     def update(self, request, *args, **kwargs):
         """Полное обновление задания с открытым ответом."""
@@ -180,8 +228,12 @@ class OpenQuestionViewSet(viewsets.ModelViewSet):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "correct_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Обновленный правильный ответ", example="44"),
-            }
+                "correct_answer": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Обновленный правильный ответ",
+                    example="44",
+                ),
+            },
         ),
         responses={
             200: openapi.Response(
@@ -189,23 +241,29 @@ class OpenQuestionViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания"),
-                        "task_item": openapi.Schema(type=openapi.TYPE_STRING, description="Название задания"),
-                        "correct_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Правильный ответ"),
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID задания"
+                        ),
+                        "task_item": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название задания"
+                        ),
+                        "correct_answer": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Правильный ответ"
+                        ),
+                    },
+                ),
             ),
             400: "Ошибка в запросе",
-            404: "Задание не найдено"
+            404: "Задание не найдено",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее задание"
+                description="Уникальное целое значение, идентифицирующее задание",
             ),
-        ]
+        ],
     )
     def partial_update(self, request, *args, **kwargs):
         """Частичное обновление задания с открытым ответом."""
@@ -214,18 +272,15 @@ class OpenQuestionViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Удалить задание с открытым ответом",
         operation_description="Удаляет задание с открытым ответом по его ID.",
-        responses={
-            204: "Задание успешно удалено",
-            404: "Задание не найдено"
-        },
+        responses={204: "Задание успешно удалено", 404: "Задание не найдено"},
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее задание"
+                description="Уникальное целое значение, идентифицирующее задание",
             ),
-        ]
+        ],
     )
     def destroy(self, request, *args, **kwargs):
         """Удаление задания с открытым ответом по его ID."""

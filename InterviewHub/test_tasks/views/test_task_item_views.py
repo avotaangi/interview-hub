@@ -11,7 +11,7 @@ class TestTaskItemViewSet(viewsets.ModelViewSet):
     queryset = TestTaskItem.objects.all()
     serializer_class = TestTaskItemSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['test_task', 'task_item']
+    filterset_fields = ["test_task", "task_item"]
 
     @swagger_auto_schema(
         operation_summary="Получить список элементов заданий",
@@ -30,21 +30,21 @@ class TestTaskItemViewSet(viewsets.ModelViewSet):
                                 "test_task": 1,
                                 "task_item": 101,
                                 "candidate_answer": "Ответ кандидата 1",
-                                "interviewer_comment": "Комментарий интервьюера 1"
+                                "interviewer_comment": "Комментарий интервьюера 1",
                             },
                             {
                                 "id": 2,
                                 "test_task": 1,
                                 "task_item": 102,
                                 "candidate_answer": "Ответ кандидата 2",
-                                "interviewer_comment": "Комментарий интервьюера 2"
-                            }
-                        ]
+                                "interviewer_comment": "Комментарий интервьюера 2",
+                            },
+                        ],
                     }
-                }
+                },
             ),
-            400: "Ошибка в запросе"
-        }
+            400: "Ошибка в запросе",
+        },
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -56,11 +56,25 @@ class TestTaskItemViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["test_task", "task_item", "candidate_answer"],
             properties={
-                "test_task": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID тестового задания", example=1),
-                "task_item": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID задания", example=101),
-                "candidate_answer": openapi.Schema(type=openapi.TYPE_STRING, description="Ответ кандидата", example="Ответ кандидата"),
-                "interviewer_comment": openapi.Schema(type=openapi.TYPE_STRING, description="Комментарий интервьюера", example="Комментарий к ответу"),
-            }
+                "test_task": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="ID тестового задания",
+                    example=1,
+                ),
+                "task_item": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID задания", example=101
+                ),
+                "candidate_answer": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Ответ кандидата",
+                    example="Ответ кандидата",
+                ),
+                "interviewer_comment": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Комментарий интервьюера",
+                    example="Комментарий к ответу",
+                ),
+            },
         ),
         responses={
             201: openapi.Response(
@@ -71,12 +85,12 @@ class TestTaskItemViewSet(viewsets.ModelViewSet):
                         "test_task": 1,
                         "task_item": 103,
                         "candidate_answer": "Ответ кандидата 3",
-                        "interviewer_comment": "Комментарий интервьюера 3"
+                        "interviewer_comment": "Комментарий интервьюера 3",
                     }
-                }
+                },
             ),
-            400: "Ошибка в запросе"
-        }
+            400: "Ошибка в запросе",
+        },
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)

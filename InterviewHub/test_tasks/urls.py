@@ -5,7 +5,7 @@ from .views.test_task_item_views import TestTaskItemViewSet
 
 # Создаем роутер для автоматической генерации маршрутов
 router = DefaultRouter()
-router.register(r'test-tasks', TestTaskViewSet, basename='test-task')
-router.register(r'test-task-items', TestTaskItemViewSet, basename='test-task-item')
+router.register(r"test-tasks", TestTaskViewSet, basename="test-task")
+router.register(r"test-task-items", TestTaskItemViewSet, basename="test-task-item")
 
 urlpatterns = router.urls

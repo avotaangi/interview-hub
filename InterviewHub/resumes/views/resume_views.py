@@ -16,7 +16,7 @@ from ..serializers.resume_serializers import ResumeSerializer, ResumeFilter
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 100
 
 
@@ -24,26 +24,57 @@ class ResumeViewSet(viewsets.ModelViewSet):
     """
     API для работы с резюме кандидатов.
     """
+
     queryset = Resume.objects.all()
     serializer_class = ResumeSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = ResumeFilter
-    filterset_fields = ['candidate', 'desired_position']
-    search_fields = ['desired_position', 'additional_info']
+    filterset_fields = ["candidate", "desired_position"]
+    search_fields = ["desired_position", "additional_info"]
 
     @swagger_auto_schema(
         operation_summary="Получить список резюме",
         operation_description="Получить список всех резюме с поддержкой фильтров, поиска и пагинации.",
         manual_parameters=[
-            openapi.Parameter(name='candidate', in_=openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Уникальный ID кандидата'),
-            openapi.Parameter(name='page', in_=openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Номер страницы'),
-            openapi.Parameter(name='page_size', in_=openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Количество элементов на странице'),
-            openapi.Parameter(name='search', in_=openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Поиск по желаемой должности или дополнительной информации'),
-            openapi.Parameter(name='desired_position', in_=openapi.IN_QUERY, type=openapi.TYPE_STRING, description='Фильтр по желаемой должности'),
-            openapi.Parameter(name='desired_salary', in_=openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='Фильтр по желаемой зарплате'),
+            openapi.Parameter(
+                name="candidate",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Уникальный ID кандидата",
+            ),
+            openapi.Parameter(
+                name="page",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Номер страницы",
+            ),
+            openapi.Parameter(
+                name="page_size",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Количество элементов на странице",
+            ),
+            openapi.Parameter(
+                name="search",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Поиск по желаемой должности или дополнительной информации",
+            ),
+            openapi.Parameter(
+                name="desired_position",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Фильтр по желаемой должности",
+            ),
+            openapi.Parameter(
+                name="desired_salary",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Фильтр по желаемой зарплате",
+            ),
         ],
-        responses={200: ResumeSerializer(many=True)}
+        responses={200: ResumeSerializer(many=True)},
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -58,36 +89,36 @@ class ResumeViewSet(viewsets.ModelViewSet):
                 "candidate_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     description="ID кандидата, которому принадлежит резюме.",
-                    example=1
+                    example=1,
                 ),
                 "desired_position": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Желаемая должность кандидата.",
-                    example="Software Developer"
+                    example="Software Developer",
                 ),
                 "desired_salary": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     description="Желаемая зарплата кандидата.",
-                    example=60000
+                    example=60000,
                 ),
                 "skills_data": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
                     items=openapi.Items(type=openapi.TYPE_INTEGER),
                     description="Список ID навыков, которые кандидат хочет указать.",
-                    example=[1, 2, 3]
+                    example=[1, 2, 3],
                 ),
                 "job_experiences_data": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
                     items=openapi.Items(type=openapi.TYPE_INTEGER),
                     description="Список ID опыта работы, который кандидат хочет указать.",
-                    example=[5, 8]
+                    example=[5, 8],
                 ),
                 "additional_info": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Дополнительная информация о кандидате.",
-                    example="Ищу удаленную работу, готов к переезду."
-                )
-            }
+                    example="Ищу удаленную работу, готов к переезду.",
+                ),
+            },
         ),
         responses={
             201: openapi.Response(
@@ -101,12 +132,12 @@ class ResumeViewSet(viewsets.ModelViewSet):
                         "skills": [1, 2, 3],
                         "job_experiences": [5, 8],
                         "additional_info": "Ищу удаленную работу, готов к переезду.",
-                        "created_at": "2024-01-01T10:00:00Z"
+                        "created_at": "2024-01-01T10:00:00Z",
                     }
-                }
+                },
             ),
-            400: "Ошибка валидации"
-        }
+            400: "Ошибка валидации",
+        },
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -120,9 +151,9 @@ class ResumeViewSet(viewsets.ModelViewSet):
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее резюме"
+                description="Уникальное целое значение, идентифицирующее резюме",
             ),
-        ]
+        ],
     )
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
@@ -137,46 +168,50 @@ class ResumeViewSet(viewsets.ModelViewSet):
                 "candidate_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     description="ID кандидата, которому принадлежит резюме.",
-                    example=1
+                    example=1,
                 ),
                 "desired_position": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Желаемая должность кандидата.",
-                    example="Software Developer"
+                    example="Software Developer",
                 ),
                 "desired_salary": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     description="Желаемая зарплата кандидата.",
-                    example=60000
+                    example=60000,
                 ),
                 "skills_data": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
                     items=openapi.Items(type=openapi.TYPE_INTEGER),
                     description="Список ID навыков, которые кандидат хочет указать.",
-                    example=[1, 2, 3]
+                    example=[1, 2, 3],
                 ),
                 "job_experiences_data": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
                     items=openapi.Items(type=openapi.TYPE_INTEGER),
                     description="Список ID опыта работы, который кандидат хочет указать.",
-                    example=[5, 8]
+                    example=[5, 8],
                 ),
                 "additional_info": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Дополнительная информация о кандидате.",
-                    example="Ищу удаленную работу, готов к переезду."
-                )
-            }
+                    example="Ищу удаленную работу, готов к переезду.",
+                ),
+            },
         ),
-        responses={200: ResumeSerializer, 400: "Ошибка валидации", 404: "Резюме не найдено"},
+        responses={
+            200: ResumeSerializer,
+            400: "Ошибка валидации",
+            404: "Резюме не найдено",
+        },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее резюме"
+                description="Уникальное целое значение, идентифицирующее резюме",
             ),
-        ]
+        ],
     )
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
@@ -191,46 +226,50 @@ class ResumeViewSet(viewsets.ModelViewSet):
                 "candidate_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     description="ID кандидата, которому принадлежит резюме.",
-                    example=1
+                    example=1,
                 ),
                 "desired_position": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Желаемая должность кандидата.",
-                    example="Software Developer"
+                    example="Software Developer",
                 ),
                 "desired_salary": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     description="Желаемая зарплата кандидата.",
-                    example=60000
+                    example=60000,
                 ),
                 "skills_data": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
                     items=openapi.Items(type=openapi.TYPE_INTEGER),
                     description="Список ID навыков, которые кандидат хочет указать.",
-                    example=[1, 2, 3]
+                    example=[1, 2, 3],
                 ),
                 "job_experiences_data": openapi.Schema(
                     type=openapi.TYPE_ARRAY,
                     items=openapi.Items(type=openapi.TYPE_INTEGER),
                     description="Список ID опыта работы, который кандидат хочет указать.",
-                    example=[5, 8]
+                    example=[5, 8],
                 ),
                 "additional_info": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Дополнительная информация о кандидате.",
-                    example="Ищу удаленную работу, готов к переезду."
-                )
-            }
+                    example="Ищу удаленную работу, готов к переезду.",
+                ),
+            },
         ),
-        responses={200: ResumeSerializer, 400: "Ошибка валидации", 404: "Резюме не найдено"},
+        responses={
+            200: ResumeSerializer,
+            400: "Ошибка валидации",
+            404: "Резюме не найдено",
+        },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее резюме"
+                description="Уникальное целое значение, идентифицирующее резюме",
             ),
-        ]
+        ],
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
@@ -244,9 +283,9 @@ class ResumeViewSet(viewsets.ModelViewSet):
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее резюме"
+                description="Уникальное целое значение, идентифицирующее резюме",
             ),
-        ]
+        ],
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
@@ -257,20 +296,26 @@ class ResumeViewSet(viewsets.ModelViewSet):
         responses={200: ResumeSerializer(many=True)},
         manual_parameters=[
             openapi.Parameter(
-                name='start_date', in_=openapi.IN_QUERY, type=openapi.TYPE_STRING,
-                description='Дата начала периода (формат: YYYY-MM-DD)', example='2024-11-01'
+                name="start_date",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Дата начала периода (формат: YYYY-MM-DD)",
+                example="2024-11-01",
             ),
             openapi.Parameter(
-                name='end_date', in_=openapi.IN_QUERY, type=openapi.TYPE_STRING,
-                description='Дата конца периода (формат: YYYY-MM-DD)', example='2024-11-07'
+                name="end_date",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Дата конца периода (формат: YYYY-MM-DD)",
+                example="2024-11-07",
             ),
-        ]
+        ],
     )
-    @action(methods=['GET'], detail=False)
+    @action(methods=["GET"], detail=False)
     def filter_by_date(self, request):
         # Получаем параметры даты из запроса
-        start_date = request.query_params.get('start_date')
-        end_date = request.query_params.get('end_date')
+        start_date = request.query_params.get("start_date")
+        end_date = request.query_params.get("end_date")
 
         # Если даты не переданы, фильтруем за последние 7 дней
         if not start_date or not end_date:
@@ -279,13 +324,18 @@ class ResumeViewSet(viewsets.ModelViewSet):
         else:
             # Преобразуем строки в объекты Date
             try:
-                start_date = timezone.datetime.strptime(start_date, '%Y-%m-%d').date()
-                end_date = timezone.datetime.strptime(end_date, '%Y-%m-%d').date()
+                start_date = timezone.datetime.strptime(start_date, "%Y-%m-%d").date()
+                end_date = timezone.datetime.strptime(end_date, "%Y-%m-%d").date()
             except ValueError:
-                return Response({"error": "Неверный формат даты. Используйте формат YYYY-MM-DD."}, status=400)
+                return Response(
+                    {"error": "Неверный формат даты. Используйте формат YYYY-MM-DD."},
+                    status=400,
+                )
 
         # Фильтруем резюме по дате создания
-        resumes = self.get_queryset().filter(created_at__gte=start_date, created_at__lte=end_date)
+        resumes = self.get_queryset().filter(
+            created_at__gte=start_date, created_at__lte=end_date
+        )
 
         # Пагинация
         page = self.paginate_queryset(resumes)
@@ -298,169 +348,167 @@ class ResumeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @swagger_auto_schema(
-        method='post',
+        method="post",
         operation_summary="Добавить навык к резюме",
         operation_description="Добавить навык к существующему резюме кандидата.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
-            required=['skill_id'],
+            required=["skill_id"],
             properties={
-                'skill_id': openapi.Schema(
+                "skill_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     example=1,
-                    description="ID навыка для добавления к резюме."
+                    description="ID навыка для добавления к резюме.",
                 ),
-            }
+            },
         ),
-        responses={
-            200: "Навык добавлен",
-            400: "Навык не найден"
-        },
+        responses={200: "Навык добавлен", 400: "Навык не найден"},
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее резюме"
+                description="Уникальное целое значение, идентифицирующее резюме",
             ),
-        ]
+        ],
     )
-    @action(methods=['POST'], detail=True)
+    @action(methods=["POST"], detail=True)
     def add_skill(self, request, pk=None):
         resume = self.get_object()
-        skill_id = request.data.get('skill_id')
+        skill_id = request.data.get("skill_id")
         try:
             skill = Skill.objects.get(id=skill_id)
             resume.skills.add(skill)
             resume.save()
-            return Response({'status': 'Навык добавлен'})
+            return Response({"status": "Навык добавлен"})
         except Skill.DoesNotExist:
-            return Response({'error': 'Навык не найден'}, status=400)
+            return Response({"error": "Навык не найден"}, status=400)
 
     @swagger_auto_schema(
-        method='post',
+        method="post",
         operation_summary="Удалить навык из резюме",
         operation_description="Удалить навык из существующего резюме кандидата.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
-            required=['skill_id'],
+            required=["skill_id"],
             properties={
-                'skill_id': openapi.Schema(
+                "skill_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     example=1,
-                    description="ID навыка для удаления из резюме."
+                    description="ID навыка для удаления из резюме.",
                 ),
-            }
+            },
         ),
         responses={
             200: "Навык удален",
-            400: "Ошибка: Навык не найден или не связан с резюме"
+            400: "Ошибка: Навык не найден или не связан с резюме",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее резюме"
+                description="Уникальное целое значение, идентифицирующее резюме",
             ),
-        ]
+        ],
     )
-    @action(methods=['POST'], detail=True)
+    @action(methods=["POST"], detail=True)
     def remove_skill(self, request, pk=None):
         resume = self.get_object()
-        skill_id = request.data.get('skill_id')
+        skill_id = request.data.get("skill_id")
         try:
             skill = Skill.objects.get(id=skill_id)
             if skill in resume.skills.all():
                 resume.skills.remove(skill)
                 resume.save()
-                return Response({'status': 'Навык удален'})
+                return Response({"status": "Навык удален"})
             else:
-                return Response({'error': 'Навык не связан с данным резюме'}, status=400)
+                return Response(
+                    {"error": "Навык не связан с данным резюме"}, status=400
+                )
         except Skill.DoesNotExist:
-            return Response({'error': 'Навык не найден'}, status=400)
+            return Response({"error": "Навык не найден"}, status=400)
 
     @swagger_auto_schema(
         operation_summary="Добавить опыт работы к резюме",
         operation_description="Добавить опыт работы к существующему резюме кандидата.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
-            required=['job_experience_id'],
+            required=["job_experience_id"],
             properties={
-                'job_experience_id': openapi.Schema(
+                "job_experience_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     example=1,
-                    description="ID опыта работы для добавления к резюме."
+                    description="ID опыта работы для добавления к резюме.",
                 ),
-            }
+            },
         ),
-        responses={
-            200: "Опыт работы добавлен",
-            400: "Ошибка: Опыт работы не найден"
-        },
+        responses={200: "Опыт работы добавлен", 400: "Ошибка: Опыт работы не найден"},
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее резюме"
+                description="Уникальное целое значение, идентифицирующее резюме",
             ),
-        ]
+        ],
     )
-    @action(methods=['POST'], detail=True)
+    @action(methods=["POST"], detail=True)
     def add_job_experience(self, request, pk=None):
         resume = self.get_object()
-        job_experience_id = request.data.get('job_experience_id')
+        job_experience_id = request.data.get("job_experience_id")
         try:
             job_experience = JobExperience.objects.get(id=job_experience_id)
             resume.job_experiences.add(job_experience)
             resume.save()
-            return Response({'status': 'Опыт работы добавлен'})
+            return Response({"status": "Опыт работы добавлен"})
         except JobExperience.DoesNotExist:
-            return Response({'error': 'Опыт работы не найден'}, status=400)
+            return Response({"error": "Опыт работы не найден"}, status=400)
 
     @swagger_auto_schema(
-        method='post',
+        method="post",
         operation_summary="Удалить опыт работы из резюме",
         operation_description="Удалить опыт работы из существующего резюме кандидата.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
-            required=['job_experience_id'],
+            required=["job_experience_id"],
             properties={
-                'job_experience_id': openapi.Schema(
+                "job_experience_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     example=1,
-                    description="ID опыта работы для удаления из резюме."
+                    description="ID опыта работы для удаления из резюме.",
                 ),
-            }
+            },
         ),
         responses={
             200: "Опыт работы удален",
-            400: "Ошибка: Опыт работы не найден или не связан с резюме"
+            400: "Ошибка: Опыт работы не найден или не связан с резюме",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее резюме"
+                description="Уникальное целое значение, идентифицирующее резюме",
             ),
-        ]
+        ],
     )
-    @action(methods=['POST'], detail=True)
+    @action(methods=["POST"], detail=True)
     def remove_job_experience(self, request, pk=None):
         resume = self.get_object()
-        job_experience_id = request.data.get('job_experience_id')
+        job_experience_id = request.data.get("job_experience_id")
         try:
             job_experience = JobExperience.objects.get(id=job_experience_id)
             if job_experience in resume.job_experiences.all():
                 resume.job_experiences.remove(job_experience)
                 resume.save()
-                return Response({'status': 'Опыт работы удален'})
+                return Response({"status": "Опыт работы удален"})
             else:
-                return Response({'error': 'Опыт работы не связан с данным резюме'}, status=400)
+                return Response(
+                    {"error": "Опыт работы не связан с данным резюме"}, status=400
+                )
         except JobExperience.DoesNotExist:
-            return Response({'error': 'Опыт работы не найден'}, status=400)
+            return Response({"error": "Опыт работы не найден"}, status=400)
 
     @swagger_auto_schema(
         operation_summary="Фильтрация резюме по зарплате, дате публикации и опыту работы",
@@ -468,32 +516,40 @@ class ResumeViewSet(viewsets.ModelViewSet):
         responses={200: ResumeSerializer(many=True)},
         manual_parameters=[
             openapi.Parameter(
-                name='desired_salary', in_=openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
-                description='Максимальная желаемая зарплата кандидата.',
+                name="desired_salary",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Максимальная желаемая зарплата кандидата.",
                 example=70000,
-                required=True
+                required=True,
             ),
             openapi.Parameter(
-                name='days_since_posted', in_=openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
-                description='Максимальное количество дней с момента публикации резюме.',
+                name="days_since_posted",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Максимальное количество дней с момента публикации резюме.",
                 example=30,
-                required=True
+                required=True,
             ),
             openapi.Parameter(
-                name='min_job_experience_companies', in_=openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
-                description='Минимальное количество компаний, в которых был опыт работы.',
+                name="min_job_experience_companies",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Минимальное количество компаний, в которых был опыт работы.",
                 example=3,
-                required=True
+                required=True,
             ),
-        ]
+        ],
     )
-    @action(methods=['GET'], detail=False)
-    @action(methods=['GET'], detail=False)
+    @action(methods=["GET"], detail=False)
+    @action(methods=["GET"], detail=False)
     def filter_by_salary_and_experience(self, request):
         # Получаем параметры из запроса
-        desired_salary = request.query_params.get('desired_salary')
-        days_since_posted = request.query_params.get('days_since_posted')
-        min_job_experience_companies = request.query_params.get('min_job_experience_companies')
+        desired_salary = request.query_params.get("desired_salary")
+        days_since_posted = request.query_params.get("days_since_posted")
+        min_job_experience_companies = request.query_params.get(
+            "min_job_experience_companies"
+        )
 
         # Получаем текущую дату
         current_date = timezone.now()
@@ -511,17 +567,21 @@ class ResumeViewSet(viewsets.ModelViewSet):
                 date_limit = current_date - timedelta(days=days_since_posted)
                 filters &= Q(created_at__gte=date_limit)
             except ValueError:
-                return Response({"error": "Неверный формат дня публикации."}, status=400)
+                return Response(
+                    {"error": "Неверный формат дня публикации."}, status=400
+                )
 
         # Аннотируем резюме с подсчетом количества связанных записей в job_experiences
-        resumes = self.get_queryset().annotate(num_companies=Count('job_experiences'))
+        resumes = self.get_queryset().annotate(num_companies=Count("job_experiences"))
 
         if min_job_experience_companies:
             try:
                 min_job_experience_companies = int(min_job_experience_companies)
                 filters |= Q(num_companies__gte=min_job_experience_companies)
             except ValueError:
-                return Response({"error": "Неверный формат для количества компаний."}, status=400)
+                return Response(
+                    {"error": "Неверный формат для количества компаний."}, status=400
+                )
 
         # Применяем фильтры с учетом аннотации
         resumes = resumes.filter(filters)

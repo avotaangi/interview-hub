@@ -5,9 +5,13 @@ from .views.multiple_choice_question_viewset import MultipleChoiceQuestionViewSe
 from .views.code_question_viewset import CodeQuestionViewSet
 
 router = DefaultRouter()
-router.register(r'task-items', TaskItemViewSet, basename='taskitem')
-router.register(r'open-questions', OpenQuestionViewSet, basename='openquestion')
-router.register(r'multiple-choice-questions', MultipleChoiceQuestionViewSet, basename='multiplechoicequestion')
-router.register(r'code-questions', CodeQuestionViewSet, basename='codequestion')
+router.register(r"task-items", TaskItemViewSet, basename="taskitem")
+router.register(r"open-questions", OpenQuestionViewSet, basename="openquestion")
+router.register(
+    r"multiple-choice-questions",
+    MultipleChoiceQuestionViewSet,
+    basename="multiplechoicequestion",
+)
+router.register(r"code-questions", CodeQuestionViewSet, basename="codequestion")
 
 urlpatterns = router.urls

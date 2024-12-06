@@ -18,7 +18,7 @@ from ..serializers.company_selection_serializers import CompanySelectionSerializ
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 100
 
 
@@ -27,8 +27,8 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
     serializer_class = CompanySelectionSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['status', 'interviewer', 'resume']
-    search_fields = ['resume__candidate__user__email', 'interviewer__user__email']
+    filterset_fields = ["status", "interviewer", "resume"]
+    search_fields = ["resume__candidate__user__email", "interviewer__user__email"]
 
     @swagger_auto_schema(
         operation_summary="Получить список отборов кандидатов",
@@ -39,25 +39,46 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "count": openapi.Schema(type=openapi.TYPE_INTEGER, description="Общее количество элементов"),
-                        "next": openapi.Schema(type=openapi.TYPE_STRING, description="Ссылка на следующую страницу"),
-                        "previous": openapi.Schema(type=openapi.TYPE_STRING, description="Ссылка на предыдущую страницу"),
+                        "count": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="Общее количество элементов",
+                        ),
+                        "next": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на следующую страницу",
+                        ),
+                        "previous": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на предыдущую страницу",
+                        ),
                         "results": openapi.Schema(
                             type=openapi.TYPE_ARRAY,
                             items=openapi.Schema(
                                 type=openapi.TYPE_OBJECT,
                                 properties={
-                                    "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID отбора"),
-                                    "interviewer": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
-                                    "resume": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
-                                    "status": openapi.Schema(type=openapi.TYPE_STRING, description="Статус отбора")
-                                }
+                                    "id": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID отбора",
+                                    ),
+                                    "interviewer": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID интервьюера",
+                                    ),
+                                    "resume": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID резюме",
+                                    ),
+                                    "status": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Статус отбора",
+                                    ),
+                                },
                             ),
                         ),
                     },
                 ),
             ),
-            400: "Ошибка в запросе"
+            400: "Ошибка в запросе",
         },
     )
     def list(self, request, *args, **kwargs):
@@ -70,14 +91,18 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["interviewer", "resume", "status"],
             properties={
-                "interviewer_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
-                "resume_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
+                "interviewer_id": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID интервьюера"
+                ),
+                "resume_id": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID резюме"
+                ),
                 "status": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Статус отбора",
-                    enum=["На рассмотрении", "Принят", "Отклонен"]
+                    enum=["На рассмотрении", "Принят", "Отклонен"],
                 ),
-            }
+            },
         ),
         responses={
             201: openapi.Response(
@@ -85,15 +110,23 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID отбора"),
-                        "interviewer": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
-                        "resume": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
-                        "status": openapi.Schema(type=openapi.TYPE_STRING, description="Статус отбора")
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID отбора"
+                        ),
+                        "interviewer": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID интервьюера"
+                        ),
+                        "resume": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID резюме"
+                        ),
+                        "status": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Статус отбора"
+                        ),
+                    },
+                ),
             ),
-            400: "Ошибка в запросе"
-        }
+            400: "Ошибка в запросе",
+        },
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -107,23 +140,31 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID отбора"),
-                        "interviewer": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
-                        "resume": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
-                        "status": openapi.Schema(type=openapi.TYPE_STRING, description="Статус отбора")
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID отбора"
+                        ),
+                        "interviewer": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID интервьюера"
+                        ),
+                        "resume": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID резюме"
+                        ),
+                        "status": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Статус отбора"
+                        ),
+                    },
+                ),
             ),
-            404: "Отбор не найден"
+            404: "Отбор не найден",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее отбор кандидата"
+                description="Уникальное целое значение, идентифицирующее отбор кандидата",
             ),
-        ]
+        ],
     )
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
@@ -135,14 +176,18 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["interviewer", "resume", "status"],
             properties={
-                "interviewer_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
-                "resume_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
+                "interviewer_id": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID интервьюера"
+                ),
+                "resume_id": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID резюме"
+                ),
                 "status": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Статус отбора",
-                    enum=["На рассмотрении", "Принят", "Отклонен"]
+                    enum=["На рассмотрении", "Принят", "Отклонен"],
                 ),
-            }
+            },
         ),
         responses={
             200: openapi.Response(
@@ -150,24 +195,32 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID отбора"),
-                        "interviewer": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
-                        "resume": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
-                        "status": openapi.Schema(type=openapi.TYPE_STRING, description="Статус отбора")
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID отбора"
+                        ),
+                        "interviewer": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID интервьюера"
+                        ),
+                        "resume": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID резюме"
+                        ),
+                        "status": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Статус отбора"
+                        ),
+                    },
+                ),
             ),
             400: "Ошибка в запросе",
-            404: "Отбор не найден"
+            404: "Отбор не найден",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее отбор кандидата"
+                description="Уникальное целое значение, идентифицирующее отбор кандидата",
             ),
-        ]
+        ],
     )
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
@@ -178,14 +231,18 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "interviewer_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
-                "resume_id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
+                "interviewer_id": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID интервьюера"
+                ),
+                "resume_id": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, description="ID резюме"
+                ),
                 "status": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Статус отбора",
-                    enum=["На рассмотрении", "Принят", "Отклонен"]
+                    enum=["На рассмотрении", "Принят", "Отклонен"],
                 ),
-            }
+            },
         ),
         responses={
             200: openapi.Response(
@@ -193,24 +250,32 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID отбора"),
-                        "interviewer": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID интервьюера"),
-                        "resume": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
-                        "status": openapi.Schema(type=openapi.TYPE_STRING, description="Статус отбора")
-                    }
-                )
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID отбора"
+                        ),
+                        "interviewer": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID интервьюера"
+                        ),
+                        "resume": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID резюме"
+                        ),
+                        "status": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Статус отбора"
+                        ),
+                    },
+                ),
             ),
             400: "Ошибка в запросе",
-            404: "Отбор не найден"
+            404: "Отбор не найден",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее отбор кандидата"
+                description="Уникальное целое значение, идентифицирующее отбор кандидата",
             ),
-        ]
+        ],
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
@@ -218,18 +283,15 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Удалить отбор кандидата",
         operation_description="Удаляет отбор кандидата по указанному ID.",
-        responses={
-            204: "Отбор успешно удален",
-            404: "Отбор не найден"
-        },
+        responses={204: "Отбор успешно удален", 404: "Отбор не найден"},
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее отбор кандидата"
+                description="Уникальное целое значение, идентифицирующее отбор кандидата",
             ),
-        ]
+        ],
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
@@ -244,23 +306,23 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
                 "status": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Новый статус отбора",
-                    enum=["На рассмотрении", "Принят", "Отклонен"]
+                    enum=["На рассмотрении", "Принят", "Отклонен"],
                 )
-            }
+            },
         ),
         responses={
             200: "Статус успешно обновлен",
             400: "Ошибка в запросе",
-            404: "Отбор не найден"
+            404: "Отбор не найден",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее отбор кандидата"
+                description="Уникальное целое значение, идентифицирующее отбор кандидата",
             ),
-        ]
+        ],
     )
     @action(detail=True, methods=["patch"], url_path="update-status")
     def update_status(self, request, pk=None):
@@ -268,31 +330,37 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
         try:
             selection = self.get_object()
         except CompanySelection.DoesNotExist:
-            return Response({"detail": "Отбор не найден."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "Отбор не найден."}, status=status.HTTP_404_NOT_FOUND
+            )
 
         new_status = request.data.get("status")
         if new_status not in dict(CompanySelection.selection_status_choices).keys():
-            return Response({"detail": "Недопустимый статус."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Недопустимый статус."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         selection.status = new_status
         selection.save()
-        return Response({"id": selection.id, "status": selection.status}, status=status.HTTP_200_OK)
+        return Response(
+            {"id": selection.id, "status": selection.status}, status=status.HTTP_200_OK
+        )
 
     @swagger_auto_schema(
         operation_summary="Фильтрация кандидатов по статусу, возрасту резюме и интервьюеру",
         operation_description=(
-                "Фильтрует кандидатов по следующим параметрам:\n"
-                "- Статус отбора кандидата: 'На рассмотрении' или 'Принят'.\n"
-                "- Исключает кандидатов с резюме, созданным более 7 дней назад.\n"
-                "- Отбирает только тех кандидатов, у которых назначен интервьюер."
+            "Фильтрует кандидатов по следующим параметрам:\n"
+            "- Статус отбора кандидата: 'На рассмотрении' или 'Принят'.\n"
+            "- Исключает кандидатов с резюме, созданным более 7 дней назад.\n"
+            "- Отбирает только тех кандидатов, у которых назначен интервьюер."
         ),
         manual_parameters=[
             openapi.Parameter(
-                'status',
+                "status",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_STRING,
                 description="Фильтрация по статусу отбора кандидата. Разделите несколько статусов запятой, например: 'На рассмотрении,Принят'.",
-                required=True
+                required=True,
             ),
         ],
         responses={
@@ -301,33 +369,52 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "count": openapi.Schema(type=openapi.TYPE_INTEGER, description="Общее количество элементов"),
-                        "next": openapi.Schema(type=openapi.TYPE_STRING, description="Ссылка на следующую страницу"),
-                        "previous": openapi.Schema(type=openapi.TYPE_STRING,
-                                                   description="Ссылка на предыдущую страницу"),
+                        "count": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="Общее количество элементов",
+                        ),
+                        "next": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на следующую страницу",
+                        ),
+                        "previous": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на предыдущую страницу",
+                        ),
                         "results": openapi.Schema(
                             type=openapi.TYPE_ARRAY,
                             items=openapi.Schema(
                                 type=openapi.TYPE_OBJECT,
                                 properties={
-                                    "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID отбора"),
-                                    "interviewer": openapi.Schema(type=openapi.TYPE_INTEGER,
-                                                                  description="ID интервьюера"),
-                                    "resume": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
-                                    "status": openapi.Schema(type=openapi.TYPE_STRING, description="Статус отбора")
-                                }
+                                    "id": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID отбора",
+                                    ),
+                                    "interviewer": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID интервьюера",
+                                    ),
+                                    "resume": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID резюме",
+                                    ),
+                                    "status": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Статус отбора",
+                                    ),
+                                },
                             ),
                         ),
                     },
                 ),
             ),
-            400: "Ошибка в запросе"
+            400: "Ошибка в запросе",
         },
     )
     @action(detail=False, methods=["GET"], url_path="practical-filter")
     def practical_filter(self, request):
         # Получаем параметры фильтрации из запроса
-        status_filter = request.query_params.get('status', None)
+        status_filter = request.query_params.get("status", None)
 
         # Формируем фильтр Q
         q_filter = Q()
@@ -342,7 +429,9 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
 
         # Исключение резюме, отобранных более 7 дней назад
         seven_days_ago = timezone.now() - timedelta(days=7)
-        q_filter &= ~Q(resume__created_at__lt=seven_days_ago)  # Логика NOT для исключения старых резюме
+        q_filter &= ~Q(
+            resume__created_at__lt=seven_days_ago
+        )  # Логика NOT для исключения старых резюме
 
         # Проверка назначения интервьюера
         q_filter &= Q(interviewer__isnull=False)  # Логика AND для наличия интервьюера
@@ -357,4 +446,3 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(selections, many=True)
         return Response(serializer.data)
-

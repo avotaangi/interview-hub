@@ -11,20 +11,25 @@ class UserViewSet(ViewSet):
     """
     ViewSet для работы с текущим пользователем.
     """
+
     permission_classes = [IsAuthenticated]
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=["get"])
     @swagger_auto_schema(
         operation_summary="Получение данных текущего пользователя",
         operation_description="Эндпоинт возвращает информацию о текущем авторизованном пользователе.",
         responses={
             200: openapi.Response(
                 description="Успешный ответ с данными пользователя.",
-                schema=UserSerializer
+                schema=UserSerializer,
             ),
             401: openapi.Response(
                 description="Неавторизованный доступ.",
-                examples={"application/json": {"detail": "Учетные данные не были предоставлены."}}
+                examples={
+                    "application/json": {
+                        "detail": "Учетные данные не были предоставлены."
+                    }
+                },
             ),
         },
     )
@@ -36,7 +41,7 @@ class UserViewSet(ViewSet):
         serializer = UserSerializer(user)
         return Response(serializer.data, status=200)
 
-    @action(detail=False, methods=['patch'])
+    @action(detail=False, methods=["patch"])
     @swagger_auto_schema(
         operation_summary="Обновление данных текущего пользователя",
         operation_description="Эндпоинт позволяет обновить данные текущего пользователя (например, имя, email).",
@@ -44,11 +49,11 @@ class UserViewSet(ViewSet):
         responses={
             200: openapi.Response(
                 description="Данные пользователя успешно обновлены.",
-                schema=UserSerializer
+                schema=UserSerializer,
             ),
             400: openapi.Response(
                 description="Ошибка валидации данных.",
-                examples={"application/json": {"email": ["Неверный формат email."]}}
+                examples={"application/json": {"email": ["Неверный формат email."]}},
             ),
         },
     )

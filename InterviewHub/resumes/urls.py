@@ -5,8 +5,8 @@ from .views.resume_views import ResumeViewSet
 from .views.job_views import JobViewSet
 
 router = DefaultRouter()
-router.register(r'skill', SkillViewSet)
-router.register(r'resume', ResumeViewSet)
-router.register(r'job_experience', JobViewSet)
+router.register(r"skill", SkillViewSet)
+router.register(r"resume", ResumeViewSet)
+router.register(r"job_experience", JobViewSet)
 
 urlpatterns = router.urls

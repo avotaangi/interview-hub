@@ -7,6 +7,9 @@ class TestTaskItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestTaskItem
         fields = [
-            'id', 'test_task', 'task_item',
-            'candidate_answer', 'interviewer_comment'
+            "id",
+            "test_task",
+            "task_item",
+            "candidate_answer",
+            "interviewer_comment",
         ]

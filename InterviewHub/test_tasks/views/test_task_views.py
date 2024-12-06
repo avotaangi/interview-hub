@@ -11,7 +11,7 @@ class TestTaskViewSet(viewsets.ModelViewSet):
     queryset = TestTask.objects.all()
     serializer_class = TestTaskSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['selection', 'result']
+    filterset_fields = ["selection", "result"]
 
     @swagger_auto_schema(
         operation_summary="Получить список тестовых заданий",
@@ -32,7 +32,7 @@ class TestTaskViewSet(viewsets.ModelViewSet):
                                 "end_time": "2024-12-06T11:00:00Z",
                                 "duration": 60,
                                 "result": "Принято",
-                                "recording_url": "https://example.com/testtask1"
+                                "recording_url": "https://example.com/testtask1",
                             },
                             {
                                 "id": 2,
@@ -41,14 +41,14 @@ class TestTaskViewSet(viewsets.ModelViewSet):
                                 "end_time": "2024-12-07T15:00:00Z",
                                 "duration": 60,
                                 "result": "Отклонено",
-                                "recording_url": "https://example.com/testtask2"
-                            }
-                        ]
+                                "recording_url": "https://example.com/testtask2",
+                            },
+                        ],
                     }
-                }
+                },
             ),
-            400: "Ошибка в запросе"
-        }
+            400: "Ошибка в запросе",
+        },
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -60,13 +60,41 @@ class TestTaskViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["selection", "start_time", "end_time", "duration"],
             properties={
-                "selection": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID отбора компании", example=1),
-                "start_time": openapi.Schema(type=openapi.TYPE_STRING, format="date-time", description="Время начала", example="2024-12-06T10:00:00Z"),
-                "end_time": openapi.Schema(type=openapi.TYPE_STRING, format="date-time", description="Время окончания", example="2024-12-06T11:00:00Z"),
-                "duration": openapi.Schema(type=openapi.TYPE_INTEGER, description="Продолжительность в минутах", example=60),
-                "result": openapi.Schema(type=openapi.TYPE_STRING, description="Результат задания", enum=["Принято", "Отклонено"], example="Принято"),
-                "recording_url": openapi.Schema(type=openapi.TYPE_STRING, format="uri", description="Ссылка на запись", example="https://example.com/testtask"),
-            }
+                "selection": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="ID отбора компании",
+                    example=1,
+                ),
+                "start_time": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="date-time",
+                    description="Время начала",
+                    example="2024-12-06T10:00:00Z",
+                ),
+                "end_time": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="date-time",
+                    description="Время окончания",
+                    example="2024-12-06T11:00:00Z",
+                ),
+                "duration": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="Продолжительность в минутах",
+                    example=60,
+                ),
+                "result": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Результат задания",
+                    enum=["Принято", "Отклонено"],
+                    example="Принято",
+                ),
+                "recording_url": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="uri",
+                    description="Ссылка на запись",
+                    example="https://example.com/testtask",
+                ),
+            },
         ),
         responses={
             201: openapi.Response(
@@ -79,15 +107,16 @@ class TestTaskViewSet(viewsets.ModelViewSet):
                         "end_time": "2024-12-06T11:00:00Z",
                         "duration": 60,
                         "result": "Принято",
-                        "recording_url": "https://example.com/testtask"
+                        "recording_url": "https://example.com/testtask",
                     }
-                }
+                },
             ),
-            400: "Ошибка в запросе"
-        }
+            400: "Ошибка в запросе",
+        },
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+
     @swagger_auto_schema(
         operation_summary="Получить тестовое задание по ID",
         operation_description="Возвращает информацию о тестовом задании по указанному ID.",
@@ -102,20 +131,20 @@ class TestTaskViewSet(viewsets.ModelViewSet):
                         "end_time": "2024-12-06T11:00:00Z",
                         "duration": 60,
                         "result": "Принято",
-                        "recording_url": "https://example.com/testtask1"
+                        "recording_url": "https://example.com/testtask1",
                     }
-                }
+                },
             ),
-            404: "Тестовое задание не найдено"
+            404: "Тестовое задание не найдено",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальный идентификатор тестового задания"
+                description="Уникальный идентификатор тестового задания",
             ),
-        ]
+        ],
     )
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
@@ -127,13 +156,41 @@ class TestTaskViewSet(viewsets.ModelViewSet):
             type=openapi.TYPE_OBJECT,
             required=["selection", "start_time", "end_time", "duration"],
             properties={
-                "selection": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID отбора компании", example=1),
-                "start_time": openapi.Schema(type=openapi.TYPE_STRING, format="date-time", description="Время начала", example="2024-12-06T10:00:00Z"),
-                "end_time": openapi.Schema(type=openapi.TYPE_STRING, format="date-time", description="Время окончания", example="2024-12-06T11:00:00Z"),
-                "duration": openapi.Schema(type=openapi.TYPE_INTEGER, description="Продолжительность в минутах", example=60),
-                "result": openapi.Schema(type=openapi.TYPE_STRING, description="Результат задания", enum=["Принято", "Отклонено"], example="Принято"),
-                "recording_url": openapi.Schema(type=openapi.TYPE_STRING, format="uri", description="Ссылка на запись", example="https://example.com/testtask"),
-            }
+                "selection": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="ID отбора компании",
+                    example=1,
+                ),
+                "start_time": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="date-time",
+                    description="Время начала",
+                    example="2024-12-06T10:00:00Z",
+                ),
+                "end_time": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="date-time",
+                    description="Время окончания",
+                    example="2024-12-06T11:00:00Z",
+                ),
+                "duration": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="Продолжительность в минутах",
+                    example=60,
+                ),
+                "result": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Результат задания",
+                    enum=["Принято", "Отклонено"],
+                    example="Принято",
+                ),
+                "recording_url": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="uri",
+                    description="Ссылка на запись",
+                    example="https://example.com/testtask",
+                ),
+            },
         ),
         responses={
             200: openapi.Response(
@@ -146,21 +203,21 @@ class TestTaskViewSet(viewsets.ModelViewSet):
                         "end_time": "2024-12-06T11:00:00Z",
                         "duration": 60,
                         "result": "Принято",
-                        "recording_url": "https://example.com/testtask1"
+                        "recording_url": "https://example.com/testtask1",
                     }
-                }
+                },
             ),
             400: "Ошибка в запросе",
-            404: "Тестовое задание не найдено"
+            404: "Тестовое задание не найдено",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальный идентификатор тестового задания"
+                description="Уникальный идентификатор тестового задания",
             ),
-        ]
+        ],
     )
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
@@ -171,12 +228,36 @@ class TestTaskViewSet(viewsets.ModelViewSet):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "start_time": openapi.Schema(type=openapi.TYPE_STRING, format="date-time", description="Время начала", example="2024-12-06T10:00:00Z"),
-                "end_time": openapi.Schema(type=openapi.TYPE_STRING, format="date-time", description="Время окончания", example="2024-12-06T11:00:00Z"),
-                "duration": openapi.Schema(type=openapi.TYPE_INTEGER, description="Продолжительность в минутах", example=60),
-                "result": openapi.Schema(type=openapi.TYPE_STRING, description="Результат задания", enum=["Принято", "Отклонено"], example="Принято"),
-                "recording_url": openapi.Schema(type=openapi.TYPE_STRING, format="uri", description="Ссылка на запись", example="https://example.com/testtask"),
-            }
+                "start_time": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="date-time",
+                    description="Время начала",
+                    example="2024-12-06T10:00:00Z",
+                ),
+                "end_time": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="date-time",
+                    description="Время окончания",
+                    example="2024-12-06T11:00:00Z",
+                ),
+                "duration": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="Продолжительность в минутах",
+                    example=60,
+                ),
+                "result": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Результат задания",
+                    enum=["Принято", "Отклонено"],
+                    example="Принято",
+                ),
+                "recording_url": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="uri",
+                    description="Ссылка на запись",
+                    example="https://example.com/testtask",
+                ),
+            },
         ),
         responses={
             200: openapi.Response(
@@ -189,21 +270,21 @@ class TestTaskViewSet(viewsets.ModelViewSet):
                         "end_time": "2024-12-06T11:00:00Z",
                         "duration": 60,
                         "result": "Принято",
-                        "recording_url": "https://example.com/testtask1"
+                        "recording_url": "https://example.com/testtask1",
                     }
-                }
+                },
             ),
             400: "Ошибка в запросе",
-            404: "Тестовое задание не найдено"
+            404: "Тестовое задание не найдено",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальный идентификатор тестового задания"
+                description="Уникальный идентификатор тестового задания",
             ),
-        ]
+        ],
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
@@ -213,17 +294,16 @@ class TestTaskViewSet(viewsets.ModelViewSet):
         operation_description="Удаляет тестовое задание по его ID.",
         responses={
             204: "Тестовое задание успешно удалено",
-            404: "Тестовое задание не найдено"
+            404: "Тестовое задание не найдено",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальный идентификатор тестового задания"
+                description="Уникальный идентификатор тестового задания",
             ),
-        ]
+        ],
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
-

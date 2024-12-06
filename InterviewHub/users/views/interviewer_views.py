@@ -9,7 +9,7 @@ from ..serializers.inteview_serializer import InterviewerSerializer
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 100
 
 
@@ -25,7 +25,7 @@ from ..serializers.inteview_serializer import InterviewerSerializer
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 100
 
 
@@ -33,52 +33,53 @@ class InterviewerViewSet(viewsets.ModelViewSet):
     """
     API для управления интервьюерами.
     """
+
     queryset = Interviewer.objects.all()
     serializer_class = InterviewerSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['company', 'position', 'user__email']
-    search_fields = ['user__first_name', 'user__email', 'position']
+    filterset_fields = ["company", "position", "user__email"]
+    search_fields = ["user__first_name", "user__email", "position"]
 
     @swagger_auto_schema(
         operation_summary="Получить список интервьюеров",
         operation_description="Получить список всех интервьюеров с поддержкой фильтров, поиска и пагинации.",
         manual_parameters=[
             openapi.Parameter(
-                name='page',
+                name="page",
                 in_=openapi.IN_QUERY,
-                description='Номер страницы',
-                type=openapi.TYPE_INTEGER
+                description="Номер страницы",
+                type=openapi.TYPE_INTEGER,
             ),
             openapi.Parameter(
-                name='page_size',
+                name="page_size",
                 in_=openapi.IN_QUERY,
-                description='Количество элементов на странице',
-                type=openapi.TYPE_INTEGER
+                description="Количество элементов на странице",
+                type=openapi.TYPE_INTEGER,
             ),
             openapi.Parameter(
-                name='search',
+                name="search",
                 in_=openapi.IN_QUERY,
-                description='Поиск по имени, email пользователя или должности.',
-                type=openapi.TYPE_STRING
+                description="Поиск по имени, email пользователя или должности.",
+                type=openapi.TYPE_STRING,
             ),
             openapi.Parameter(
-                name='company',
+                name="company",
                 in_=openapi.IN_QUERY,
-                description='Фильтр по ID компании.',
-                type=openapi.TYPE_INTEGER
+                description="Фильтр по ID компании.",
+                type=openapi.TYPE_INTEGER,
             ),
             openapi.Parameter(
-                name='position',
+                name="position",
                 in_=openapi.IN_QUERY,
-                description='Фильтр по должности.',
-                type=openapi.TYPE_STRING
+                description="Фильтр по должности.",
+                type=openapi.TYPE_STRING,
             ),
             openapi.Parameter(
-                name='user__email',
+                name="user__email",
                 in_=openapi.IN_QUERY,
-                description='Фильтр по email пользователя.',
-                type=openapi.TYPE_STRING
+                description="Фильтр по email пользователя.",
+                type=openapi.TYPE_STRING,
             ),
         ],
         responses={
@@ -95,19 +96,16 @@ class InterviewerViewSet(viewsets.ModelViewSet):
                                 "user": {
                                     "id": 1,
                                     "name": "Иван Иванов",
-                                    "email": "ivan@example.com"
+                                    "email": "ivan@example.com",
                                 },
-                                "company": {
-                                    "id": 2,
-                                    "name": "Example Company"
-                                },
-                                "position": "Senior Developer"
+                                "company": {"id": 2, "name": "Example Company"},
+                                "position": "Senior Developer",
                             }
-                        ]
+                        ],
                     }
-                }
+                },
             )
-        }
+        },
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -117,24 +115,24 @@ class InterviewerViewSet(viewsets.ModelViewSet):
         operation_description="Создать запись нового интервьюера с указанием пользователя, компании и должности.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
-            required=['user_id', 'company_id', 'position'],
+            required=["user_id", "company_id", "position"],
             properties={
-                'user_id': openapi.Schema(
+                "user_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     example=1,
-                    description="ID пользователя, связанного с интервьюером."
+                    description="ID пользователя, связанного с интервьюером.",
                 ),
-                'company_id': openapi.Schema(
+                "company_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     example=2,
-                    description="ID компании, в которой работает интервьюер."
+                    description="ID компании, в которой работает интервьюер.",
                 ),
-                'position': openapi.Schema(
+                "position": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     example="Senior Developer",
-                    description="Должность интервьюера."
+                    description="Должность интервьюера.",
                 ),
-            }
+            },
         ),
         responses={
             201: openapi.Response(
@@ -145,18 +143,15 @@ class InterviewerViewSet(viewsets.ModelViewSet):
                         "user": {
                             "id": 1,
                             "name": "Иван Иванов",
-                            "email": "ivan@example.com"
+                            "email": "ivan@example.com",
                         },
-                        "company": {
-                            "id": 2,
-                            "name": "Example Company"
-                        },
-                        "position": "Senior Developer"
+                        "company": {"id": 2, "name": "Example Company"},
+                        "position": "Senior Developer",
                     }
-                }
+                },
             ),
-            400: "Неверный запрос"
-        }
+            400: "Неверный запрос",
+        },
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -164,18 +159,15 @@ class InterviewerViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Получить информацию об интервьюере",
         operation_description="Получить информацию о конкретном интервьюере по его ID.",
-        responses={
-            200: InterviewerSerializer,
-            404: "Интервьюер не найден"
-        },
+        responses={200: InterviewerSerializer, 404: "Интервьюер не найден"},
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее интервьюера"
+                description="Уникальное целое значение, идентифицирующее интервьюера",
             ),
-        ]
+        ],
     )
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
@@ -185,38 +177,38 @@ class InterviewerViewSet(viewsets.ModelViewSet):
         operation_description="Полностью обновить запись интервьюера.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
-            required=['user_id', 'company_id', 'position'],
+            required=["user_id", "company_id", "position"],
             properties={
-                'user_id': openapi.Schema(
+                "user_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     example=1,
-                    description="ID пользователя, связанного с интервьюером."
+                    description="ID пользователя, связанного с интервьюером.",
                 ),
-                'company_id': openapi.Schema(
+                "company_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     example=2,
-                    description="ID компании, в которой работает интервьюер."
+                    description="ID компании, в которой работает интервьюер.",
                 ),
-                'position': openapi.Schema(
+                "position": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     example="Senior Developer",
-                    description="Должность интервьюера."
+                    description="Должность интервьюера.",
                 ),
-            }
+            },
         ),
         responses={
             200: InterviewerSerializer,
             400: "Неверный запрос",
-            404: "Интервьюер не найден"
+            404: "Интервьюер не найден",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее интервьюера"
+                description="Уникальное целое значение, идентифицирующее интервьюера",
             ),
-        ]
+        ],
     )
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
@@ -226,38 +218,38 @@ class InterviewerViewSet(viewsets.ModelViewSet):
         operation_description="Частично обновить данные интервьюера.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
-            required=['user_id', 'company_id', 'position'],
+            required=["user_id", "company_id", "position"],
             properties={
-                'user_id': openapi.Schema(
+                "user_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     example=1,
-                    description="ID пользователя, связанного с интервьюером."
+                    description="ID пользователя, связанного с интервьюером.",
                 ),
-                'company_id': openapi.Schema(
+                "company_id": openapi.Schema(
                     type=openapi.TYPE_INTEGER,
                     example=2,
-                    description="ID компании, в которой работает интервьюер."
+                    description="ID компании, в которой работает интервьюер.",
                 ),
-                'position': openapi.Schema(
+                "position": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     example="Senior Developer",
-                    description="Должность интервьюера."
+                    description="Должность интервьюера.",
                 ),
-            }
+            },
         ),
         responses={
             200: InterviewerSerializer,
             400: "Неверный запрос",
-            404: "Интервьюер не найден"
+            404: "Интервьюер не найден",
         },
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее интервьюера"
+                description="Уникальное целое значение, идентифицирующее интервьюера",
             ),
-        ]
+        ],
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
@@ -265,18 +257,15 @@ class InterviewerViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Удалить интервьюера",
         operation_description="Удалить запись интервьюера по его ID.",
-        responses={
-            204: "Интервьюер успешно удален",
-            404: "Интервьюер не найден"
-        },
+        responses={204: "Интервьюер успешно удален", 404: "Интервьюер не найден"},
         manual_parameters=[
             openapi.Parameter(
                 name="id",
                 in_=openapi.IN_PATH,
                 type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее интервьюера"
+                description="Уникальное целое значение, идентифицирующее интервьюера",
             ),
-        ]
+        ],
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)

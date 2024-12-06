@@ -10,7 +10,7 @@ from ..serializers.job_serializers import JobExperienceSerializer
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 100
 
 
@@ -19,8 +19,8 @@ class JobViewSet(viewsets.ModelViewSet):
     serializer_class = JobExperienceSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['company', 'position', 'start_date', 'end_date']
-    search_fields = ['company', 'position', 'responsibilities']
+    filterset_fields = ["company", "position", "start_date", "end_date"]
+    search_fields = ["company", "position", "responsibilities"]
 
     @swagger_auto_schema(
         operation_summary="Получить список работ",
@@ -31,49 +31,100 @@ class JobViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "count": openapi.Schema(type=openapi.TYPE_INTEGER, description="Общее количество записей"),
-                        "next": openapi.Schema(type=openapi.TYPE_STRING, description="Ссылка на следующую страницу"),
-                        "previous": openapi.Schema(type=openapi.TYPE_STRING,
-                                                   description="Ссылка на предыдущую страницу"),
+                        "count": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="Общее количество записей",
+                        ),
+                        "next": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на следующую страницу",
+                        ),
+                        "previous": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на предыдущую страницу",
+                        ),
                         "results": openapi.Schema(
                             type=openapi.TYPE_ARRAY,
                             items=openapi.Schema(
                                 type=openapi.TYPE_OBJECT,
                                 properties={
-                                    "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID записи"),
-                                    "company": openapi.Schema(type=openapi.TYPE_STRING,
-                                                              description="Название компании"),
-                                    "position": openapi.Schema(type=openapi.TYPE_STRING,
-                                                               description="Название должности"),
-                                    "start_date": openapi.Schema(type=openapi.TYPE_STRING, format="date",
-                                                                 description="Дата начала работы"),
-                                    "end_date": openapi.Schema(type=openapi.TYPE_STRING, format="date",
-                                                               description="Дата окончания работы"),
-                                    "responsibilities": openapi.Schema(type=openapi.TYPE_STRING,
-                                                                       description="Основные обязанности"),
-                                }
+                                    "id": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID записи",
+                                    ),
+                                    "company": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Название компании",
+                                    ),
+                                    "position": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Название должности",
+                                    ),
+                                    "start_date": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        format="date",
+                                        description="Дата начала работы",
+                                    ),
+                                    "end_date": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        format="date",
+                                        description="Дата окончания работы",
+                                    ),
+                                    "responsibilities": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Основные обязанности",
+                                    ),
+                                },
                             ),
                         ),
                     },
                 ),
             ),
-            400: "Ошибка в запросе"
+            400: "Ошибка в запросе",
         },
         manual_parameters=[
-            openapi.Parameter(name="search", in_=openapi.IN_QUERY, type=openapi.TYPE_STRING,
-                              description="Поиск по компании, должности или обязанностям"),
-            openapi.Parameter(name="company", in_=openapi.IN_QUERY, type=openapi.TYPE_STRING,
-                              description="Поиск по компании"),
-            openapi.Parameter(name="position", in_=openapi.IN_QUERY, type=openapi.TYPE_STRING,
-                              description="Поиск по должности"),
-            openapi.Parameter(name="start_date", in_=openapi.IN_QUERY, type=openapi.FORMAT_DATE,
-                              description="Поиск по началу времени"),
-            openapi.Parameter(name="end_date", in_=openapi.IN_QUERY, type=openapi.FORMAT_DATE,
-                              description="Поиск по концу времени"),
-            openapi.Parameter(name="page", in_=openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
-                              description="Номер страницы для пагинации"),
-            openapi.Parameter(name="page_size", in_=openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
-                              description="Количество записей на странице"),
+            openapi.Parameter(
+                name="search",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Поиск по компании, должности или обязанностям",
+            ),
+            openapi.Parameter(
+                name="company",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Поиск по компании",
+            ),
+            openapi.Parameter(
+                name="position",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Поиск по должности",
+            ),
+            openapi.Parameter(
+                name="start_date",
+                in_=openapi.IN_QUERY,
+                type=openapi.FORMAT_DATE,
+                description="Поиск по началу времени",
+            ),
+            openapi.Parameter(
+                name="end_date",
+                in_=openapi.IN_QUERY,
+                type=openapi.FORMAT_DATE,
+                description="Поиск по концу времени",
+            ),
+            openapi.Parameter(
+                name="page",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Номер страницы для пагинации",
+            ),
+            openapi.Parameter(
+                name="page_size",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Количество записей на странице",
+            ),
         ],
     )
     def list(self, request, *args, **kwargs):
@@ -89,29 +140,29 @@ class JobViewSet(viewsets.ModelViewSet):
                 "company": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Название компании",
-                    example="INNOPROG"
+                    example="INNOPROG",
                 ),
                 "position": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Название должности",
-                    example="Software Developer"
+                    example="Software Developer",
                 ),
                 "start_date": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     format="date",
                     description="Дата начала работы",
-                    example="2024-01-01"
+                    example="2024-01-01",
                 ),
                 "end_date": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     format="date",
                     description="Дата окончания работы",
-                    example="2024-11-30"
+                    example="2024-11-30",
                 ),
                 "responsibilities": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Основные обязанности",
-                    example="Разработка и поддержка веб-приложений."
+                    example="Разработка и поддержка веб-приложений.",
                 ),
             },
         ),
@@ -124,34 +175,34 @@ class JobViewSet(viewsets.ModelViewSet):
                         "id": openapi.Schema(
                             type=openapi.TYPE_INTEGER,
                             description="ID записи",
-                            example=1
+                            example=1,
                         ),
                         "company": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             description="Название компании",
-                            example="OpenAI"
+                            example="OpenAI",
                         ),
                         "position": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             description="Название должности",
-                            example="Software Developer"
+                            example="Software Developer",
                         ),
                         "start_date": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             format="date",
                             description="Дата начала работы",
-                            example="2023-01-01"
+                            example="2023-01-01",
                         ),
                         "end_date": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             format="date",
                             description="Дата окончания работы",
-                            example="2023-12-30"
+                            example="2023-12-30",
                         ),
                         "responsibilities": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             description="Основные обязанности",
-                            example="Разработка и поддержка веб-приложений."
+                            example="Разработка и поддержка веб-приложений.",
                         ),
                     },
                 ),
@@ -171,15 +222,28 @@ class JobViewSet(viewsets.ModelViewSet):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID записи"),
-                        "company": openapi.Schema(type=openapi.TYPE_STRING, description="Название компании"),
-                        "position": openapi.Schema(type=openapi.TYPE_STRING, description="Название должности"),
-                        "start_date": openapi.Schema(type=openapi.TYPE_STRING, format="date",
-                                                     description="Дата начала работы"),
-                        "end_date": openapi.Schema(type=openapi.TYPE_STRING, format="date",
-                                                   description="Дата окончания работы"),
-                        "responsibilities": openapi.Schema(type=openapi.TYPE_STRING,
-                                                           description="Основные обязанности"),
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER, description="ID записи"
+                        ),
+                        "company": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название компании"
+                        ),
+                        "position": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Название должности"
+                        ),
+                        "start_date": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            format="date",
+                            description="Дата начала работы",
+                        ),
+                        "end_date": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            format="date",
+                            description="Дата окончания работы",
+                        ),
+                        "responsibilities": openapi.Schema(
+                            type=openapi.TYPE_STRING, description="Основные обязанности"
+                        ),
                     },
                 ),
             ),
@@ -207,29 +271,29 @@ class JobViewSet(viewsets.ModelViewSet):
                 "company": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Название компании",
-                    example="INNOPROG"
+                    example="INNOPROG",
                 ),
                 "position": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Название должности",
-                    example="Software Developer"
+                    example="Software Developer",
                 ),
                 "start_date": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     format="date",
                     description="Дата начала работы",
-                    example="2024-01-01"
+                    example="2024-01-01",
                 ),
                 "end_date": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     format="date",
                     description="Дата окончания работы",
-                    example="2024-11-30"
+                    example="2024-11-30",
                 ),
                 "responsibilities": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Основные обязанности",
-                    example="Разработка и поддержка веб-приложений."
+                    example="Разработка и поддержка веб-приложений.",
                 ),
             },
         ),
@@ -242,34 +306,34 @@ class JobViewSet(viewsets.ModelViewSet):
                         "id": openapi.Schema(
                             type=openapi.TYPE_INTEGER,
                             description="ID записи",
-                            example=1
+                            example=1,
                         ),
                         "company": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             description="Название компании",
-                            example="OpenAI"
+                            example="OpenAI",
                         ),
                         "position": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             description="Название должности",
-                            example="Software Developer"
+                            example="Software Developer",
                         ),
                         "start_date": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             format="date",
                             description="Дата начала работы",
-                            example="2023-01-01"
+                            example="2023-01-01",
                         ),
                         "end_date": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             format="date",
                             description="Дата окончания работы",
-                            example="2023-12-30"
+                            example="2023-12-30",
                         ),
                         "responsibilities": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             description="Основные обязанности",
-                            example="Разработка и поддержка веб-приложений."
+                            example="Разработка и поддержка веб-приложений.",
                         ),
                     },
                 ),
@@ -290,29 +354,29 @@ class JobViewSet(viewsets.ModelViewSet):
                 "company": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Название компании",
-                    example="INNOPROG"
+                    example="INNOPROG",
                 ),
                 "position": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Название должности",
-                    example="Software Developer"
+                    example="Software Developer",
                 ),
                 "start_date": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     format="date",
                     description="Дата начала работы",
-                    example="2024-01-01"
+                    example="2024-01-01",
                 ),
                 "end_date": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     format="date",
                     description="Дата окончания работы",
-                    example="2024-11-30"
+                    example="2024-11-30",
                 ),
                 "responsibilities": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     description="Основные обязанности",
-                    example="Разработка и поддержка веб-приложений."
+                    example="Разработка и поддержка веб-приложений.",
                 ),
             },
         ),
@@ -325,34 +389,34 @@ class JobViewSet(viewsets.ModelViewSet):
                         "id": openapi.Schema(
                             type=openapi.TYPE_INTEGER,
                             description="ID записи",
-                            example=1
+                            example=1,
                         ),
                         "company": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             description="Название компании",
-                            example="OpenAI"
+                            example="OpenAI",
                         ),
                         "position": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             description="Название должности",
-                            example="Software Developer"
+                            example="Software Developer",
                         ),
                         "start_date": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             format="date",
                             description="Дата начала работы",
-                            example="2023-01-01"
+                            example="2023-01-01",
                         ),
                         "end_date": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             format="date",
                             description="Дата окончания работы",
-                            example="2023-12-30"
+                            example="2023-12-30",
                         ),
                         "responsibilities": openapi.Schema(
                             type=openapi.TYPE_STRING,
                             description="Основные обязанности",
-                            example="Разработка и поддержка веб-приложений."
+                            example="Разработка и поддержка веб-приложений.",
                         ),
                     },
                 ),

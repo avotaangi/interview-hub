@@ -10,3 +10,6 @@ django-filter==24.3
 django-import-export==4.3.3
 openpyxl==3.1.5
 django-filter==24.3
+pylint==3.3.2
+pylint-django==2.6.1
+

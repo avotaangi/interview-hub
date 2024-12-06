@@ -4,21 +4,24 @@ from .open_question_serializer import OpenQuestionSerializer
 from .multiple_choice_question_serializer import MultipleChoiceQuestionSerializer
 from .code_question_serializer import CodeQuestionSerializer
 
+
 class TaskItemSerializer(serializers.ModelSerializer):
     open_questions = OpenQuestionSerializer(many=True, read_only=True)
-    multiple_choice_questions = MultipleChoiceQuestionSerializer(many=True, read_only=True)
+    multiple_choice_questions = MultipleChoiceQuestionSerializer(
+        many=True, read_only=True
+    )
     code_questions = CodeQuestionSerializer(many=True, read_only=True)
 
     class Meta:
         model = TaskItem
         fields = [
-            'id',
-            'title',
-            'complexity',
-            'task_condition',
-            'open_questions',
-            'multiple_choice_questions',
-            'code_questions',
+            "id",
+            "title",
+            "complexity",
+            "task_condition",
+            "open_questions",
+            "multiple_choice_questions",
+            "code_questions",
         ]
 
     def validate_complexity(self, value):
