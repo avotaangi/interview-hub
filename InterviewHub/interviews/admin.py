@@ -14,6 +14,14 @@ class InterviewAdmin(ImportExportModelAdmin):
     def get_export_formats(self):
         return [XLSX, CSV, JSON]
 
+    def get_export_queryset(self, request):
+        """
+        Отбор интревью, имеющих статус 'На рассмотрении'"
+        """
+        queryset = super().get_export_queryset(request)
+        # фильтруем только завершенные интервью
+        return queryset.filter(status='Запланировано')
+
     list_display = ('selection', 'start_time', 'end_time', 'status', 'result', 'short_feedback')
     list_filter = ('status', 'result', 'start_time')
     search_fields = ('selection__resume__candidate__user__email', 'status', 'result')
@@ -34,6 +42,15 @@ class InterviewTaskItemAdmin(ImportExportModelAdmin):
     # Форматы экспорта
     def get_export_formats(self):
         return [XLSX, CSV, JSON]
+
+    def get_export_queryset(self, request):
+        """
+        Метод для кастомизации выборки данных для задания интервью.
+        Выбор только те задания, которые еще не были выполнены кандидатом.
+        """
+        queryset = super().get_export_queryset(request)
+        # Пример: выбираем только те задания, которые не имеют ответа
+        return queryset.filter(candidate_answer__isnull=False)
 
     list_display = ('interview', 'task_item', 'short_candidate_answer')
     list_filter = ('task_item',)

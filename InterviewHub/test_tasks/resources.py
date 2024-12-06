@@ -1,53 +1,51 @@
+import io
+
 from import_export import resources, fields
+from openpyxl.reader.excel import load_workbook
+from openpyxl.styles import PatternFill
+
 from .models import TestTask, TestTaskItem
 
 
-# Ресурс для TestTask
 class TestTaskResource(resources.ModelResource):
-    # Кастомное поле для отображения email кандидата
-    candidate_email = fields.Field(column_name='Candidate Email')
+    candidate_email = fields.Field(column_name='Candidate Email', attribute='get_candidate_email')
+    status = fields.Field(column_name='Status', readonly=True)
 
     class Meta:
         model = TestTask
-        fields = ('id', 'candidate_email', 'selection', 'start_time', 'end_time', 'result', 'duration')
-        export_order = ('id', 'candidate_email', 'selection', 'start_time', 'end_time', 'result', 'duration')
+        fields = ('id', 'candidate_email', 'selection', 'start_time', 'end_time', 'result', 'duration', 'status')
+        export_order = ('id', 'candidate_email', 'selection', 'start_time', 'end_time', 'result', 'duration', 'status')
 
-    def get_candidate_email(self, obj):
-        # Получаем email кандидата через связанную модель
+    def dehydrate_candidate_email(self, obj):
         return obj.selection.resume.candidate.user.email
 
     def dehydrate_result(self, obj):
-        # Преобразуем значение result в его отображаемое значение
         return obj.get_result_display()
 
-    def get_export_queryset(self, queryset, *args, **kwargs):
-        # Ограничиваем экспорт только записями с результатом "Принято"
-        return queryset.filter(result='Принято')
+    def dehydrate_status(self, obj):
+        # На основе результата определяем статус
+        if obj.get_result_display() == 'Принято':
+            return 'Завершено успешно'
+        elif obj.get_result_display() == 'Отклонено':
+            return 'Завершено не успешно'
+        else:
+            return 'Не завершено'
 
 
-# Ресурс для TestTaskItem
 class TestTaskItemResource(resources.ModelResource):
-    # Кастомные поля
-    candidate_email = fields.Field(column_name='Candidate Email')
-    task_title = fields.Field(column_name='Task Title')
+    candidate_email = fields.Field(column_name='Candidate Email', attribute='get_candidate_email')
+    task_title = fields.Field(column_name='Task Title', attribute='get_task_title')
 
     class Meta:
         model = TestTaskItem
         fields = ('id', 'candidate_email', 'test_task', 'task_title', 'candidate_answer', 'interviewer_comment')
         export_order = ('id', 'candidate_email', 'test_task', 'task_title', 'candidate_answer', 'interviewer_comment')
 
-    def get_candidate_email(self, obj):
-        # Получаем email кандидата через связанную модель TestTask
+    def dehydrate_candidate_email(self, obj):
         return obj.test_task.selection.resume.candidate.user.email
 
-    def get_task_title(self, obj):
-        # Получаем название задания через task_item
+    def dehydrate_task_title(self, obj):
         return obj.task_item.title
 
     def dehydrate_candidate_answer(self, obj):
-        # Укорачиваем длинный ответ кандидата
         return (obj.candidate_answer[:100] + '...') if len(obj.candidate_answer) > 100 else obj.candidate_answer
-
-    def get_export_queryset(self, queryset, *args, **kwargs):
-        # Ограничиваем экспорт элементами, связанными с "Принято"
-        return queryset.filter(test_task__result='Принято')
