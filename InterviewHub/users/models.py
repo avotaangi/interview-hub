@@ -80,4 +80,4 @@ class Interviewer(models.Model):
         verbose_name_plural = 'Интервьюеры'  # Название во множественном числе
 
     def __str__(self):
-        return self.user.name
+        return self.user.first_name

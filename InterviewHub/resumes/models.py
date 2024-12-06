@@ -34,8 +34,8 @@ class JobExperience(models.Model):
         return f"{self.position} в {self.company}"
 
     class Meta:
-        verbose_name = 'Работа'
-        verbose_name_plural = 'Работы'
+        verbose_name = 'Опыт работы'
+        verbose_name_plural = 'Опыт работы'
 
     # Валидация на уровне модели
     def clean(self):

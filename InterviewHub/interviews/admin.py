@@ -21,7 +21,7 @@ class InterviewAdmin(ImportExportModelAdmin):
     date_hierarchy = 'start_time'
     list_display_links = ('selection', 'start_time')
 
-    @admin.display(description='Feedback (short)')
+    @admin.display(description='Feedback')
     def short_feedback(self, obj):
         return obj.feedback[:50] if obj.feedback else 'No feedback available'
 
@@ -41,6 +41,6 @@ class InterviewTaskItemAdmin(ImportExportModelAdmin):
     raw_id_fields = ('interview', 'task_item')
     readonly_fields = ('candidate_answer',)
 
-    @admin.display(description='Candidate Answer (short)')
+    @admin.display(description='Candidate Answer')
     def short_candidate_answer(self, obj):
         return obj.candidate_answer[:50] if obj.candidate_answer else 'No answer provided'

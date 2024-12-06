@@ -1,15 +1,17 @@
+from datetime import timedelta
+
 from drf_yasg import openapi
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
-from django.db.models import Q
+from django.db.models import Q, Count
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from django.utils import timezone
 from ..models import Resume, Skill, JobExperience
-from ..serializers.resume_serializers import ResumeSerializer
+from ..serializers.resume_serializers import ResumeSerializer, ResumeFilter
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -26,7 +28,8 @@ class ResumeViewSet(viewsets.ModelViewSet):
     serializer_class = ResumeSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['candidate', 'desired_position', 'desired_salary']
+    filterset_class = ResumeFilter
+    filterset_fields = ['candidate', 'desired_position']
     search_fields = ['desired_position', 'additional_info']
 
     @swagger_auto_schema(
@@ -249,53 +252,48 @@ class ResumeViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
     @swagger_auto_schema(
-        method='get',
-        operation_summary="Получить последние резюме",
-        operation_description="Получить все резюме, созданные за последние 30 дней.",
+        operation_summary="Фильтровать резюме по дате",
+        operation_description="Получить резюме, созданные за указанный период (параметры 'start_date' и 'end_date'). Если параметры не указаны, будет использован период за последние 7 дней.",
         responses={200: ResumeSerializer(many=True)},
-        properties={
-            "candidate": openapi.Schema(
-                type=openapi.TYPE_INTEGER,
-                description="ID кандидата, которому принадлежит резюме.",
-                example=1
+        manual_parameters=[
+            openapi.Parameter(
+                name='start_date', in_=openapi.IN_QUERY, type=openapi.TYPE_STRING,
+                description='Дата начала периода (формат: YYYY-MM-DD)', example='2024-11-01'
             ),
-            "desired_position": openapi.Schema(
-                type=openapi.TYPE_STRING,
-                description="Желаемая должность кандидата.",
-                example="Software Developer"
+            openapi.Parameter(
+                name='end_date', in_=openapi.IN_QUERY, type=openapi.TYPE_STRING,
+                description='Дата конца периода (формат: YYYY-MM-DD)', example='2024-11-07'
             ),
-            "desired_salary": openapi.Schema(
-                type=openapi.TYPE_INTEGER,
-                description="Желаемая зарплата кандидата.",
-                example=60000
-            ),
-            "skills": openapi.Schema(
-                type=openapi.TYPE_ARRAY,
-                items=openapi.Items(type=openapi.TYPE_INTEGER),
-                description="Список ID навыков, которые кандидат хочет указать.",
-                example=[1, 2, 3]
-            ),
-            "job_experiences": openapi.Schema(
-                type=openapi.TYPE_ARRAY,
-                items=openapi.Items(type=openapi.TYPE_INTEGER),
-                description="Список ID опыта работы, который кандидат хочет указать.",
-                example=[5, 8]
-            ),
-            "additional_info": openapi.Schema(
-                type=openapi.TYPE_STRING,
-                description="Дополнительная информация о кандидате.",
-                example="Ищу удаленную работу, готов к переезду."
-            )
-        }
+        ]
     )
     @action(methods=['GET'], detail=False)
-    def recent_resumes(self, request):
-        recent_date = timezone.now() - timezone.timedelta(days=30)
-        resumes = self.get_queryset().filter(created_at__gte=recent_date)
+    def filter_by_date(self, request):
+        # Получаем параметры даты из запроса
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        # Если даты не переданы, фильтруем за последние 7 дней
+        if not start_date or not end_date:
+            end_date = timezone.now()
+            start_date = end_date - timedelta(days=7)
+        else:
+            # Преобразуем строки в объекты Date
+            try:
+                start_date = timezone.datetime.strptime(start_date, '%Y-%m-%d').date()
+                end_date = timezone.datetime.strptime(end_date, '%Y-%m-%d').date()
+            except ValueError:
+                return Response({"error": "Неверный формат даты. Используйте формат YYYY-MM-DD."}, status=400)
+
+        # Фильтруем резюме по дате создания
+        resumes = self.get_queryset().filter(created_at__gte=start_date, created_at__lte=end_date)
+
+        # Пагинация
         page = self.paginate_queryset(resumes)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
+
+        # Если пагинация не используется, просто возвращаем результат
         serializer = self.get_serializer(resumes, many=True)
         return Response(serializer.data)
 
@@ -464,3 +462,76 @@ class ResumeViewSet(viewsets.ModelViewSet):
         except JobExperience.DoesNotExist:
             return Response({'error': 'Опыт работы не найден'}, status=400)
 
+    @swagger_auto_schema(
+        operation_summary="Фильтрация резюме по зарплате, дате публикации и опыту работы",
+        operation_description="Получить резюме, удовлетворяющие условиям: зарплата не превышает желаемую и опубликованы не позднее заданного количества дней, либо имеют опыт работы более чем в указанном количестве компаний.",
+        responses={200: ResumeSerializer(many=True)},
+        manual_parameters=[
+            openapi.Parameter(
+                name='desired_salary', in_=openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
+                description='Максимальная желаемая зарплата кандидата.',
+                example=70000,
+                required=True
+            ),
+            openapi.Parameter(
+                name='days_since_posted', in_=openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
+                description='Максимальное количество дней с момента публикации резюме.',
+                example=30,
+                required=True
+            ),
+            openapi.Parameter(
+                name='min_job_experience_companies', in_=openapi.IN_QUERY, type=openapi.TYPE_INTEGER,
+                description='Минимальное количество компаний, в которых был опыт работы.',
+                example=3,
+                required=True
+            ),
+        ]
+    )
+    @action(methods=['GET'], detail=False)
+    @action(methods=['GET'], detail=False)
+    def filter_by_salary_and_experience(self, request):
+        # Получаем параметры из запроса
+        desired_salary = request.query_params.get('desired_salary')
+        days_since_posted = request.query_params.get('days_since_posted')
+        min_job_experience_companies = request.query_params.get('min_job_experience_companies')
+
+        # Получаем текущую дату
+        current_date = timezone.now()
+
+        # Формируем условия фильтрации
+        filters = Q()
+
+        if desired_salary:
+            filters &= Q(desired_salary__lte=desired_salary)
+
+        if days_since_posted:
+            try:
+                days_since_posted = int(days_since_posted)
+                # Рассчитываем дату, на которую резюме должны быть опубликованы
+                date_limit = current_date - timedelta(days=days_since_posted)
+                filters &= Q(created_at__gte=date_limit)
+            except ValueError:
+                return Response({"error": "Неверный формат дня публикации."}, status=400)
+
+        # Аннотируем резюме с подсчетом количества связанных записей в job_experiences
+        resumes = self.get_queryset().annotate(num_companies=Count('job_experiences'))
+
+        if min_job_experience_companies:
+            try:
+                min_job_experience_companies = int(min_job_experience_companies)
+                filters |= Q(num_companies__gte=min_job_experience_companies)
+            except ValueError:
+                return Response({"error": "Неверный формат для количества компаний."}, status=400)
+
+        # Применяем фильтры с учетом аннотации
+        resumes = resumes.filter(filters)
+
+        # Пагинация
+        page = self.paginate_queryset(resumes)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        # Если пагинация не используется, просто возвращаем результат
+        serializer = self.get_serializer(resumes, many=True)
+        return Response(serializer.data)

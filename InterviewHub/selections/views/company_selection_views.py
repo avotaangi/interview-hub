@@ -1,11 +1,16 @@
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
+
+from django.db.models import Q
+from datetime import timedelta
+from django.utils import timezone
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from rest_framework.response import Response
 
 from ..models import CompanySelection
 from ..serializers.company_selection_serializers import CompanySelectionSerializer
@@ -272,3 +277,84 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
         selection.status = new_status
         selection.save()
         return Response({"id": selection.id, "status": selection.status}, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(
+        operation_summary="Фильтрация кандидатов по статусу, возрасту резюме и интервьюеру",
+        operation_description=(
+                "Фильтрует кандидатов по следующим параметрам:\n"
+                "- Статус отбора кандидата: 'На рассмотрении' или 'Принят'.\n"
+                "- Исключает кандидатов с резюме, созданным более 7 дней назад.\n"
+                "- Отбирает только тех кандидатов, у которых назначен интервьюер."
+        ),
+        manual_parameters=[
+            openapi.Parameter(
+                'status',
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Фильтрация по статусу отбора кандидата. Разделите несколько статусов запятой, например: 'На рассмотрении,Принят'.",
+                required=True
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                description="Успешный ответ",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "count": openapi.Schema(type=openapi.TYPE_INTEGER, description="Общее количество элементов"),
+                        "next": openapi.Schema(type=openapi.TYPE_STRING, description="Ссылка на следующую страницу"),
+                        "previous": openapi.Schema(type=openapi.TYPE_STRING,
+                                                   description="Ссылка на предыдущую страницу"),
+                        "results": openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    "id": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID отбора"),
+                                    "interviewer": openapi.Schema(type=openapi.TYPE_INTEGER,
+                                                                  description="ID интервьюера"),
+                                    "resume": openapi.Schema(type=openapi.TYPE_INTEGER, description="ID резюме"),
+                                    "status": openapi.Schema(type=openapi.TYPE_STRING, description="Статус отбора")
+                                }
+                            ),
+                        ),
+                    },
+                ),
+            ),
+            400: "Ошибка в запросе"
+        },
+    )
+    @action(detail=False, methods=["GET"], url_path="practical-filter")
+    def practical_filter(self, request):
+        # Получаем параметры фильтрации из запроса
+        status_filter = request.query_params.get('status', None)
+
+        # Формируем фильтр Q
+        q_filter = Q()
+
+        # Фильтрация по статусу отбора кандидата
+        if status_filter:
+            statuses = status_filter.split(",")  # Статусы передаются через запятую
+            status_q = Q()
+            for status in statuses:
+                status_q |= Q(status=status)  # Логика OR для статусов
+            q_filter &= status_q  # Логика AND с другими фильтрами
+
+        # Исключение резюме, отобранных более 7 дней назад
+        seven_days_ago = timezone.now() - timedelta(days=7)
+        q_filter &= ~Q(resume__created_at__lt=seven_days_ago)  # Логика NOT для исключения старых резюме
+
+        # Проверка назначения интервьюера
+        q_filter &= Q(interviewer__isnull=False)  # Логика AND для наличия интервьюера
+
+        # Применяем фильтрацию на queryset
+        selections = self.get_queryset().filter(q_filter)
+        page = self.paginate_queryset(selections)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(selections, many=True)
+        return Response(serializer.data)
+

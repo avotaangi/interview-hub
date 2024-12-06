@@ -33,7 +33,7 @@ class CompanyAdmin(admin.ModelAdmin):
 
     @admin.display(description='Interviewers')
     def display_interviewers(self, obj):
-        return ", ".join([interviewer.name for interviewer in obj.interviewer_set.all()])
+        return ", ".join([interviewer.user.first_name for interviewer in obj.interviewer_set.all()])
 
     @admin.display(description='Логотип компании')
     def logo_preview(self, obj):

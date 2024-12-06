@@ -21,6 +21,8 @@ class TestTask(models.Model):
         verbose_name = 'Тестовое задание'  # Название таблицы в единственном числе
         verbose_name_plural = 'Тестовые задания'  # Название таблицы во множественном числе
 
+    def __str__(self):
+        return f"{self.selection.resume.candidate.user.email} - {self.start_time.strftime('%d.%m.%Y %H:%M')}"
 
 class TestTaskItem(models.Model):
     test_task = models.ForeignKey('TestTask', on_delete=models.CASCADE, verbose_name='Тестовое задание')

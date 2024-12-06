@@ -35,7 +35,7 @@ class TestTaskItemAdmin(ImportExportModelAdmin):
     readonly_fields = ('candidate_answer',)  # Поле только для чтения
     list_display_links = ('test_task', 'task_item')  # Делаем поля ссылками
 
-    @admin.display(description='Test Task (short)')
+    @admin.display(description='Test Task')
     def short_test_task(self, obj):
         # Отображаем email клиента
         return f"{obj.test_task.selection.resume.candidate.user.email}"

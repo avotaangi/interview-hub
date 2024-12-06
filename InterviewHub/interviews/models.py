@@ -40,6 +40,9 @@ class Interview(models.Model):
             self.duration = int(delta.total_seconds() // 60)  # Convert seconds to minutes
         super().save(*args, **kwargs)
 
+    def __str__(self):
+        return f"{self.selection.resume.candidate.user.email} - {self.start_time.strftime('%d.%m.%Y %H:%M')}"
+
 
 class InterviewTaskItem(models.Model):
     interview = models.ForeignKey(Interview, on_delete=models.CASCADE, verbose_name='Интервью')
