@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+import django_filters
 from drf_yasg import openapi
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
@@ -11,7 +12,19 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from django.utils import timezone
 from ..models import Resume, Skill, JobExperience
-from ..serializers.resume_serializers import ResumeSerializer, ResumeFilter
+from ..serializers.resume_serializers import ResumeSerializer
+
+class ResumeFilter(django_filters.FilterSet):
+    min_salary = django_filters.NumberFilter(
+        field_name="desired_salary", lookup_expr="gte", label="Минимальная зарплата"
+    )
+    max_salary = django_filters.NumberFilter(
+        field_name="desired_salary", lookup_expr="lte", label="Максимальная зарплата"
+    )
+
+    class Meta:
+        model = Resume
+        fields = ["candidate", "desired_position", "desired_salary"]
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -28,10 +41,9 @@ class ResumeViewSet(viewsets.ModelViewSet):
     queryset = Resume.objects.all()
     serializer_class = ResumeSerializer
     pagination_class = StandardResultsSetPagination
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_backends = [DjangoFilterBackend]
     filterset_class = ResumeFilter
     filterset_fields = ["candidate", "desired_position"]
-    search_fields = ["desired_position", "additional_info"]
 
     @swagger_auto_schema(
         operation_summary="Получить список резюме",
@@ -54,12 +66,6 @@ class ResumeViewSet(viewsets.ModelViewSet):
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
                 description="Количество элементов на странице",
-            ),
-            openapi.Parameter(
-                name="search",
-                in_=openapi.IN_QUERY,
-                type=openapi.TYPE_STRING,
-                description="Поиск по желаемой должности или дополнительной информации",
             ),
             openapi.Parameter(
                 name="desired_position",
@@ -541,7 +547,6 @@ class ResumeViewSet(viewsets.ModelViewSet):
             ),
         ],
     )
-    @action(methods=["GET"], detail=False)
     @action(methods=["GET"], detail=False)
     def filter_by_salary_and_experience(self, request):
         # Получаем параметры из запроса

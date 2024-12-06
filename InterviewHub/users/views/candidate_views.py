@@ -24,9 +24,8 @@ class CandidateViewSet(viewsets.ModelViewSet):
     queryset = Candidate.objects.all()
     serializer_class = CandidateSerializer
     pagination_class = StandardResultsSetPagination
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_backends = [DjangoFilterBackend]
     filterset_fields = ["user__email", "city"]
-    search_fields = ["user__email", "city", "social_media"]
 
     @swagger_auto_schema(
         operation_summary="Получить список кандидатов",
@@ -57,6 +56,34 @@ class CandidateViewSet(viewsets.ModelViewSet):
                 },
             )
         },
+        manual_parameters=[
+            openapi.Parameter(
+                name="user__email",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Электронная почта пользователя для фильтрации кандидатов"
+            ),
+            openapi.Parameter(
+                name="city",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Город для фильтрации кандидатов"
+            ),
+            openapi.Parameter(
+                name="page",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Номер страницы для пагинации",
+                default=1
+            ),
+            openapi.Parameter(
+                name="page_size",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Количество элементов на странице",
+                default=10
+            ),
+        ],
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)

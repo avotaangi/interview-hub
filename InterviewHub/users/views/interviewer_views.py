@@ -37,8 +37,7 @@ class InterviewerViewSet(viewsets.ModelViewSet):
     queryset = Interviewer.objects.all()
     serializer_class = InterviewerSerializer
     pagination_class = StandardResultsSetPagination
-    filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ["company", "position", "user__email"]
+    filter_backends = [SearchFilter]
     search_fields = ["user__first_name", "user__email", "position"]
 
     @swagger_auto_schema(
@@ -48,39 +47,23 @@ class InterviewerViewSet(viewsets.ModelViewSet):
             openapi.Parameter(
                 name="page",
                 in_=openapi.IN_QUERY,
-                description="Номер страницы",
                 type=openapi.TYPE_INTEGER,
+                description="Номер страницы для пагинации",
+                default=1
             ),
             openapi.Parameter(
                 name="page_size",
                 in_=openapi.IN_QUERY,
-                description="Количество элементов на странице",
                 type=openapi.TYPE_INTEGER,
+                description="Количество элементов на странице",
+                default=10
             ),
             openapi.Parameter(
                 name="search",
                 in_=openapi.IN_QUERY,
                 description="Поиск по имени, email пользователя или должности.",
                 type=openapi.TYPE_STRING,
-            ),
-            openapi.Parameter(
-                name="company",
-                in_=openapi.IN_QUERY,
-                description="Фильтр по ID компании.",
-                type=openapi.TYPE_INTEGER,
-            ),
-            openapi.Parameter(
-                name="position",
-                in_=openapi.IN_QUERY,
-                description="Фильтр по должности.",
-                type=openapi.TYPE_STRING,
-            ),
-            openapi.Parameter(
-                name="user__email",
-                in_=openapi.IN_QUERY,
-                description="Фильтр по email пользователя.",
-                type=openapi.TYPE_STRING,
-            ),
+            )
         ],
         responses={
             200: openapi.Response(

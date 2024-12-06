@@ -1,6 +1,8 @@
+from django.db.models import Q
 from rest_framework import viewsets, status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
@@ -20,8 +22,8 @@ class InterviewViewSet(viewsets.ModelViewSet):
     queryset = Interview.objects.all()
     serializer_class = InterviewSerializer
     pagination_class = StandardResultsSetPagination
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["selection", "status", "result"]
+    filter_backends = [SearchFilter]
+    search_fields = ["selection__resume__candidate__user__email", "selection__interviewer__user__email"]
 
     @swagger_auto_schema(
         operation_summary="Получить список интервью",
@@ -120,34 +122,24 @@ class InterviewViewSet(viewsets.ModelViewSet):
         },
         manual_parameters=[
             openapi.Parameter(
-                name="selection",
+                name="search",
                 in_=openapi.IN_QUERY,
-                type=openapi.TYPE_INTEGER,
-                description="Фильтр по ID отбора кандидата",
-            ),
-            openapi.Parameter(
-                name="status",
-                in_=openapi.IN_QUERY,
+                description="Поиск отбора кандидата по электронной почте интервьюера или кандидата",
                 type=openapi.TYPE_STRING,
-                description="Фильтр по статусу интервью",
-            ),
-            openapi.Parameter(
-                name="result",
-                in_=openapi.IN_QUERY,
-                type=openapi.TYPE_STRING,
-                description="Фильтр по результату интервью",
             ),
             openapi.Parameter(
                 name="page",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
                 description="Номер страницы для пагинации",
+                default=1
             ),
             openapi.Parameter(
                 name="page_size",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
                 description="Количество элементов на странице",
+                default=10
             ),
         ],
     )
@@ -735,3 +727,113 @@ class InterviewViewSet(viewsets.ModelViewSet):
             },
             status=status.HTTP_200_OK,
         )
+
+    @swagger_auto_schema(
+        operation_summary="Фильтрация интервью кандидатов по статусу",
+        operation_description=(
+                "Фильтрует интервью кандидатов по статусу отбора, который передается как параметр в URL.\n"
+                "Например, /company-selections/status/На рассмотрении/"
+        ),
+        manual_parameters=[
+            openapi.Parameter(
+                "status",
+                in_=openapi.IN_PATH,
+                type=openapi.TYPE_STRING,
+                description="Статус интервью кандидата, например 'Запланировано', 'Завершено', 'Отклонено'.",
+                required=True,
+            ),
+            openapi.Parameter(
+                name="search",
+                in_=openapi.IN_QUERY,
+                description="Поиск отбора кандидата по электронной почте интервьюера или кандидата",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                name="page",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Номер страницы для пагинации",
+                default=1
+            ),
+            openapi.Parameter(
+                name="page_size",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Количество элементов на странице",
+                default=10
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                description="Успешный ответ",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "count": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="Общее количество элементов",
+                        ),
+                        "next": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на следующую страницу",
+                        ),
+                        "previous": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на предыдущую страницу",
+                        ),
+                        "results": openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    "id": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID отбора",
+                                    ),
+                                    "interviewer": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID интервьюера",
+                                    ),
+                                    "resume": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID резюме",
+                                    ),
+                                    "status": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Статус отбора",
+                                    ),
+                                },
+                            ),
+                        ),
+                    },
+                ),
+            ),
+            400: "Ошибка в запросе",
+        },
+    )
+    @action(detail=False, methods=["GET"], url_path=r"status/(?P<status>[\w-]+)")
+    def get_by_status(self, request, status=None):
+        """Фильтрация кандидатов по статусу из именованного параметра в URL."""
+        q_filter = Q()
+
+        # Фильтрация по статусу отбора кандидата (из URL)
+        if status:
+            status_q = Q(status=status)  # Фильтрация по переданному статусу
+            q_filter &= status_q  # Логика AND с другими фильтрами
+
+        # Фильтрация по поисковому запросу, если есть
+        search = request.query_params.get("search", None)
+        if search:
+            search_q = Q(selection__interviewer__email__icontains=search) | Q(selection__resume__candidate__email__icontains=search)
+            q_filter &= search_q  # Логика AND с другими фильтрами
+
+        # Применяем фильтрацию на queryset
+        selections = self.get_queryset().filter(q_filter)
+        page = self.paginate_queryset(selections)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(selections, many=True)
+        return Response(serializer.data)

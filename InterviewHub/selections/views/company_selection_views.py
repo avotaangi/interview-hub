@@ -26,13 +26,34 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
     queryset = CompanySelection.objects.all()
     serializer_class = CompanySelectionSerializer
     pagination_class = StandardResultsSetPagination
-    filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ["status", "interviewer", "resume"]
+    filter_backends = [SearchFilter]
     search_fields = ["resume__candidate__user__email", "interviewer__user__email"]
 
     @swagger_auto_schema(
         operation_summary="Получить список отборов кандидатов",
         operation_description="Возвращает список отборов кандидатов с возможностью фильтрации и поиска.",
+        manual_parameters=[
+            openapi.Parameter(
+                name="search",
+                in_=openapi.IN_QUERY,
+                description="Поиск отбора кандидата по электронной почте интервьюера или кандидата",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                name="page",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Номер страницы для пагинации",
+                default=1
+            ),
+            openapi.Parameter(
+                name="page_size",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Количество элементов на странице",
+                default=10
+            ),
+        ],
         responses={
             200: openapi.Response(
                 description="Успешный ответ",
@@ -361,6 +382,26 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
                 type=openapi.TYPE_STRING,
                 description="Фильтрация по статусу отбора кандидата. Разделите несколько статусов запятой, например: 'На рассмотрении,Принят'.",
                 required=True,
+            ),
+            openapi.Parameter(
+                name="search",
+                in_=openapi.IN_QUERY,
+                description="Поиск отбора кандидата по электронной почте интервьюера или кандидата",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                name="page",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Номер страницы для пагинации",
+                default=1
+            ),
+            openapi.Parameter(
+                name="page_size",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Количество элементов на странице",
+                default=10
             ),
         ],
         responses={

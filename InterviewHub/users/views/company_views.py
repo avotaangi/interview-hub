@@ -37,43 +37,32 @@ class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
     pagination_class = StandardResultsSetPagination
-    filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ["name", "location"]
-    search_fields = ["name", "description", "location"]
+    filter_backends = [SearchFilter]
+    search_fields = ["name", "description"]
 
     @swagger_auto_schema(
         operation_summary="Получить список компаний",
         operation_description="Получить список всех компаний с поддержкой фильтров, поиска и пагинации.",
         manual_parameters=[
             openapi.Parameter(
+                name="search",
+                in_=openapi.IN_QUERY,
+                description="Поиск компании по названию или описанию",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
                 name="page",
                 in_=openapi.IN_QUERY,
-                description="Номер страницы",
                 type=openapi.TYPE_INTEGER,
+                description="Номер страницы для пагинации",
+                default=1
             ),
             openapi.Parameter(
                 name="page_size",
                 in_=openapi.IN_QUERY,
-                description="Количество элементов на странице",
                 type=openapi.TYPE_INTEGER,
-            ),
-            openapi.Parameter(
-                name="search",
-                in_=openapi.IN_QUERY,
-                description="Поиск по названию, описанию или местоположению компании.",
-                type=openapi.TYPE_STRING,
-            ),
-            openapi.Parameter(
-                name="name",
-                in_=openapi.IN_QUERY,
-                description="Фильтр по названию компании",
-                type=openapi.TYPE_STRING,
-            ),
-            openapi.Parameter(
-                name="location",
-                in_=openapi.IN_QUERY,
-                description="Фильтр по местоположению компании",
-                type=openapi.TYPE_STRING,
+                description="Количество элементов на странице",
+                default=10
             ),
         ],
         responses={

@@ -1,12 +1,20 @@
+from django_filters import NumberFilter
 from drf_yasg import openapi
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from ..models import JobExperience
 from ..serializers.job_serializers import JobExperienceSerializer
 
+class JobExperienceFilter(FilterSet):
+    min_duration = NumberFilter(field_name='start_date', lookup_expr='lte', label='Минимальная продолжительность работы (месяцы)')
+    max_duration = NumberFilter(field_name='end_date', lookup_expr='gte', label='Максимальная продолжительность работы (месяцы)')
+
+    class Meta:
+        model = JobExperience
+        fields = ['min_duration', 'max_duration']
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
@@ -18,9 +26,9 @@ class JobViewSet(viewsets.ModelViewSet):
     queryset = JobExperience.objects.all()
     serializer_class = JobExperienceSerializer
     pagination_class = StandardResultsSetPagination
-    filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ["company", "position", "start_date", "end_date"]
+    filter_backends = [SearchFilter]
     search_fields = ["company", "position", "responsibilities"]
+    filterset_class = JobExperienceFilter
 
     @swagger_auto_schema(
         operation_summary="Получить список работ",
@@ -90,28 +98,16 @@ class JobViewSet(viewsets.ModelViewSet):
                 description="Поиск по компании, должности или обязанностям",
             ),
             openapi.Parameter(
-                name="company",
+                name="min_duration",
                 in_=openapi.IN_QUERY,
-                type=openapi.TYPE_STRING,
-                description="Поиск по компании",
+                type=openapi.TYPE_INTEGER,
+                description="Минимальная продолжительность работы в месяцах",
             ),
             openapi.Parameter(
-                name="position",
+                name="max_duration",
                 in_=openapi.IN_QUERY,
-                type=openapi.TYPE_STRING,
-                description="Поиск по должности",
-            ),
-            openapi.Parameter(
-                name="start_date",
-                in_=openapi.IN_QUERY,
-                type=openapi.FORMAT_DATE,
-                description="Поиск по началу времени",
-            ),
-            openapi.Parameter(
-                name="end_date",
-                in_=openapi.IN_QUERY,
-                type=openapi.FORMAT_DATE,
-                description="Поиск по концу времени",
+                type=openapi.TYPE_INTEGER,
+                description="Максимальная продолжительность работы в месяцах",
             ),
             openapi.Parameter(
                 name="page",

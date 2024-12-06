@@ -1,4 +1,5 @@
 from rest_framework import viewsets, status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
@@ -6,10 +7,16 @@ from drf_yasg import openapi
 from ..models import TestTask
 from ..serializers.test_task_serializer import TestTaskSerializer
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
 
 class TestTaskViewSet(viewsets.ModelViewSet):
     queryset = TestTask.objects.all()
     serializer_class = TestTaskSerializer
+    pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ["selection", "result"]
 

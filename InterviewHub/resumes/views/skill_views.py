@@ -20,8 +20,7 @@ class SkillViewSet(viewsets.ModelViewSet):
     queryset = Skill.objects.all()
     serializer_class = SkillSerializer
     pagination_class = StandardResultsSetPagination
-    filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ["name"]
+    filter_backends = [SearchFilter]
     search_fields = ["name", "description"]
 
     @swagger_auto_schema(
@@ -72,16 +71,10 @@ class SkillViewSet(viewsets.ModelViewSet):
         },
         manual_parameters=[
             openapi.Parameter(
-                name="name",
-                in_=openapi.IN_QUERY,
-                type=openapi.TYPE_STRING,
-                description="Поиск по названию навыка",
-            ),
-            openapi.Parameter(
                 name="search",
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_STRING,
-                description="Поиск по описанию навыка",
+                description="Поиск по названию или описанию навыка",
             ),
             openapi.Parameter(
                 name="page",

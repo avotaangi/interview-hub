@@ -4,20 +4,7 @@ from .job_serializers import JobExperienceSerializer
 from .skill_serializers import SkillSerializer
 from ..models import Resume, Skill, JobExperience
 from users.models import Candidate
-import django_filters
 
-
-class ResumeFilter(django_filters.FilterSet):
-    min_salary = django_filters.NumberFilter(
-        field_name="desired_salary", lookup_expr="gte", label="Минимальная зарплата"
-    )
-    max_salary = django_filters.NumberFilter(
-        field_name="desired_salary", lookup_expr="lte", label="Максимальная зарплата"
-    )
-
-    class Meta:
-        model = Resume
-        fields = ["candidate", "desired_position", "desired_salary"]
 
 
 class ResumeSerializer(serializers.ModelSerializer):
