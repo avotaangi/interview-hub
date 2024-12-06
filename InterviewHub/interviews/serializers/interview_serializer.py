@@ -11,7 +11,7 @@ class InterviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Interview
         fields = [
-            'id', 'selection', 'selection_id', 'start_time', 'end_time', 'duration',
+            'id', 'selection_id', 'start_time', 'end_time', 'duration',
             'type', 'status', 'feedback', 'notes', 'hard_skills_rate',
             'soft_skills_rate', 'result', 'recording_url'
         ]

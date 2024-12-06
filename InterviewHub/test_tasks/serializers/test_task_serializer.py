@@ -8,7 +8,7 @@ class TestTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestTask
         fields = [
-            'id', 'selection', 'selection_id', 'start_time', 'end_time', 'duration',
+            'id', 'selection_id', 'start_time', 'end_time', 'duration',
             'result', 'recording_url'
         ]
 

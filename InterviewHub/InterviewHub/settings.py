@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'selections',
     'test_tasks',
     'import_export',
+    'django_filters',
 ]
 
 REST_FRAMEWORK = {
