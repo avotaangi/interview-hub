@@ -18,6 +18,12 @@ class CompanySelection(models.Model):
     status = models.CharField(
         max_length=20, choices=selection_status_choices, verbose_name="Статус"
     )
+    created_at = models.DateTimeField(
+        auto_now_add=True, verbose_name="Дата создания"
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, verbose_name="Дата обновления"
+    )
     history = HistoricalRecords()
 
     def __str__(self):

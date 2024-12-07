@@ -4,7 +4,7 @@ from .models import CompanySelection
 
 @admin.register(CompanySelection)
 class CompanySelectionAdmin(admin.ModelAdmin):
-    list_display = ("interviewer", "resume", "candidate_name", "status")
+    list_display = ("interviewer", "resume", "candidate_name", "status", "created_at")
     list_filter = (
         "status",
         "interviewer__company__name",
