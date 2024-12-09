@@ -1,5 +1,3 @@
-from django.contrib.auth.models import AbstractUser
-from django.db import models
 from django.utils import timezone
 
 from django.contrib.auth.models import AbstractUser
@@ -85,4 +83,4 @@ class Interviewer(models.Model):
         verbose_name_plural = "Интервьюеры"  # Название во множественном числе
 
     def __str__(self):
-        return self.user.first_name
+        return f"{self.user.first_name} {self.user.last_name}"
