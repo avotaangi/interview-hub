@@ -52,12 +52,13 @@ class MultipleChoiceQuestion(models.Model):
 
 
 class CodeQuestion(models.Model):
+
     task_item = models.ForeignKey(
         TaskItem, on_delete=models.CASCADE, verbose_name="Элемент задания"
     )
-    language = models.CharField(max_length=255, verbose_name="Язык программирования")
-    is_code_run = models.BooleanField(default=False, verbose_name="Код выполнен")
-    code_snippet = models.TextField(verbose_name="Код")
+    is_code_run = models.BooleanField(default=False, verbose_name="Тест для примера")
+    input_data = models.TextField(null=True, blank=True, verbose_name="Входные данные")
+    output_data = models.TextField(null=True, blank=True, verbose_name="Выходные данные")
     history = HistoricalRecords()
 
     class Meta:

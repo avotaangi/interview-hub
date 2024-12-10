@@ -25,10 +25,7 @@ class MultipleChoiceQuestionAdmin(admin.ModelAdmin):
 
 @admin.register(CodeQuestion)
 class CodeQuestionAdmin(admin.ModelAdmin):
-    list_display = ("task_item", "language", "is_code_run")
-    list_filter = ("language", "is_code_run")  # Фильтр по языку и выполнению кода
-    search_fields = ("task_item__title", "language")
-    list_display_links = (
-        "task_item",
-        "language",
-    )  # Сделаем "task_item" и "language" ссылками
+    list_display = ("task_item", "is_code_run", "input_data", "output_data")
+    list_filter = ("is_code_run",)  # Фильтр по выполнению кода
+    search_fields = ("task_item__title", "input_data", "output_data")
+    list_display_links = ("task_item",)  # Сделаем "task_item" ссылкой
