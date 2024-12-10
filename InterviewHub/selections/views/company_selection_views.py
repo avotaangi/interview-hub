@@ -487,3 +487,91 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(selections, many=True)
         return Response(serializer.data)
+
+    @swagger_auto_schema(
+        operation_summary="Добавить новый комментарий к отбору кандидата",
+        operation_description="Позволяет добавить комментарий к конкретному отбору кандидата, используя его ID.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=["comment"],
+            properties={
+                "comment": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Текст комментария"
+                ),
+            },
+        ),
+        responses={
+            201: openapi.Response(
+                description="Комментарий успешно добавлен",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="ID отбора"
+                        ),
+                        "comment": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Добавленный комментарий"
+                        ),
+                        "timestamp": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            format=openapi.FORMAT_DATETIME,
+                            description="Время добавления комментария"
+                        ),
+                    },
+                ),
+            ),
+            400: "Ошибка в запросе",
+            404: "Отбор не найден",
+        },
+        manual_parameters=[
+            openapi.Parameter(
+                name="id",
+                in_=openapi.IN_PATH,
+                type=openapi.TYPE_INTEGER,
+                description="Уникальное целое значение, идентифицирующее отбор кандидата",
+            ),
+        ],
+    )
+    @action(detail=True, methods=["post"], url_path="add-comment")
+    def add_comment(self, request, pk=None):
+        """
+        Добавление нового комментария к отбору кандидата.
+
+        - Проверяется наличие отбора кандидата по переданному ID.
+        - Проверяется наличие комментария в теле запроса.
+        - Если все проверки проходят, комментарий сохраняется в базе данных.
+        """
+        try:
+            # Получаем отбор по ID
+            selection = self.get_object()
+        except CompanySelection.DoesNotExist:
+            return Response(
+                {"detail": "Отбор не найден."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Получаем текст комментария из тела запроса
+        comment = request.data.get("comment")
+        if not comment:
+            return Response(
+                {"detail": "Комментарий не предоставлен."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Пример сохранения комментария (предполагается, что в модели есть поле для комментариев)
+        selection.comment = comment  # Замените на свою логику, если требуется
+        selection.timestamp = timezone.now()  # Сохраняем время добавления комментария
+        selection.save()
+
+        # Формируем ответ
+        return Response(
+            {
+                "id": selection.id,
+                "comment": selection.comment,
+                "timestamp": selection.timestamp,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
