@@ -1,20 +1,26 @@
-from django_filters import NumberFilter
+from django_filters import DateFilter
 from drf_yasg import openapi
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet
+from django_filters.rest_framework import FilterSet
 from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.permissions import IsAuthenticated
+
 from ..models import JobExperience
 from ..serializers.job_serializers import JobExperienceSerializer
 
+
 class JobExperienceFilter(FilterSet):
-    min_duration = NumberFilter(field_name='start_date', lookup_expr='lte', label='Минимальная продолжительность работы (месяцы)')
-    max_duration = NumberFilter(field_name='end_date', lookup_expr='gte', label='Максимальная продолжительность работы (месяцы)')
+    start_date_after = DateFilter(field_name="start_date", lookup_expr="gte", label="Дата начала после")
+    start_date_before = DateFilter(field_name="start_date", lookup_expr="lte", label="Дата начала до")
+    end_date_after = DateFilter(field_name="end_date", lookup_expr="gte", label="Дата окончания после")
+    end_date_before = DateFilter(field_name="end_date", lookup_expr="lte", label="Дата окончания до")
 
     class Meta:
         model = JobExperience
-        fields = ['min_duration', 'max_duration']
+        fields = ["start_date_after", "start_date_before", "end_date_after", "end_date_before"]
+
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
@@ -80,7 +86,11 @@ class JobViewSet(viewsets.ModelViewSet):
                                     ),
                                     "responsibilities": openapi.Schema(
                                         type=openapi.TYPE_STRING,
-                                        description="Основные обязанности",
+                                        description="Основные обязанности"
+                                    ),
+                                    "candidate_id": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID кандидата"
                                     ),
                                 },
                             ),
@@ -98,16 +108,32 @@ class JobViewSet(viewsets.ModelViewSet):
                 description="Поиск по компании, должности или обязанностям",
             ),
             openapi.Parameter(
-                name="min_duration",
+                name="start_date_after",
                 in_=openapi.IN_QUERY,
-                type=openapi.TYPE_INTEGER,
-                description="Минимальная продолжительность работы в месяцах",
+                type=openapi.TYPE_STRING,
+                format="date",
+                description="Дата начала после указанной",
             ),
             openapi.Parameter(
-                name="max_duration",
+                name="start_date_before",
                 in_=openapi.IN_QUERY,
-                type=openapi.TYPE_INTEGER,
-                description="Максимальная продолжительность работы в месяцах",
+                type=openapi.TYPE_STRING,
+                format="date",
+                description="Дата начала до указанной",
+            ),
+            openapi.Parameter(
+                name="end_date_after",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                format="date",
+                description="Дата окончания после указанной",
+            ),
+            openapi.Parameter(
+                name="end_date_before",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                format="date",
+                description="Дата окончания до указанной",
             ),
             openapi.Parameter(
                 name="page",
@@ -160,6 +186,10 @@ class JobViewSet(viewsets.ModelViewSet):
                     description="Основные обязанности",
                     example="Разработка и поддержка веб-приложений.",
                 ),
+                "candidate_id": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="ID кандидата"
+                ),
             },
         ),
         responses={
@@ -200,6 +230,10 @@ class JobViewSet(viewsets.ModelViewSet):
                             description="Основные обязанности",
                             example="Разработка и поддержка веб-приложений.",
                         ),
+                        "candidate_id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="ID кандидата"
+                        ),
                     },
                 ),
             ),
@@ -239,6 +273,10 @@ class JobViewSet(viewsets.ModelViewSet):
                         ),
                         "responsibilities": openapi.Schema(
                             type=openapi.TYPE_STRING, description="Основные обязанности"
+                        ),
+                        "candidate_id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="ID кандидата"
                         ),
                     },
                 ),
@@ -291,6 +329,11 @@ class JobViewSet(viewsets.ModelViewSet):
                     description="Основные обязанности",
                     example="Разработка и поддержка веб-приложений.",
                 ),
+                "candidate_id": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="ID кандидата",
+                    example=1,
+                ),
             },
         ),
         responses={
@@ -330,6 +373,11 @@ class JobViewSet(viewsets.ModelViewSet):
                             type=openapi.TYPE_STRING,
                             description="Основные обязанности",
                             example="Разработка и поддержка веб-приложений.",
+                        ),
+                        "candidate_id": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="ID кандидата",
+                            example=1,
                         ),
                     },
                 ),
@@ -373,6 +421,11 @@ class JobViewSet(viewsets.ModelViewSet):
                     type=openapi.TYPE_STRING,
                     description="Основные обязанности",
                     example="Разработка и поддержка веб-приложений.",
+                ),
+                "candidate_id": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="ID кандидата",
+                    example=1,
                 ),
             },
         ),

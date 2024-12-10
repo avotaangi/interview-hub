@@ -33,6 +33,9 @@ class JobExperience(models.Model):
     start_date = models.DateField(verbose_name="Дата начала")
     end_date = models.DateField(null=True, blank=True, verbose_name="Дата окончания")
     responsibilities = models.TextField(verbose_name="Обязанности")
+    candidate = models.ForeignKey(
+        Candidate, on_delete=models.CASCADE, verbose_name="Кандидат"
+    )
     history = HistoricalRecords()
 
     def __str__(self):
@@ -62,7 +65,7 @@ class Resume(models.Model):
         Skill, related_name="resumes", verbose_name="Навыки"
     )
     job_experiences = models.ManyToManyField(
-        JobExperience, related_name="job_experience", verbose_name="Опыт работы"
+        JobExperience, related_name="job_experience", verbose_name="Опыт работы",blank=True
     )
     additional_info = models.TextField(
         null=True, blank=True, verbose_name="Дополнительная информация"
@@ -79,7 +82,7 @@ class Resume(models.Model):
 
     # Валидация на уровне модели
     def clean(self):
-        if self.desired_salary <= 0:
+        if  self.desired_salary is None or self.desired_salary <= 0:
             raise ValidationError(
                 {"desired_salary": "Желаемая зарплата должна быть положительной."}
             )

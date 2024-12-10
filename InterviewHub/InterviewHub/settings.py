@@ -58,10 +58,11 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication"
     ),
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',  # Только авторизованные пользователи
-    # ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # Только авторизованные пользователи
+    ],
 }
 
 SIMPLE_JWT = {
@@ -82,7 +83,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SWAGGER_SETTINGS = {
-    "USE_SESSION_AUTH": True,  # Отключает сессионную аутентификацию в Swagger
+    "USE_SESSION_AUTH": True,
     "DEFAULT_MODEL_RENDERING": "example",
     "SECURITY_DEFINITIONS": {
         "Bearer": {
@@ -193,3 +194,8 @@ EMAIL_USE_SSL = False
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
