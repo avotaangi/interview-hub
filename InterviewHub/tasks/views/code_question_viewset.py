@@ -18,7 +18,7 @@ class CodeQuestionViewSet(viewsets.ModelViewSet):
     serializer_class = CodeQuestionSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["task_item", "language", "is_code_run"]
+    filterset_fields = ["task_item", "is_code_run"]
 
     @swagger_auto_schema(
         operation_summary="Получить список заданий с кодом",
@@ -54,17 +54,17 @@ class CodeQuestionViewSet(viewsets.ModelViewSet):
                                         type=openapi.TYPE_STRING,
                                         description="Название задания",
                                     ),
-                                    "language": openapi.Schema(
-                                        type=openapi.TYPE_STRING,
-                                        description="Язык программирования",
-                                    ),
                                     "is_code_run": openapi.Schema(
                                         type=openapi.TYPE_BOOLEAN,
-                                        description="Был ли выполнен код",
+                                        description="Является ли тест примером",
                                     ),
-                                    "code_snippet": openapi.Schema(
+                                    "input_data": openapi.Schema(
                                         type=openapi.TYPE_STRING,
-                                        description="Текст кода",
+                                        description="Входные данные",
+                                    ),
+                                    "output_data": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Выходные данные",
                                     ),
                                 },
                             ),
@@ -80,12 +80,6 @@ class CodeQuestionViewSet(viewsets.ModelViewSet):
                 in_=openapi.IN_QUERY,
                 type=openapi.TYPE_INTEGER,
                 description="ID задания, к которому привязаны задания с кодом",
-            ),
-            openapi.Parameter(
-                name="language",
-                in_=openapi.IN_QUERY,
-                type=openapi.TYPE_STRING,
-                description="Фильтр по языку программирования",
             ),
             openapi.Parameter(
                 name="is_code_run",
@@ -121,22 +115,20 @@ class CodeQuestionViewSet(viewsets.ModelViewSet):
             required=["task_item", "language", "code_snippet"],
             properties={
                 "task_item": openapi.Schema(
-                    type=openapi.TYPE_INTEGER, description="ID задания", example=1
-                ),
-                "language": openapi.Schema(
                     type=openapi.TYPE_STRING,
-                    description="Язык программирования",
-                    example="Python",
+                    description="Название задания",
                 ),
                 "is_code_run": openapi.Schema(
                     type=openapi.TYPE_BOOLEAN,
-                    description="Был ли выполнен код",
-                    example=False,
+                    description="Является ли тест примером",
                 ),
-                "code_snippet": openapi.Schema(
+                "input_data": openapi.Schema(
                     type=openapi.TYPE_STRING,
-                    description="Текст кода",
-                    example="print('Hello, World!')",
+                    description="Входные данные",
+                ),
+                "output_data": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Выходные данные",
                 ),
             },
         ),
@@ -150,17 +142,20 @@ class CodeQuestionViewSet(viewsets.ModelViewSet):
                             type=openapi.TYPE_INTEGER, description="ID задания"
                         ),
                         "task_item": openapi.Schema(
-                            type=openapi.TYPE_STRING, description="Название задания"
-                        ),
-                        "language": openapi.Schema(
                             type=openapi.TYPE_STRING,
-                            description="Язык программирования",
+                            description="Название задания",
                         ),
                         "is_code_run": openapi.Schema(
-                            type=openapi.TYPE_BOOLEAN, description="Был ли выполнен код"
+                            type=openapi.TYPE_BOOLEAN,
+                            description="Является ли тест примером",
                         ),
-                        "code_snippet": openapi.Schema(
-                            type=openapi.TYPE_STRING, description="Текст кода"
+                        "input_data": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Входные данные",
+                        ),
+                        "output_data": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Выходные данные",
                         ),
                     },
                 ),
@@ -185,17 +180,20 @@ class CodeQuestionViewSet(viewsets.ModelViewSet):
                             type=openapi.TYPE_INTEGER, description="ID задания"
                         ),
                         "task_item": openapi.Schema(
-                            type=openapi.TYPE_STRING, description="Название задания"
-                        ),
-                        "language": openapi.Schema(
                             type=openapi.TYPE_STRING,
-                            description="Язык программирования",
+                            description="Название задания",
                         ),
                         "is_code_run": openapi.Schema(
-                            type=openapi.TYPE_BOOLEAN, description="Был ли выполнен код"
+                            type=openapi.TYPE_BOOLEAN,
+                            description="Является ли тест примером",
                         ),
-                        "code_snippet": openapi.Schema(
-                            type=openapi.TYPE_STRING, description="Текст кода"
+                        "input_data": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Входные данные",
+                        ),
+                        "output_data": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Выходные данные",
                         ),
                     },
                 ),
@@ -223,22 +221,20 @@ class CodeQuestionViewSet(viewsets.ModelViewSet):
             required=["task_item", "language", "code_snippet"],
             properties={
                 "task_item": openapi.Schema(
-                    type=openapi.TYPE_INTEGER, description="ID задания", example=1
-                ),
-                "language": openapi.Schema(
                     type=openapi.TYPE_STRING,
-                    description="Язык программирования",
-                    example="Python",
+                    description="Название задания",
                 ),
                 "is_code_run": openapi.Schema(
                     type=openapi.TYPE_BOOLEAN,
-                    description="Был ли выполнен код",
-                    example=True,
+                    description="Является ли тест примером",
                 ),
-                "code_snippet": openapi.Schema(
+                "input_data": openapi.Schema(
                     type=openapi.TYPE_STRING,
-                    description="Текст кода",
-                    example="print('Updated Code')",
+                    description="Входные данные",
+                ),
+                "output_data": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Выходные данные",
                 ),
             },
         ),
@@ -252,17 +248,20 @@ class CodeQuestionViewSet(viewsets.ModelViewSet):
                             type=openapi.TYPE_INTEGER, description="ID задания"
                         ),
                         "task_item": openapi.Schema(
-                            type=openapi.TYPE_STRING, description="Название задания"
-                        ),
-                        "language": openapi.Schema(
                             type=openapi.TYPE_STRING,
-                            description="Язык программирования",
+                            description="Название задания",
                         ),
                         "is_code_run": openapi.Schema(
-                            type=openapi.TYPE_BOOLEAN, description="Был ли выполнен код"
+                            type=openapi.TYPE_BOOLEAN,
+                            description="Является ли тест примером",
                         ),
-                        "code_snippet": openapi.Schema(
-                            type=openapi.TYPE_STRING, description="Текст кода"
+                        "input_data": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Входные данные",
+                        ),
+                        "output_data": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Выходные данные",
                         ),
                     },
                 ),
@@ -289,20 +288,17 @@ class CodeQuestionViewSet(viewsets.ModelViewSet):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                "language": openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    description="Обновленный язык программирования",
-                    example="JavaScript",
-                ),
-                "code_snippet": openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    description="Обновленный текст кода",
-                    example="console.log('Hello, World!');",
-                ),
                 "is_code_run": openapi.Schema(
                     type=openapi.TYPE_BOOLEAN,
-                    description="Обновленный статус выполнения кода",
-                    example=True,
+                    description="Является ли тест примером",
+                ),
+                "input_data": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Входные данные",
+                ),
+                "output_data": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Выходные данные",
                 ),
             },
         ),
@@ -316,17 +312,20 @@ class CodeQuestionViewSet(viewsets.ModelViewSet):
                             type=openapi.TYPE_INTEGER, description="ID задания"
                         ),
                         "task_item": openapi.Schema(
-                            type=openapi.TYPE_STRING, description="Название задания"
-                        ),
-                        "language": openapi.Schema(
                             type=openapi.TYPE_STRING,
-                            description="Язык программирования",
+                            description="Название задания",
                         ),
                         "is_code_run": openapi.Schema(
-                            type=openapi.TYPE_BOOLEAN, description="Был ли выполнен код"
+                            type=openapi.TYPE_BOOLEAN,
+                            description="Является ли тест примером",
                         ),
-                        "code_snippet": openapi.Schema(
-                            type=openapi.TYPE_STRING, description="Текст кода"
+                        "input_data": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Входные данные",
+                        ),
+                        "output_data": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Выходные данные",
                         ),
                     },
                 ),

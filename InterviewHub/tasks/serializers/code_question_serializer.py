@@ -9,7 +9,7 @@ class CodeQuestionSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "task_item",
-            "language",
             "is_code_run",
-            "code_snippet",
+            "input_data",
+            "output_data",
         ]
