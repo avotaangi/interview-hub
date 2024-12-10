@@ -570,7 +570,7 @@ class ResumeViewSet(viewsets.ModelViewSet):
                 days_since_posted = int(days_since_posted)
                 # Рассчитываем дату, на которую резюме должны быть опубликованы
                 date_limit = current_date - timedelta(days=days_since_posted)
-                filters &= Q(created_at__gte=date_limit)
+                filters &= ~Q(created_at__lt=date_limit)
             except ValueError:
                 return Response(
                     {"error": "Неверный формат дня публикации."}, status=400

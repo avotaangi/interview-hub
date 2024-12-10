@@ -41,20 +41,15 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", lambda request: redirect("/swagger/", permanent=False)),
-    path(
-        "api/",
-        include(
-            [
-                path("", include("users.urls")),
-                path("", include("resumes.urls")),
-                path("", include("selections.urls")),
-                path("", include("interviews.urls")),
-                path("", include("tasks.urls")),
-                path("", include("test_tasks.urls")),
-            ]
-        ),
-    ),
+    path("", lambda request: redirect("swagger/", permanent=False)),
+
+    path("api/users/", include("users.urls")),
+    path("api/resumes/", include("resumes.urls")),
+    path("api/selections/", include("selections.urls")),
+    path("api/interviews/", include("interviews.urls")),
+    path("api/tasks/", include("tasks.urls")),
+    path("api/test_tasks/", include("test_tasks.urls")),
+
     path(
         "swagger/",
         schema_view.with_ui("swagger", cache_timeout=0),
