@@ -136,7 +136,8 @@ DATABASES = {
             "PG_USER"
         ],  # Имя пользователя базы данных, указанного при создании
         "PASSWORD": config["PG_PASSWORD"],  # Пароль пользователя базы данных
-        "HOST": config["PG_HOST"],  # Адрес сервера базы данных
+        # "HOST": config["PG_HOST"],  # Адрес сервера базы данных
+        "HOST": 'host.docker.internal',
         "PORT": config["PG_PORT"],  # Порт PostgreSQL, обычно 5432
     }
 }
