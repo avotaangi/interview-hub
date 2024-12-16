@@ -1,8 +1,11 @@
+from django.core.cache import cache
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.response import Response
+
 from ..models import Interviewer
 from ..serializers.inteview_serializer import InterviewerSerializer
 
@@ -91,7 +94,24 @@ class InterviewerViewSet(viewsets.ModelViewSet):
         },
     )
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        """
+        Получить список интервьюеров с поддержкой кэширования.
+        """
+        # Генерация ключа для кэша на основе параметров запроса
+        cache_key = f"interviewers_{request.query_params.urlencode()}"
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            # Возвращаем кэшированные данные
+            return Response(cached_data)
+
+        # Получаем данные через стандартный метод
+        response = super().list(request, *args, **kwargs)
+
+        # Сохраняем данные в кэш на 15 минут
+        cache.set(cache_key, response.data, timeout=60 * 15)
+
+        return response
 
     @swagger_auto_schema(
         operation_summary="Создать нового интервьюера",
@@ -137,7 +157,13 @@ class InterviewerViewSet(viewsets.ModelViewSet):
         },
     )
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        """
+        Создать интервьюера и очистить кэш списка.
+        """
+        response = super().create(request, *args, **kwargs)
+        if response.status_code == 201:
+            cache.delete_pattern("interviewers_*")
+        return response
 
     @swagger_auto_schema(
         operation_summary="Получить информацию об интервьюере",
@@ -153,7 +179,20 @@ class InterviewerViewSet(viewsets.ModelViewSet):
         ],
     )
     def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+        """
+        Получить информацию об интервьюере с поддержкой кэширования.
+        """
+        instance_id = kwargs.get("pk")
+        cache_key = f"interviewer_{instance_id}"
+
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        response = super().retrieve(request, *args, **kwargs)
+        if response.status_code == 200:
+            cache.set(cache_key, response.data, timeout=60 * 15)
+        return response
 
     @swagger_auto_schema(
         operation_summary="Обновить информацию об интервьюере",
@@ -194,7 +233,15 @@ class InterviewerViewSet(viewsets.ModelViewSet):
         ],
     )
     def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        """
+        Обновить информацию об интервьюере и очистить кэш.
+        """
+        instance_id = kwargs.get("pk")
+        response = super().update(request, *args, **kwargs)
+        if response.status_code == 200:
+            cache.delete_pattern("interviewers_*")
+            cache.delete(f"interviewer_{instance_id}")
+        return response
 
     @swagger_auto_schema(
         operation_summary="Частично обновить информацию об интервьюере",
@@ -235,20 +282,24 @@ class InterviewerViewSet(viewsets.ModelViewSet):
         ],
     )
     def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
+        """
+        Частично обновить интервьюера и очистить кэш.
+        """
+        instance_id = kwargs.get("pk")
+        response = super().partial_update(request, *args, **kwargs)
+        if response.status_code == 200:
+            cache.delete_pattern("interviewers_*")
+            cache.delete(f"interviewer_{instance_id}")
+        return response
 
-    @swagger_auto_schema(
-        operation_summary="Удалить интервьюера",
-        operation_description="Удалить запись интервьюера по его ID.",
-        responses={204: "Интервьюер успешно удален", 404: "Интервьюер не найден"},
-        manual_parameters=[
-            openapi.Parameter(
-                name="id",
-                in_=openapi.IN_PATH,
-                type=openapi.TYPE_INTEGER,
-                description="Уникальное целое значение, идентифицирующее интервьюера",
-            ),
-        ],
-    )
     def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
+        """
+        Удалить интервьюера и очистить кэш.
+        """
+        instance_id = kwargs.get("pk")
+        response = super().destroy(request, *args, **kwargs)
+        if response.status_code == 204:
+            cache.delete_pattern("interviewers_*")
+            cache.delete(f"interviewer_{instance_id}")
+        return response
+

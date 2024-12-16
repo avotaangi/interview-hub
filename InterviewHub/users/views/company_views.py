@@ -1,8 +1,11 @@
-from rest_framework import viewsets
+from django.core.cache import cache
+from rest_framework import viewsets, status
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.response import Response
+
 from ..models import Company
 from ..serializers.company_serializer import CompanySerializer
 
@@ -97,7 +100,24 @@ class CompanyViewSet(viewsets.ModelViewSet):
         },
     )
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        """
+        Получить список компаний с поддержкой кэширования.
+        """
+        # Создаём ключ для кэша на основе параметров запроса
+        cache_key = f"companies_{request.query_params.urlencode()}"
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            # Возвращаем кэшированные данные
+            return Response(cached_data)
+
+        # Получаем данные через стандартный метод
+        response = super().list(request, *args, **kwargs)
+
+        # Сохраняем данные в кэш на 15 минут
+        cache.set(cache_key, response.data, timeout=60 * 15)
+
+        return response
 
     @swagger_auto_schema(
         operation_summary="Создать новую компанию",
@@ -152,7 +172,14 @@ class CompanyViewSet(viewsets.ModelViewSet):
         },
     )
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        """
+        Создание компании и очистка кэша списка компаний.
+        """
+        response = super().create(request, *args, **kwargs)
+        if response.status_code == 201:
+            cache.delete_pattern("companies_*")
+        return response
+
 
     @swagger_auto_schema(
         operation_summary="Получить информацию о компании",
@@ -168,7 +195,26 @@ class CompanyViewSet(viewsets.ModelViewSet):
         ],
     )
     def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+        """
+        Получение информации о компании с поддержкой кэширования.
+        """
+        # Получаем ID компании из параметров
+        company_id = kwargs.get("pk")
+
+        # Формируем ключ для кэша
+        cache_key = f"company_{company_id}"
+
+        # Проверяем, есть ли данные в кэше
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        # Если данных нет в кэше, получаем через стандартный метод
+        try:
+            response = super().retrieve(request, *args, **kwargs)
+            return response
+        except Exception:
+            return Response({"detail": "Компания не найдена"}, status=status.HTTP_404_NOT_FOUND)
 
     @swagger_auto_schema(
         operation_summary="Обновить информацию о компании",
@@ -181,7 +227,15 @@ class CompanyViewSet(viewsets.ModelViewSet):
         },
     )
     def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        """
+        Обновление компании и очистка кэша.
+        """
+        company_id = kwargs.get("pk")
+        response = super().update(request, *args, **kwargs)
+        if response.status_code == 200:
+            cache.delete_pattern("companies_*")
+            cache.delete(f"company_{company_id}")
+        return response
 
     @swagger_auto_schema(
         operation_summary="Частично обновить информацию о компании",
@@ -202,7 +256,15 @@ class CompanyViewSet(viewsets.ModelViewSet):
         ],
     )
     def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
+        """
+        Частичное обновление компании и очистка кэша.
+        """
+        company_id = kwargs.get("pk")
+        response = super().partial_update(request, *args, **kwargs)
+        if response.status_code == 200:
+            cache.delete_pattern("companies_*")
+            cache.delete(f"company_{company_id}")
+        return response
 
     @swagger_auto_schema(
         operation_summary="Удалить компанию",
@@ -218,4 +280,23 @@ class CompanyViewSet(viewsets.ModelViewSet):
         ],
     )
     def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
+        """
+        Удаление компании и очистка кэша, связанного с компаниями.
+        """
+        # Получаем ID удаляемой компании
+        instance_id = kwargs.get("pk")
+
+        # Удаляем запись через стандартный метод
+        response = super().destroy(request, *args, **kwargs)
+
+        if response.status_code == 204:  # Удаление прошло успешно
+            # Удаляем кэш, связанный со списком компаний
+            cache_key_pattern = "companies_"
+            for key in cache.keys(f"{cache_key_pattern}*"):
+                cache.delete(key)
+
+            # Удаляем кэш, связанный с конкретной компанией (если используется)
+            specific_cache_key = f"company_{instance_id}"
+            cache.delete(specific_cache_key)
+
+        return response

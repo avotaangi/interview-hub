@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -5,7 +6,6 @@ from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.response import Response
-from rest_framework.decorators import action
 from ..models import Candidate
 from ..serializers.candidate_serializer import CandidateSerializer
 
@@ -86,7 +86,20 @@ class CandidateViewSet(viewsets.ModelViewSet):
         ],
     )
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        """
+        Получить список кандидатов с поддержкой кэширования.
+        """
+        # Генерация ключа для кэша с учётом параметров запроса
+        cache_key = f"candidates_{request.query_params}"
+        cached_response = cache.get(cache_key)
+
+        if cached_response is not None:
+            return Response(cached_response)
+
+        # Получение данных через стандартный метод
+        response = super().list(request, *args, **kwargs)
+        cache.set(cache_key, response.data, timeout=60 * 15)  # Кэш на 15 минут
+        return response
 
     @swagger_auto_schema(
         operation_summary="Создать нового кандидата",
@@ -135,7 +148,13 @@ class CandidateViewSet(viewsets.ModelViewSet):
         },
     )
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        """
+        Создать кандидата и очистить кэш списка.
+        """
+        response = super().create(request, *args, **kwargs)
+        if response.status_code == 201:
+            cache.delete_pattern("candidates_*")
+        return response
 
     @swagger_auto_schema(
         operation_summary="Получить информацию о кандидате",
@@ -151,7 +170,20 @@ class CandidateViewSet(viewsets.ModelViewSet):
         ],
     )
     def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+        """
+        Получить информацию о кандидате с поддержкой кэширования.
+        """
+        candidate_id = kwargs.get("pk")
+        cache_key = f"candidate_{candidate_id}"
+
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+
+        response = super().retrieve(request, *args, **kwargs)
+        if response.status_code == 200:
+            cache.set(cache_key, response.data, timeout=60 * 15)
+        return response
 
     @swagger_auto_schema(
         operation_summary="Обновить информацию о кандидате",
@@ -198,7 +230,15 @@ class CandidateViewSet(viewsets.ModelViewSet):
         ],
     )
     def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        """
+        Полностью обновить информацию о кандидате и очистить кэш.
+        """
+        candidate_id = kwargs.get("pk")
+        response = super().update(request, *args, **kwargs)
+        if response.status_code == 200:
+            cache.delete_pattern("candidates_*")
+            cache.delete(f"candidate_{candidate_id}")
+        return response
 
     @swagger_auto_schema(
         operation_summary="Частично обновить информацию о кандидате",
@@ -245,7 +285,15 @@ class CandidateViewSet(viewsets.ModelViewSet):
         ],
     )
     def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
+        """
+        Частично обновить информацию о кандидате и очистить кэш.
+        """
+        candidate_id = kwargs.get("pk")
+        response = super().partial_update(request, *args, **kwargs)
+        if response.status_code == 200:
+            cache.delete_pattern("candidates_*")
+            cache.delete(f"candidate_{candidate_id}")
+        return response
 
     @swagger_auto_schema(
         operation_summary="Удалить кандидата",
@@ -261,4 +309,12 @@ class CandidateViewSet(viewsets.ModelViewSet):
         ],
     )
     def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
+        """
+        Удалить кандидата и очистить кэш.
+        """
+        candidate_id = kwargs.get("pk")
+        response = super().destroy(request, *args, **kwargs)
+        if response.status_code == 204:
+            cache.delete_pattern("candidates_*")
+            cache.delete(f"candidate_{candidate_id}")
+        return response
