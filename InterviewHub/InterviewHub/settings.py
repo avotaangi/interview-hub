@@ -136,8 +136,8 @@ DATABASES = {
             "PG_USER"
         ],  # Имя пользователя базы данных, указанного при создании
         "PASSWORD": config["PG_PASSWORD"],  # Пароль пользователя базы данных
-        # "HOST": config["PG_HOST"],  # Адрес сервера базы данных
-        "HOST": 'host.docker.internal',
+        "HOST": config["PG_HOST"],  # Адрес сервера базы данных
+        # "HOST": 'host.docker.internal',
         "PORT": config["PG_PORT"],  # Порт PostgreSQL, обычно 5432
     }
 }
@@ -200,3 +200,14 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",  # Используем бэкенд для Redis
+        "LOCATION": "redis://127.0.0.1:6379/1",  # URL подключения к Redis (номер базы 1)
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "TIMEOUT": 60 * 15,  # Тайм-аут кэша (15 минут)
+    }
+}
