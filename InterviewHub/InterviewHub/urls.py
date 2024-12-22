@@ -43,12 +43,12 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", lambda request: redirect("swagger/", permanent=False)),
 
-    path("api/users/", include("users.urls")),
-    path("api/resumes/", include("resumes.urls")),
-    path("api/selections/", include("selections.urls")),
-    path("api/interviews/", include("interviews.urls")),
-    path("api/tasks/", include("tasks.urls")),
-    path("api/test_tasks/", include("test_tasks.urls")),
+    path("api/", include("users.urls")),
+    path("api/", include("resumes.urls")),
+    path("api/", include("selections.urls")),
+    path("api/", include("interviews.urls")),
+    path("api/", include("tasks.urls")),
+    path("api/", include("test_tasks.urls")),
 
     path(
         "swagger/",
@@ -61,4 +61,5 @@ urlpatterns = [
         schema_view.without_ui(cache_timeout=0),
         name="schema-json",
     ),
+    path("accounts/", include("allauth.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
