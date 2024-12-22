@@ -16,9 +16,11 @@ class LoggingMiddleware:
             validated_token = self.jwt_authenticator.get_validated_token(
                 request.headers.get('Authorization').split()[1])
             user = self.jwt_authenticator.get_user(validated_token)
+            logger.info(f"Пользователь: {user.first_name} {user.last_name} ({user}), Путь: {request.path}, Метод: {request.method}")
+
         except Exception:
             user = "Ананимус"
-        logger.info(f"Пользователь: {user.first_name} {user.last_name} ({user}), Путь: {request.path}, Метод: {request.method}")
+            logger.info(f"Пользователь: {user}, Путь: {request.path}, Метод: {request.method}")
 
         response = self.get_response(request)
         return response
