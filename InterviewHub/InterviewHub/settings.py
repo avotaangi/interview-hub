@@ -103,6 +103,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'InterviewHub.logging_middleware.LoggingMiddleware',
 ]
 
 ROOT_URLCONF = "InterviewHub.urls"
@@ -210,4 +211,30 @@ CACHES = {
         },
         "TIMEOUT": 60 * 15,  # Тайм-аут кэша (15 минут)
     }
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'user_activity.log',  # Файл для логов
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'user_activity': {  # Логгер для middleware
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
 }
