@@ -29,4 +29,8 @@ app.conf.beat_schedule = {
         'task': 'selections.tasks.archive_rejected_company_selections',
         'schedule': crontab(day_of_week='sunday', hour=0, minute=0),  # Каждый воскресенье в 00:00
     },
+    'save_user_activity_to_db': {
+        'task': 'user.tasks.save_user_activity_to_db',
+        'schedule': crontab(minute='*/5'),
+    },
 }
