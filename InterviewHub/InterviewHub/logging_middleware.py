@@ -19,7 +19,7 @@ class LoggingMiddleware:
             logger.info(f"Пользователь: {user.first_name} {user.last_name} ({user}), Путь: {request.path}, Метод: {request.method}")
 
         except Exception:
-            user = "Ананимус"
+            user = "Анонимус"
             logger.info(f"Пользователь: {user}, Путь: {request.path}, Метод: {request.method}")
 
         response = self.get_response(request)
