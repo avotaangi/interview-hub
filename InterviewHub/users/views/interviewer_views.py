@@ -91,7 +91,10 @@ class InterviewerViewSet(viewsets.ModelViewSet):
                         ],
                     }
                 },
-            )
+            ),
+            203: openapi.Response(
+                description="Информация о списке интервьюеров из кэша",
+            ),
         },
     )
     def list(self, request, *args, **kwargs):
@@ -104,7 +107,7 @@ class InterviewerViewSet(viewsets.ModelViewSet):
 
         if cached_data:
             # Возвращаем кэшированные данные
-            return Response(cached_data, status=2)
+            return Response(cached_data, status=203)
 
         # Получаем данные через стандартный метод
         response = super().list(request, *args, **kwargs)
@@ -169,7 +172,7 @@ class InterviewerViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Получить информацию об интервьюере",
         operation_description="Получить информацию о конкретном интервьюере по его ID.",
-        responses={200: InterviewerSerializer, 404: "Интервьюер не найден"},
+        responses={200: InterviewerSerializer, 404: "Интервьюер не найден", 203: "Информация об интервьюера из кэша"},
         manual_parameters=[
             openapi.Parameter(
                 name="id",
@@ -188,7 +191,7 @@ class InterviewerViewSet(viewsets.ModelViewSet):
 
         cached_data = cache.get(cache_key)
         if cached_data:
-            return Response(cached_data)
+            return Response(cached_data, status=203)
 
         response = super().retrieve(request, *args, **kwargs)
         if response.status_code == 200:
