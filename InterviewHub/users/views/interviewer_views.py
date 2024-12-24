@@ -9,7 +9,6 @@ from rest_framework.response import Response
 from ..models import Interviewer
 from ..serializers.inteview_serializer import InterviewerSerializer
 
-
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = "page_size"
@@ -90,7 +89,10 @@ class InterviewerViewSet(viewsets.ModelViewSet):
                         ],
                     }
                 },
-            )
+            ),
+            203: openapi.Response(
+                description="Информация о списке интервьюеров из кэша",
+            ),
         },
     )
     def list(self, request, *args, **kwargs):
@@ -103,7 +105,7 @@ class InterviewerViewSet(viewsets.ModelViewSet):
 
         if cached_data:
             # Возвращаем кэшированные данные
-            return Response(cached_data)
+            return Response(cached_data, status=203)
 
         # Получаем данные через стандартный метод
         response = super().list(request, *args, **kwargs)
@@ -168,7 +170,7 @@ class InterviewerViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         operation_summary="Получить информацию об интервьюере",
         operation_description="Получить информацию о конкретном интервьюере по его ID.",
-        responses={200: InterviewerSerializer, 404: "Интервьюер не найден"},
+        responses={200: InterviewerSerializer, 404: "Интервьюер не найден", 203: "Информация об интервьюера из кэша"},
         manual_parameters=[
             openapi.Parameter(
                 name="id",
@@ -187,7 +189,7 @@ class InterviewerViewSet(viewsets.ModelViewSet):
 
         cached_data = cache.get(cache_key)
         if cached_data:
-            return Response(cached_data)
+            return Response(cached_data, status=203)
 
         response = super().retrieve(request, *args, **kwargs)
         if response.status_code == 200:
@@ -294,11 +296,7 @@ class InterviewerViewSet(viewsets.ModelViewSet):
 
     @swagger_auto_schema(
         operation_summary="Удалить интервьюера",
-        operation_description="Удалить интервьюера по его ID.",
-        responses={
-            204: "Интервьюер успешно удален",
-            404: "Интервьюер не найден",
-        },
+        operation_description="Удалить интервьюера из системы по его ID и очистить соответствующий кэш.",
         manual_parameters=[
             openapi.Parameter(
                 name="id",
@@ -307,6 +305,22 @@ class InterviewerViewSet(viewsets.ModelViewSet):
                 description="Уникальное целое значение, идентифицирующее интервьюера",
             ),
         ],
+        responses={
+            204: openapi.Response(
+                description="Интервьюер успешно удален",
+                examples={
+                    "application/json": None
+                },
+            ),
+            404: openapi.Response(
+                description="Интервьюер не найден",
+                examples={
+                    "application/json": {
+                        "detail": "Интервьюер не найден."
+                    }
+                },
+            ),
+        },
     )
     def destroy(self, request, *args, **kwargs):
         """
