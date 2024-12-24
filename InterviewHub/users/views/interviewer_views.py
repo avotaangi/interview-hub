@@ -292,6 +292,22 @@ class InterviewerViewSet(viewsets.ModelViewSet):
             cache.delete(f"interviewer_{instance_id}")
         return response
 
+    @swagger_auto_schema(
+        operation_summary="Удалить интервьюера",
+        operation_description="Удалить интервьюера по его ID.",
+        responses={
+            204: "Интервьюер успешно удален",
+            404: "Интервьюер не найден",
+        },
+        manual_parameters=[
+            openapi.Parameter(
+                name="id",
+                in_=openapi.IN_PATH,
+                type=openapi.TYPE_INTEGER,
+                description="Уникальное целое значение, идентифицирующее интервьюера",
+            ),
+        ],
+    )
     def destroy(self, request, *args, **kwargs):
         """
         Удалить интервьюера и очистить кэш.

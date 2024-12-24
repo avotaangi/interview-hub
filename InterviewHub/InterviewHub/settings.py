@@ -29,7 +29,7 @@ SECRET_KEY = config["SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -40,20 +40,31 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+
     "drf_yasg",
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+
+    "import_export",
+    "django_filters",
+    'django_celery_beat',
+
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+
     "users",
     "resumes",
     "interviews",
     "tasks",
     "selections",
     "test_tasks",
-    "import_export",
-    "django_filters",
-    'django_celery_beat',
 ]
+
+SITE_ID = 1
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -80,6 +91,7 @@ SIMPLE_JWT = {
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",  # Стандартный бэкэнд
     "users.authentication.CustomAuthBackend",  # Кастомный бэкэнд
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 SWAGGER_SETTINGS = {
@@ -104,6 +116,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'InterviewHub.logging_middleware.LoggingMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "InterviewHub.urls"
@@ -238,3 +251,6 @@ LOGGING = {
         },
     },
 }
+
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"

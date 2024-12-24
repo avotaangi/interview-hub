@@ -123,6 +123,25 @@ class AuthViewSet(ViewSet):
             {"detail": "Неверные учетные данные."}, status=status.HTTP_401_UNAUTHORIZED
         )
 
+    @action(detail=False, methods=["get"])
+    @swagger_auto_schema(
+        operation_summary="Ссылка для авторизации через VK",
+        responses={
+            200: openapi.Response(
+                description="Ссылка для авторизации через VK",
+                examples={
+                    "application/json": {
+                        "vk": "https://oauth.vk.com/authorize?client_id=...&redirect_uri=...&response_type=code"
+                    }
+                },
+            )
+        },
+    )
+    def vk_auth_link(self, request):
+        base_url = request.build_absolute_uri("/")
+        vk_link = f"{base_url}accounts/vk/login/"
+        return Response({"vk": vk_link}, status=status.HTTP_200_OK)
+
     @action(detail=False, methods=["post"])
     @swagger_auto_schema(
         operation_summary="Обновление токенов",
