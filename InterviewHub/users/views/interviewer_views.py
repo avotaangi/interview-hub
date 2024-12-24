@@ -1,3 +1,5 @@
+import logging
+
 from django.core.cache import cache
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
@@ -8,7 +10,6 @@ from rest_framework.response import Response
 
 from ..models import Interviewer
 from ..serializers.inteview_serializer import InterviewerSerializer
-
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
@@ -103,7 +104,7 @@ class InterviewerViewSet(viewsets.ModelViewSet):
 
         if cached_data:
             # Возвращаем кэшированные данные
-            return Response(cached_data)
+            return Response(cached_data, status=2)
 
         # Получаем данные через стандартный метод
         response = super().list(request, *args, **kwargs)
@@ -292,6 +293,34 @@ class InterviewerViewSet(viewsets.ModelViewSet):
             cache.delete(f"interviewer_{instance_id}")
         return response
 
+    @swagger_auto_schema(
+        operation_summary="Удалить интервьюера",
+        operation_description="Удалить интервьюера из системы по его ID и очистить соответствующий кэш.",
+        manual_parameters=[
+            openapi.Parameter(
+                name="id",
+                in_=openapi.IN_PATH,
+                type=openapi.TYPE_INTEGER,
+                description="Уникальное целое значение, идентифицирующее интервьюера",
+            ),
+        ],
+        responses={
+            204: openapi.Response(
+                description="Интервьюер успешно удален",
+                examples={
+                    "application/json": None
+                },
+            ),
+            404: openapi.Response(
+                description="Интервьюер не найден",
+                examples={
+                    "application/json": {
+                        "detail": "Интервьюер не найден."
+                    }
+                },
+            ),
+        },
+    )
     def destroy(self, request, *args, **kwargs):
         """
         Удалить интервьюера и очистить кэш.

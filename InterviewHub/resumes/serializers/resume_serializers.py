@@ -86,12 +86,12 @@ class ResumeSerializer(serializers.ModelSerializer):
             "additional_info", instance.additional_info
         )
 
-        instance.save()
-
         # Используем .set() для обновления связей Many-to-Many
         if skills is not None:
             instance.skills.set(skills)
         if job_experiences is not None:
             instance.job_experiences.set(job_experiences)
+
+        instance.save()
 
         return instance

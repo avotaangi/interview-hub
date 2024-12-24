@@ -188,12 +188,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'localhost'
+EMAIL_HOST = 'mailhog'
 EMAIL_PORT = 1025
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'redis://redis:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
@@ -205,7 +205,7 @@ CSRF_COOKIE_SECURE = False
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",  # Используем бэкенд для Redis
-        "LOCATION": "redis://127.0.0.1:6379/1",  # URL подключения к Redis (номер базы 1)
+        "LOCATION": "redis://redis:6379/1",  # URL подключения к Redis (номер базы 1)
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
