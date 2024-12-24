@@ -86,10 +86,14 @@ class Interviewer(models.Model):
         return f"{self.user.first_name} {self.user.last_name}"
 
 class UserActivity(models.Model):
-    user = models.CharField(max_length=255)
-    path = models.TextField()
-    method = models.CharField(max_length=10)
-    timestamp = models.DateTimeField()
+    user = models.CharField(max_length=255,  verbose_name="Пользователь")
+    path = models.TextField( verbose_name="Путь")
+    method = models.CharField(max_length=10,  verbose_name="Метод")
+    timestamp = models.DateTimeField( verbose_name="Дата и время")
+
+    class Meta:
+        verbose_name = "Активность пользователей"  # Название в единственном числе
+        verbose_name_plural = "Активности пользователей"  # Название во множественном числе
 
     def __str__(self):
         return f"{self.user} - {self.path} ({self.method}) at {self.timestamp}"

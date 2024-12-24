@@ -30,7 +30,7 @@ app.conf.beat_schedule = {
         'schedule': crontab(day_of_week='sunday', hour=0, minute=0),  # Каждый воскресенье в 00:00
     },
     'save_user_activity_to_db': {
-        'task': 'user.tasks.save_user_activity_to_db',
-        'schedule': crontab(minute='*/5'),
+        'task': 'users.tasks.save_user_activity_to_db',
+        'schedule': crontab(minute='*'),
     },
 }

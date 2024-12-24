@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import User, Candidate, Company, Interviewer
+from .models import User, Candidate, Company, Interviewer, UserActivity
 
 
 @admin.register(User)
@@ -59,3 +59,11 @@ class InterviewerAdmin(admin.ModelAdmin):
     search_fields = ("company__name", "position", "user__first_name", "user__email")
     list_display_links = ("user__first_name", "user__email")
     raw_id_fields = ("company",)
+
+@admin.register(UserActivity)
+class UserActivityAdmin(admin.ModelAdmin):
+    list_display = ('user', 'path', 'method', 'timestamp')  # Поля для отображения в списке
+    list_filter = ('method', 'timestamp')  # Фильтры в правой панели
+    search_fields = ('user', 'path', 'method')  # Поля для поиска
+    ordering = ('-timestamp',)  # Сортировка по умолчанию (по дате, от нового к старому)
+    date_hierarchy = 'timestamp'  # Иерархия по дате
