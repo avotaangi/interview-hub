@@ -15,6 +15,7 @@ def save_user_activity_to_db():
         if not visit_data:
             break
         visit = json.loads(visit_data)
+        # Создаем объект UserActivity и добавляем его в список
         activities.append(UserActivity(
             user=visit["user"],
             path=visit["path"],
