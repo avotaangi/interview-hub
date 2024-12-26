@@ -1,7 +1,6 @@
 from datetime import date
 
 from django.core.exceptions import ValidationError
-from django.forms import forms
 from django.urls import reverse
 from django.utils import timezone
 
@@ -74,33 +73,6 @@ class Candidate(models.Model):
     class Meta:
         verbose_name = "Кандидат"  # Название таблицы в единственном числе
         verbose_name_plural = "Кандидаты"  # Название таблицы во множественном числе
-
-class CandidateForm(forms.ModelForm):
-    additional_info = forms.CharField(
-        widget=forms.Textarea(attrs={
-            'placeholder': 'Введите дополнительную информацию',
-            'rows': 4,  # Укажите желаемое количество строк
-            'cols': 40  # Укажите желаемое количество колонок
-        }),
-        required=False  # Сделайте поле необязательным, если это необходимо
-    )
-
-    class Meta:
-        model = Candidate
-        fields = ["birth_date", "city", "social_media", "additional_info"]
-
-    def save(self, commit=True):
-        # Вызываем метод save формы и получаем объект
-        candidate = super().save(commit=False)
-
-        # Устанавливаем дополнительные данные
-        candidate.created_by = self.initial.get("created_by")
-
-        # Сохраняем в базу данных, если commit=True
-        if commit:
-            candidate.save()
-
-        return candidate
 
 
 class Company(models.Model):
