@@ -575,3 +575,110 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED,
         )
 
+    @swagger_auto_schema(
+        operation_summary="Исключить отборы кандидатов по статусу",
+        operation_description=(
+            "Исключает отборы кандидатов с указанными статусами. "
+            "Статусы передаются через запятую, например: 'Отклонен,Принят'."
+        ),
+        manual_parameters=[
+            openapi.Parameter(
+                name="exclude_status",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description=(
+                    "Статусы, которые нужно исключить. Разделите несколько статусов запятой, "
+                    "например: 'Отклонен,Принят'."
+                ),
+            ),
+            openapi.Parameter(
+                name="page",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Номер страницы для пагинации",
+                default=1
+            ),
+            openapi.Parameter(
+                name="page_size",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Количество элементов на странице",
+                default=10
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                description="Успешный ответ",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "count": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="Общее количество элементов",
+                        ),
+                        "next": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на следующую страницу",
+                        ),
+                        "previous": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на предыдущую страницу",
+                        ),
+                        "results": openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    "id": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID отбора",
+                                    ),
+                                    "interviewer": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID интервьюера",
+                                    ),
+                                    "resume": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID резюме",
+                                    ),
+                                    "status": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Статус отбора",
+                                    ),
+                                },
+                            ),
+                        ),
+                    },
+                ),
+            ),
+            400: "Ошибка в запросе",
+        },
+    )
+    @action(detail=False, methods=["GET"], url_path="exclude-by-status")
+    def exclude_by_status(self, request):
+        """
+        Исключает отборы кандидатов с указанными статусами.
+        """
+        exclude_statuses = request.query_params.get("exclude_status", None)
+
+        # Проверяем, переданы ли статусы для исключения
+        if not exclude_statuses:
+            return Response(
+                {"detail": "Параметр 'exclude_status' обязателен."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Разделяем статусы по запятой и формируем фильтр
+        exclude_statuses = exclude_statuses.split(",")
+        queryset = self.get_queryset().exclude(status__in=exclude_statuses)
+
+        # Пагинация
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        # Если пагинация не используется, возвращаем все данные
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
