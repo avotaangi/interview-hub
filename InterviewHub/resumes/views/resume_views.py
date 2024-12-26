@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 import django_filters
+from django.http import Http404
 from drf_yasg import openapi
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
@@ -162,7 +163,20 @@ class ResumeViewSet(viewsets.ModelViewSet):
         ],
     )
     def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+        """
+        Получить информацию о конкретном резюме по его ID.
+        """
+        pk = kwargs.get("pk")
+        try:
+            # Попытка получить резюме по pk
+            resume = Resume.objects.get(pk=pk)
+        except Resume.DoesNotExist:
+            # Если объект не найден, выбрасывается Http404
+            raise Http404(f"Резюме с ID {pk} не найдено.")
+
+        # Если найдено, сериализуем и возвращаем
+        serializer = self.get_serializer(resume)
+        return Response(serializer.data)
 
     @swagger_auto_schema(
         operation_summary="Обновить резюме",
