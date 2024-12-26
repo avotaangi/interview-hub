@@ -60,13 +60,30 @@ class Interview(models.Model):
         ordering = ["-start_time"]
 
     def save(self, *args, **kwargs):
-        # Calculate the duration before saving
+        # Проверка: start_time должен быть меньше end_time
+        if self.start_time and self.end_time and self.start_time >= self.end_time:
+            raise ValueError("Время начала должно быть меньше времени окончания.")
+
+        # Логика вычисления продолжительности
         if self.start_time and self.end_time:
             delta = self.end_time - self.start_time
-            self.duration = int(
-                delta.total_seconds() // 60
-            )  # Convert seconds to minutes
+            self.duration = int(delta.total_seconds() // 60)  # Перевод секунд в минуты
+
+        # Выполнение основного сохранения
         super().save(*args, **kwargs)
+
+        # Кастомная логика после сохранения: Уведомление пользователя
+        if self.status == "Запланировано":
+            # Импортируем нужную функцию отправки уведомлений
+            from django.core.mail import send_mail
+
+            # Пример отправки уведомления
+            send_mail(
+                subject="Ваше интервью запланировано",
+                message=f"Интервью запланировано на {self.start_time.strftime('%d.%m.%Y %H:%M')}.",
+                from_email="noreply@yourdomain.com",
+                recipient_list=[self.selection.resume.candidate.user.email],
+            )
 
     def __str__(self):
         return f"{self.selection.resume.candidate.user.email} - {self.start_time.strftime('%d.%m.%Y %H:%M')}"
