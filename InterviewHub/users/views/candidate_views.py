@@ -1,5 +1,6 @@
 from django.core.cache import cache
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
@@ -8,6 +9,7 @@ from drf_yasg import openapi
 from rest_framework.response import Response
 from ..models import Candidate
 from ..serializers.candidate_serializer import CandidateSerializer
+from django.shortcuts import get_object_or_404
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -318,3 +320,53 @@ class CandidateViewSet(viewsets.ModelViewSet):
             cache.delete_pattern("candidates_*")
             cache.delete(f"candidate_{candidate_id}")
         return response
+
+    @swagger_auto_schema(
+        operation_summary="Подсчитать кандидатов из города",
+        operation_description="Возвращает количество кандидатов, связанных с указанным городом.",
+        manual_parameters=[
+            openapi.Parameter(
+                name="city",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Название города для подсчёта кандидатов",
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                description="Успешный подсчёт кандидатов",
+                examples={
+                    "application/json": {
+                        "city": "Москва",
+                        "candidate_count": 10,
+                    }
+                },
+            ),
+            404: "Город не найден",
+        },
+    )
+    @action(detail=False, methods=["get"], url_path="count-by-city")
+    def count_by_city(self, request, *args, **kwargs):
+        """
+        Подсчитать количество кандидатов из указанного города.
+        """
+        city = request.query_params.get("city")
+        if not city:
+            return Response(
+                {"detail": "Параметр 'city' обязателен для выполнения запроса."},
+                status=400,
+            )
+
+        # Проверяем, существует ли хотя бы один кандидат в указанном городе
+        candidate = get_object_or_404(Candidate, city=city)
+
+        # Подсчитываем количество кандидатов
+        candidate_count = Candidate.objects.filter(city=city).count()
+
+        return Response({"city": city, "candidate_count": candidate_count})
+
+
+
+
+
+
