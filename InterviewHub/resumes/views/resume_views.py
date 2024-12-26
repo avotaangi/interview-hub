@@ -38,7 +38,7 @@ class ResumeViewSet(viewsets.ModelViewSet):
     API для работы с резюме кандидатов.
     """
 
-    queryset = Resume.objects.all()
+    queryset = Resume.objects.prefetch_related("skills", "job_experiences", "candidate")
     serializer_class = ResumeSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
