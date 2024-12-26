@@ -1,8 +1,10 @@
 from django.db import models
 from django.utils.timezone import now
-from users.models import Candidate
 from django.core.exceptions import ValidationError
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 from simple_history.models import HistoricalRecords
+from users.models import Candidate
 
 
 class Skill(models.Model):
@@ -52,6 +54,7 @@ class JobExperience(models.Model):
                 {"end_date": "Дата окончания не может быть раньше даты начала."}
             )
 
+
 class ResumeSkill(models.Model):
     resume = models.ForeignKey(
         "Resume", on_delete=models.CASCADE, verbose_name="Резюме"
@@ -70,6 +73,7 @@ class ResumeSkill(models.Model):
         verbose_name = "Навык резюме"
         verbose_name_plural = "Навыки резюме"
 
+
 class Resume(models.Model):
     candidate = models.ForeignKey(
         Candidate, on_delete=models.CASCADE, verbose_name="Кандидат"
@@ -82,7 +86,10 @@ class Resume(models.Model):
         Skill, through="ResumeSkill", related_name="resumes", verbose_name="Навыки"
     )
     job_experiences = models.ManyToManyField(
-        JobExperience, related_name="job_experience", verbose_name="Опыт работы",blank=True
+        JobExperience,
+        related_name="job_experience",
+        verbose_name="Опыт работы",
+        blank=True,
     )
     additional_info = models.TextField(
         null=True, blank=True, verbose_name="Дополнительная информация"
@@ -99,7 +106,20 @@ class Resume(models.Model):
 
     # Валидация на уровне модели
     def clean(self):
-        if  self.desired_salary is None or self.desired_salary <= 0:
+        if self.desired_salary is None or self.desired_salary <= 0:
             raise ValidationError(
                 {"desired_salary": "Желаемая зарплата должна быть положительной."}
             )
+
+
+# Универсальная связь с ContentTypes
+class Note(models.Model):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+    note = models.TextField(verbose_name="Заметка")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+
+    class Meta:
+        verbose_name = "Заметка"
+        verbose_name_plural = "Заметки"
