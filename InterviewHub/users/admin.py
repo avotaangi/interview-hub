@@ -4,14 +4,25 @@ from django.utils.html import format_html
 from .models import User, Candidate, Company, Interviewer, UserActivity
 
 
+def make_active(modeladmin, request, queryset):
+    """
+    Действие для массовой активации пользователей.
+    """
+    queryset.update(is_active=True)
+    modeladmin.message_user(request, "Выбранные пользователи были активированы.")
+
+
+make_active.short_description = "Активировать выбранных пользователей"
+
+
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("email", "first_name", "last_name", "gender", "phone")
+    list_display = ("email", "first_name", "last_name", "gender", "phone", "is_active")
     search_fields = ("email", "first_name", "last_name")
-    list_filter = ("gender",)  # Фильтрация по полу
+    list_filter = ("gender", "is_active")  # Фильтрация по полу и статусу
     readonly_fields = ("last_login",)  # Поле для чтения (последний вход)
     date_hierarchy = "date_joined"  # Иерархия по дате регистрации
-
+    actions = [make_active]  # Добавляем действие
 
 @admin.register(Candidate)
 class CandidateAdmin(admin.ModelAdmin):
