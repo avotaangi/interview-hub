@@ -32,8 +32,6 @@ class Interview(models.Model):
     soft_skills_rate = models.IntegerField(
         null=True, blank=True, verbose_name="Оценка софт скиллов"
     )
-    history = HistoricalRecords()
-
     result_choices = [("Принято", "Принято"), ("Отклонено", "Отклонено")]
     result = models.CharField(
         max_length=20,
@@ -43,6 +41,18 @@ class Interview(models.Model):
         verbose_name="Результат",
     )
     recording_url = models.URLField(null=True, blank=True, verbose_name="URL записи")
+    file = models.FileField(
+        upload_to="interviews/files/",
+        null=True,
+        blank=True,
+        verbose_name="Файл"
+    )
+    additional_url = models.URLField(
+        null=True,
+        blank=True,
+        verbose_name="Дополнительный URL"
+    )
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "Интервью"  # Название таблицы в единственном числе
@@ -60,7 +70,6 @@ class Interview(models.Model):
 
     def __str__(self):
         return f"{self.selection.resume.candidate.user.email} - {self.start_time.strftime('%d.%m.%Y %H:%M')}"
-
 
 class InterviewTaskItem(models.Model):
     interview = models.ForeignKey(
