@@ -103,6 +103,8 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
         },
     )
     def list(self, request, *args, **kwargs):
+        # Всегда сортируем по убыванию даты создания
+        self.queryset = self.queryset.order_by("-created_at")
         return super().list(request, *args, **kwargs)
 
     @swagger_auto_schema(
