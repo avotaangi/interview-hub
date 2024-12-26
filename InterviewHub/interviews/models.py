@@ -47,6 +47,7 @@ class Interview(models.Model):
     class Meta:
         verbose_name = "Интервью"  # Название таблицы в единственном числе
         verbose_name_plural = "Интервью"  # Название таблицы во множественном числе
+        ordering = ["-start_time"]
 
     def save(self, *args, **kwargs):
         # Calculate the duration before saving
