@@ -7,7 +7,7 @@ from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.response import Response
-from ..models import Candidate
+from ..models import Candidate, CandidateForm
 from ..serializers.candidate_serializer import CandidateSerializer
 from django.shortcuts import get_object_or_404
 
@@ -151,12 +151,25 @@ class CandidateViewSet(viewsets.ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """
-        Создать кандидата и очистить кэш списка.
+        Создать кандидата с использованием Django формы и очистить кэш списка.
         """
-        response = super().create(request, *args, **kwargs)
-        if response.status_code == 201:
-            cache.delete_pattern("candidates_*")
-        return response
+
+        form = CandidateForm(data=request.data)
+
+        if form.is_valid():  # Проверяем корректность формы
+            cleaned_data = form.cleaned_data  # Получаем очищенные данные формы
+            candidate = form.save(commit=False)  # Создаем объект, но не сохраняем его
+            candidate.save()  # Сохраняем объект в базе данных
+
+            cache.delete_pattern("candidates_*")  # Удаляем кэш
+            return Response(
+                {"detail": "Кандидат успешно создан.", "data": cleaned_data},
+                status=201,
+            )
+        return Response(
+            {"detail": "Ошибка валидации формы.", "errors": form.errors},
+            status=400,
+        )
 
     @swagger_auto_schema(
         operation_summary="Получить информацию о кандидате",
