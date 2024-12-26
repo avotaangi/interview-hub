@@ -2,11 +2,35 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 
 
+# Кастомный QuerySet
+class TaskItemQuerySet(models.QuerySet):
+    def by_complexity(self, level):
+        """Фильтрует задания по сложности."""
+        return self.filter(complexity=level)
+
+    def contains_keyword(self, keyword):
+        """Ищет задания, содержащие ключевое слово в названии или условии."""
+        return self.filter(models.Q(title__icontains=keyword) | models.Q(task_condition__icontains=keyword))
+
+# Кастомный менеджер
+class TaskItemManager(models.Manager):
+    def get_queryset(self):
+        return TaskItemQuerySet(self.model, using=self._db)
+
+    def by_complexity(self, level):
+        return self.get_queryset().by_complexity(level)
+
+    def contains_keyword(self, keyword):
+        return self.get_queryset().contains_keyword(keyword)
+
 class TaskItem(models.Model):
     title = models.CharField(max_length=255, verbose_name="Название задания")
     complexity = models.IntegerField(verbose_name="Сложность")
     task_condition = models.TextField(verbose_name="Условие задания")
     history = HistoricalRecords()
+
+    # Подключаем кастомный менеджер
+    objects = TaskItemManager()
 
     def __str__(self):
         return self.title

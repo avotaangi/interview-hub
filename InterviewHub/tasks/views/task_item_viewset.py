@@ -1,4 +1,5 @@
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
@@ -332,3 +333,53 @@ class TaskItemViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """Удаление задания по его ID."""
         return super().destroy(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        operation_summary="Фильтрация по сложности",
+        operation_description="Возвращает задания с указанной сложностью.",
+        manual_parameters=[
+            openapi.Parameter(
+                name="complexity",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Сложность задания для фильтрации",
+            ),
+        ],
+    )
+    @action(detail=False, methods=["get"])
+    def filter_by_complexity(self, request):
+        """Метод для фильтрации заданий по сложности."""
+        complexity = request.query_params.get("complexity")
+        if complexity is not None:
+            tasks = TaskItem.objects.by_complexity(int(complexity))
+            serializer = self.get_serializer(tasks, many=True)
+            return Response(serializer.data)
+        return Response({"error": "Complexity parameter is required."}, status=400)
+
+    @swagger_auto_schema(
+        operation_summary="Поиск по ключевому слову",
+        operation_description="Ищет задания по ключевому слову в названии или описании.",
+        manual_parameters=[
+            openapi.Parameter(
+                name="keyword",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Ключевое слово для поиска",
+            ),
+        ],
+    )
+    @action(detail=False, methods=["get"])
+    def search_by_keyword(self, request):
+        """Метод для поиска заданий по ключевому слову."""
+        keyword = request.query_params.get("keyword")
+        if keyword:
+            tasks = TaskItem.objects.contains_keyword(keyword)
+            serializer = self.get_serializer(tasks, many=True)
+            return Response(serializer.data)
+        return Response({"error": "Keyword parameter is required."}, status=400)
+
+
+
+
+
+
