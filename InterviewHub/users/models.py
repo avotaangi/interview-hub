@@ -1,3 +1,4 @@
+from django.urls import reverse
 from django.utils import timezone
 
 from django.contrib.auth.models import AbstractUser
@@ -60,6 +61,12 @@ class Company(models.Model):
         blank=True,
         verbose_name="Логотип компании",
     )  # New field
+
+    def get_absolute_url(self):
+        """
+        Возвращает полный URL для просмотра объекта компании.
+        """
+        return reverse("company-detail", kwargs={"pk": self.pk})
 
     class Meta:
         verbose_name = "Компания"
