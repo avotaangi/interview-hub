@@ -1,4 +1,8 @@
+import io
+
 from django.contrib import admin
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
 from django.utils.html import format_html
 
 from .models import User, Candidate, Company, Interviewer, UserActivity
@@ -11,13 +15,43 @@ def make_active(modeladmin, request, queryset):
     queryset.update(is_active=True)
     modeladmin.message_user(request, "Выбранные пользователи были активированы.")
 
+def export_users_to_pdf(modeladmin, request, queryset):
+    """
+    Генерация PDF с данными о выбранных пользователях.
+    """
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer)
+
+    # Заголовок PDF
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(100, 800, "Список пользователей")
+
+    # Содержимое PDF
+    p.setFont("Helvetica", 12)
+    y = 770  # Начальная позиция по Y
+    for user in queryset:
+        line = f"{user.first_name} {user.last_name} - {user.email}"
+        p.drawString(100, y, line)
+        y -= 20  # Смещение вниз на 20 пикселей
+
+        if y < 50:  # Если достигли конца страницы, создаем новую
+            p.showPage()
+            y = 800
+
+    p.save()
+
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename="users.pdf")
+
 
 make_active.short_description = "Активировать выбранных пользователей"
+export_users_to_pdf.short_description = "Экспортировать выбранных пользователей в PDF"
 
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ("email", "first_name", "last_name", "gender", "phone", "is_active")
+    actions = [export_users_to_pdf]
     search_fields = ("email", "first_name", "last_name")
     list_filter = ("gender", "is_active")  # Фильтрация по полу и статусу
     readonly_fields = ("last_login",)  # Поле для чтения (последний вход)
