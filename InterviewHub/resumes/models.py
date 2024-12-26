@@ -52,6 +52,23 @@ class JobExperience(models.Model):
                 {"end_date": "Дата окончания не может быть раньше даты начала."}
             )
 
+class ResumeSkill(models.Model):
+    resume = models.ForeignKey(
+        "Resume", on_delete=models.CASCADE, verbose_name="Резюме"
+    )
+    skill = models.ForeignKey(
+        "Skill", on_delete=models.CASCADE, verbose_name="Навык"
+    )
+    proficiency_level = models.CharField(
+        max_length=50, verbose_name="Уровень владения"
+    )
+    added_at = models.DateTimeField(
+        auto_now_add=True, verbose_name="Дата добавления"
+    )
+
+    class Meta:
+        verbose_name = "Навык резюме"
+        verbose_name_plural = "Навыки резюме"
 
 class Resume(models.Model):
     candidate = models.ForeignKey(
@@ -62,7 +79,7 @@ class Resume(models.Model):
     )
     desired_salary = models.IntegerField(verbose_name="Желаемая зарплата")
     skills = models.ManyToManyField(
-        Skill, related_name="resumes", verbose_name="Навыки"
+        Skill, through="ResumeSkill", related_name="resumes", verbose_name="Навыки"
     )
     job_experiences = models.ManyToManyField(
         JobExperience, related_name="job_experience", verbose_name="Опыт работы",blank=True
