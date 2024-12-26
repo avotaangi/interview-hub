@@ -76,3 +76,9 @@ class InterviewForm(forms.ModelForm):
                 "max_length": "Тип интервью не может содержать более 255 символов.",
             },
         }
+
+        class Media:
+            css = {
+                'all': ('css/interview_form.css',)  # Подключение CSS файла
+            }
+            js = ('js/interview_form.js',)  # Подключение JavaScript файла
