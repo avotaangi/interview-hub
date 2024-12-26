@@ -42,6 +42,24 @@ class Candidate(models.Model):
         null=True, blank=True, verbose_name="Ссылка на социальные сети"
     )
 
+    def calculate_age(self):
+        """
+        Вычисляет возраст кандидата на основе даты рождения.
+        """
+        if not self.birth_date:
+            return "Возраст неизвестен"
+        today = date.today()
+        return today.year - self.birth_date.year - (
+                (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
+        )
+
+    def get_full_info(self):
+        """
+        Возвращает полную информацию о кандидате, включая возраст.
+        """
+        age = self.calculate_age()
+        return f"{self.user.first_name} {self.user.last_name}, {age} лет, {self.city}"
+
     def clean_birth_date(self):
         """
         Проверяет, что дата рождения не из будущего.
