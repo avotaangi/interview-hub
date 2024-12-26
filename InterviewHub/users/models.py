@@ -76,9 +76,18 @@ class Candidate(models.Model):
         verbose_name_plural = "Кандидаты"  # Название таблицы во множественном числе
 
 class CandidateForm(forms.ModelForm):
+    additional_info = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'placeholder': 'Введите дополнительную информацию',
+            'rows': 4,  # Укажите желаемое количество строк
+            'cols': 40  # Укажите желаемое количество колонок
+        }),
+        required=False  # Сделайте поле необязательным, если это необходимо
+    )
+
     class Meta:
         model = Candidate
-        fields = ["birth_date", "city", "social_media"]
+        fields = ["birth_date", "city", "social_media", "additional_info"]
 
     def save(self, commit=True):
         # Вызываем метод save формы и получаем объект
