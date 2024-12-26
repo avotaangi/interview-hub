@@ -6,7 +6,7 @@ from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
-from django.db.models import Q, Count
+from django.db.models import Q, Count, F
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
@@ -612,5 +612,48 @@ class ResumeViewSet(viewsets.ModelViewSet):
         Возвращает топ-5 резюме с самой высокой желаемой зарплатой.
         """
         resumes = self.get_queryset().order_by("-desired_salary")[:5]
+        serializer = self.get_serializer(resumes, many=True)
+        return Response(serializer.data)
+
+
+    @swagger_auto_schema(
+        operation_summary="Фильтрация резюме по зарплатным ожиданиям",
+        operation_description="Получить резюме, где желаемая зарплата превышает текущую зарплату на указанный процент.",
+        manual_parameters=[
+            openapi.Parameter(
+                name="percentage",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Процент превышения желаемой зарплаты над текущей.",
+                example=20,
+                required=True,
+            ),
+        ],
+        responses={200: ResumeSerializer(many=True)},
+    )
+    @action(methods=["GET"], detail=False)
+    def filter_by_salary_expectation(self, request):
+        """
+        Возвращает резюме, где desired_salary > current_salary + (current_salary * percentage / 100).
+        """
+        try:
+            percentage = int(request.query_params.get("percentage", 20))  # Берем процент из параметра запроса
+        except ValueError:
+            return Response(
+                {"error": "Неверный формат процента. Укажите целое число."}, status=400
+            )
+
+        # Вычисляем фильтр с использованием F-выражений
+        resumes = self.get_queryset().filter(
+            desired_salary__gt=F("current_salary") + (F("current_salary") * percentage / 100)
+        )
+
+        # Пагинация
+        page = self.paginate_queryset(resumes)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        # Если пагинация не используется
         serializer = self.get_serializer(resumes, many=True)
         return Response(serializer.data)
