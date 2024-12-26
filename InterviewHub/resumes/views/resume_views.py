@@ -600,3 +600,17 @@ class ResumeViewSet(viewsets.ModelViewSet):
         # Если пагинация не используется, просто возвращаем результат
         serializer = self.get_serializer(resumes, many=True)
         return Response(serializer.data)
+
+    @swagger_auto_schema(
+        operation_summary="Топ-5 резюме с самой высокой зарплатой",
+        operation_description="Получить первые 5 резюме, отсортированные по желаемой зарплате в порядке убывания.",
+        responses={200: ResumeSerializer(many=True)},
+    )
+    @action(methods=["GET"], detail=False)
+    def top_highest_salaries(self, request):
+        """
+        Возвращает топ-5 резюме с самой высокой желаемой зарплатой.
+        """
+        resumes = self.get_queryset().order_by("-desired_salary")[:5]
+        serializer = self.get_serializer(resumes, many=True)
+        return Response(serializer.data)
