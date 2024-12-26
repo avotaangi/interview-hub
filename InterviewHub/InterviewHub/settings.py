@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     "tasks",
     "selections",
     "test_tasks",
+
+    'debug_toolbar',
 ]
 
 SITE_ID = 1
@@ -108,6 +110,7 @@ SWAGGER_SETTINGS = {
 }
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -254,3 +257,12 @@ LOGGING = {
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+INTERNAL_IPS = [
+    '127.0.0.1',  # Локальный IP-адрес
+]
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_COLLAPSED': True,  # Панель будет свернута по умолчанию
+    'RESULTS_CACHE_SIZE': 100,  # Количество кэшируемых результатов
+}
