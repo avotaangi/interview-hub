@@ -62,7 +62,9 @@ class AuthViewSet(ViewSet):
     def register(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
+            # Сохранение данных в сеанс
+            request.session["user_id"] = user.id
             return Response(
                 {"message": "Пользователь успешно зарегистрирован."},
                 status=status.HTTP_201_CREATED,
@@ -111,6 +113,9 @@ class AuthViewSet(ViewSet):
         user = authenticate(request, username=login, password=password)
         if user:
             refresh = RefreshToken.for_user(user)
+            # Сохранение данных в сеанс
+            request.session["user_id"] = user.id
+            request.session["access_token"] = str(refresh.access_token)
             return Response(
                 {
                     "refresh": str(refresh),
@@ -122,64 +127,6 @@ class AuthViewSet(ViewSet):
         return Response(
             {"detail": "Неверные учетные данные."}, status=status.HTTP_401_UNAUTHORIZED
         )
-
-    @action(detail=False, methods=["get"])
-    @swagger_auto_schema(
-        operation_summary="Ссылка для авторизации через VK",
-        responses={
-            200: openapi.Response(
-                description="Ссылка для авторизации через VK",
-                examples={
-                    "application/json": {
-                        "vk": "https://oauth.vk.com/authorize?client_id=...&redirect_uri=...&response_type=code"
-                    }
-                },
-            )
-        },
-    )
-    def vk_auth_link(self, request):
-        base_url = request.build_absolute_uri("/")
-        vk_link = f"{base_url}accounts/vk/login/"
-        return Response({"vk": vk_link}, status=status.HTTP_200_OK)
-
-    @action(detail=False, methods=["post"])
-    @swagger_auto_schema(
-        operation_summary="Обновление токенов",
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "refresh": openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    description="Refresh-токен для обновления токенов",
-                )
-            },
-            required=["refresh"],
-        ),
-        responses={
-            200: openapi.Response(
-                description="Токен успешно обновлен.",
-                examples={"application/json": {"access": "string"}},
-            ),
-            401: openapi.Response(description="Невалидный или истекший refresh-токен."),
-        },
-    )
-    def refresh(self, request):
-        refresh_token = request.data.get("refresh")
-        if not refresh_token:
-            return Response(
-                {"detail": "Не указан refresh-токен."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        try:
-            refresh = RefreshToken(refresh_token)
-            new_access = refresh.access_token
-            return Response({"access": str(new_access)}, status=status.HTTP_200_OK)
-        except TokenError as e:
-            return Response(
-                {"detail": "Невалидный или истекший refresh-токен.", "error": str(e)},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
 
     @action(detail=False, methods=["post"])
     @swagger_auto_schema(
@@ -200,9 +147,8 @@ class AuthViewSet(ViewSet):
     )
     def logout(self, request):
         try:
-            refresh_token = request.data["refresh"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()
+            # Очистка сеанса
+            request.session.flush()
             return Response(
                 {"message": "Вы успешно вышли из системы."},
                 status=status.HTTP_205_RESET_CONTENT,
