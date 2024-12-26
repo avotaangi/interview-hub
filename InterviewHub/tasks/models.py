@@ -12,6 +12,7 @@ class TaskItemQuerySet(models.QuerySet):
         """Ищет задания, содержащие ключевое слово в названии или условии."""
         return self.filter(models.Q(title__icontains=keyword) | models.Q(task_condition__icontains=keyword))
 
+
 # Кастомный менеджер
 class TaskItemManager(models.Manager):
     def get_queryset(self):
@@ -23,10 +24,17 @@ class TaskItemManager(models.Manager):
     def contains_keyword(self, keyword):
         return self.get_queryset().contains_keyword(keyword)
 
+
 class TaskItem(models.Model):
     title = models.CharField(max_length=255, verbose_name="Название задания")
     complexity = models.IntegerField(verbose_name="Сложность")
     task_condition = models.TextField(verbose_name="Условие задания")
+    image = models.ImageField(
+        upload_to='task_images/',
+        null=True,
+        blank=True,
+        verbose_name="Изображение задания"
+    )
     history = HistoricalRecords()
 
     # Подключаем кастомный менеджер
@@ -36,10 +44,8 @@ class TaskItem(models.Model):
         return self.title
 
     class Meta:
-        verbose_name = "Элемент задания"  # Название таблицы в единственном числе
-        verbose_name_plural = (
-            "Элементы задания"  # Название таблицы во множественном числе
-        )
+        verbose_name = "Элемент задания"
+        verbose_name_plural = "Элементы задания"
 
 
 class OpenQuestion(models.Model):
@@ -50,12 +56,8 @@ class OpenQuestion(models.Model):
     history = HistoricalRecords()
 
     class Meta:
-        verbose_name = (
-            "Задание с открытым ответом"  # Название таблицы в единственном числе
-        )
-        verbose_name_plural = (
-            "Задания с открытыми ответами"  # Название таблицы во множественном числе
-        )
+        verbose_name = "Задание с открытым ответом"
+        verbose_name_plural = "Задания с открытыми ответами"
 
 
 class MultipleChoiceQuestion(models.Model):
@@ -67,16 +69,11 @@ class MultipleChoiceQuestion(models.Model):
     history = HistoricalRecords()
 
     class Meta:
-        verbose_name = (
-            "Задание с выбором ответа"  # Название таблицы в единственном числе
-        )
-        verbose_name_plural = (
-            "Задания с выбором ответа"  # Название таблицы во множественном числе
-        )
+        verbose_name = "Задание с выбором ответа"
+        verbose_name_plural = "Задания с выбором ответа"
 
 
 class CodeQuestion(models.Model):
-
     task_item = models.ForeignKey(
         TaskItem, on_delete=models.CASCADE, verbose_name="Элемент задания"
     )
@@ -86,9 +83,5 @@ class CodeQuestion(models.Model):
     history = HistoricalRecords()
 
     class Meta:
-        verbose_name = (
-            "Задание с написанием кода"  # Название таблицы в единственном числе
-        )
-        verbose_name_plural = (
-            "Задания с написанием кода"  # Название таблицы во множественном числе
-        )
+        verbose_name = "Задание с написанием кода"
+        verbose_name_plural = "Задания с написанием кода"
