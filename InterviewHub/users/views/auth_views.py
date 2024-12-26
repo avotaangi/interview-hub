@@ -1,3 +1,4 @@
+from django.http import HttpResponseRedirect
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ViewSet
@@ -149,9 +150,7 @@ class AuthViewSet(ViewSet):
         try:
             # Очистка сеанса
             request.session.flush()
-            return Response(
-                {"message": "Вы успешно вышли из системы."},
-                status=status.HTTP_205_RESET_CONTENT,
-            )
+            # Перенаправление на страницу входа после выхода
+            return HttpResponseRedirect(redirect_to="/login/")
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
