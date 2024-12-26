@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, Sum
 from rest_framework import viewsets, status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
@@ -837,3 +837,41 @@ class InterviewViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(selections, many=True)
         return Response(serializer.data)
+
+    @swagger_auto_schema(
+        operation_summary="Подсчитать суммарную продолжительность интервью по статусам",
+        operation_description="Возвращает суммарную продолжительность всех интервью, сгруппированную по статусам.",
+        responses={
+            200: openapi.Response(
+                description="Суммарная продолжительность интервью по статусам",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            "status": openapi.Schema(
+                                type=openapi.TYPE_STRING,
+                                description="Статус интервью"
+                            ),
+                            "total_duration": openapi.Schema(
+                                type=openapi.TYPE_INTEGER,
+                                description="Суммарная продолжительность интервью для данного статуса в минутах"
+                            ),
+                        },
+                    ),
+                ),
+            )
+        },
+    )
+    @action(detail=False, methods=["get"], url_path="duration-by-status")
+    def duration_by_status(self, request):
+        """
+        Возвращает суммарную продолжительность интервью по статусам.
+        """
+        data = (
+            Interview.objects.values("status")
+            .annotate(total_duration=Sum("duration"))
+            .order_by("status")
+        )
+
+        return Response(data)
