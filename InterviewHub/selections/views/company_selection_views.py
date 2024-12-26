@@ -684,3 +684,129 @@ class CompanySelectionViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    def apply_filters(self, queryset, params):
+        """
+        Применяет последовательные фильтры к QuerySet на основе переданных параметров.
+        """
+        # Фильтрация по статусу
+        status = params.get("status", None)
+        if status:
+            statuses = status.split(",")
+            queryset = queryset.filter(status__in=statuses)
+
+        # Исключение резюме, созданных более 7 дней назад
+        exclude_old = params.get("exclude_old", None)
+        if exclude_old == "true":
+            seven_days_ago = timezone.now() - timedelta(days=7)
+            queryset = queryset.exclude(resume__created_at__lt=seven_days_ago)
+
+        # Фильтрация по интервьюеру
+        has_interviewer = params.get("has_interviewer", None)
+        if has_interviewer == "true":
+            queryset = queryset.filter(interviewer__isnull=False)
+
+        return queryset
+
+    @swagger_auto_schema(
+        operation_summary="Применить последовательные фильтры к отбору кандидатов",
+        operation_description=(
+                "Позволяет последовательно применить фильтры к списку отборов кандидатов, включая статус, дату создания и наличие интервьюера."
+        ),
+        manual_parameters=[
+            openapi.Parameter(
+                name="status",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Фильтрация по статусу отбора кандидата. Несколько статусов разделяются запятой.",
+            ),
+            openapi.Parameter(
+                name="exclude_old",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Исключить резюме, созданные более 7 дней назад ('true' для включения фильтра).",
+            ),
+            openapi.Parameter(
+                name="has_interviewer",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description="Фильтровать только отборы с назначенным интервьюером ('true' для включения фильтра).",
+            ),
+            openapi.Parameter(
+                name="page",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Номер страницы для пагинации.",
+                default=1,
+            ),
+            openapi.Parameter(
+                name="page_size",
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description="Количество элементов на странице.",
+                default=10,
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                description="Успешный ответ",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "count": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="Общее количество элементов.",
+                        ),
+                        "next": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на следующую страницу.",
+                        ),
+                        "previous": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Ссылка на предыдущую страницу.",
+                        ),
+                        "results": openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    "id": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID отбора.",
+                                    ),
+                                    "interviewer": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID интервьюера.",
+                                    ),
+                                    "resume": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                        description="ID резюме.",
+                                    ),
+                                    "status": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                        description="Статус отбора.",
+                                    ),
+                                },
+                            ),
+                        ),
+                    },
+                ),
+            ),
+            400: "Ошибка в запросе.",
+        },
+    )
+    @action(detail=False, methods=["GET"], url_path="filter")
+    def filter_selections(self, request):
+        """
+        Применяет последовательные фильтры к списку отборов кандидатов.
+        """
+        queryset = self.get_queryset()
+        filtered_queryset = self.apply_filters(queryset, request.query_params)
+
+        # Пагинация
+        page = self.paginate_queryset(filtered_queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(filtered_queryset, many=True)
+        return Response(serializer.data)
