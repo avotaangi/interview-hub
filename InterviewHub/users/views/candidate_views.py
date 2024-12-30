@@ -7,9 +7,10 @@ from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.response import Response
-from ..models import Candidate, CandidateForm
+from ..models import Candidate
 from ..serializers.candidate_serializer import CandidateSerializer
 from django.shortcuts import get_object_or_404
+from ..forms import CandidateForm
 
 
 class StandardResultsSetPagination(PageNumberPagination):

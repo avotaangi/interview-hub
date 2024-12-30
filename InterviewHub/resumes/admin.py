@@ -25,7 +25,7 @@ class ResumeAdmin(admin.ModelAdmin):
     search_fields = ("candidate__user__email", "desired_position")
     raw_id_fields = ("candidate",)
     list_display_links = ("candidate", "desired_position")
-    filter_horizontal = ("skills", "job_experiences")
+    filter_horizontal = ("job_experiences",)
     readonly_fields = ("created_at",)
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):

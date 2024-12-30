@@ -7,8 +7,9 @@ services:
       dockerfile: Dockerfile
     container_name: interview-hub-container
     command: >
-      sh -c "python manage.py makemigrations && python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
+             exec python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
     ports:
@@ -52,7 +53,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: celery-container
-    command: celery -A InterviewHub worker --loglevel=info
+    command: sh -c "python manage.py migrate && celery -A InterviewHub worker --loglevel=info"
     depends_on:
       - db
       - redis

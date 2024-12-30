@@ -43,12 +43,12 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", lambda request: redirect("swagger/", permanent=False)),
 
-    path("api/", include("users.urls")),
-    path("api/", include("resumes.urls")),
-    path("api/", include("selections.urls")),
-    path("api/", include("interviews.urls")),
-    path("api/", include("tasks.urls")),
-    path("api/", include("test_tasks.urls")),
+    path("", include("users.urls")),
+    path("", include("resumes.urls")),
+    path("", include("selections.urls")),
+    path("", include("interviews.urls")),
+    path("", include("tasks.urls")),
+    path("", include("test_tasks.urls")),
 
     path(
         "swagger/",
