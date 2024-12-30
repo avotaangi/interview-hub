@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пример с кастомным тегом</title>
+</head>
+<body>
+{% load custom_tags %}
+<h1>Пример использования кастомного тега</h1>
+<p>Текущая дата: {% current_date "%d.%m.%Y" %}</p>
+<p>Текущая дата по умолчанию: {% current_date %}</p>
+</body>
+</html>

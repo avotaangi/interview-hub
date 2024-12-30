@@ -1,0 +1,21 @@
+{% load custom_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пример с QuerySet</title>
+</head>
+<body>
+<h1>Последние объекты</h1>
+<ul>
+    {% get_filtered_objects 'status' 'active' 5 as active_objects %}
+    <ul>
+        {% for obj in active_objects %}
+        <li>{{ obj.name }} - {{ obj.created_at }}</li>
+        {% endfor %}
+    </ul>
+</ul>
+</body>
+</html>
