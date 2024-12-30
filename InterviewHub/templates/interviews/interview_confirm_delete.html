@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Удалить интервью</title>
+</head>
+<body>
+    <h1>Вы уверены, что хотите удалить интервью?</h1>
+    <p>Интервью: {{ interview }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Удалить</button>
+    </form>
+    <a href="{% url 'interview_list' %}">Отмена</a>
+</body>
+</html>
