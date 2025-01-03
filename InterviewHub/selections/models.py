@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from resumes.models import Resume
 from simple_history.models import HistoricalRecords
 from users.models import Interviewer
@@ -34,3 +35,11 @@ class CompanySelection(models.Model):
         verbose_name_plural = (
             "Отборы кандидатов"  # Название таблицы во множественном числе
         )
+
+    def clean(self):
+        if self.status not in dict(self.selection_status_choices):
+            raise ValidationError(f"Статус '{self.status}' некорректен.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Выполняем валидацию перед сохранением
+        super().save(*args, **kwargs)

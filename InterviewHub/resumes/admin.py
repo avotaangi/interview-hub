@@ -2,7 +2,6 @@ from .models import Resume, JobExperience, Skill
 from django.contrib import admin
 from .models import Resume, JobExperience, Skill
 from django.contrib import admin
-from django import forms
 
 @admin.register(Resume)
 class ResumeAdmin(admin.ModelAdmin):
