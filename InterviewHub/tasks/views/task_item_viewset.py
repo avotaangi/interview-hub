@@ -1,3 +1,4 @@
+from django.db.models import Sum, Count
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
@@ -378,7 +379,35 @@ class TaskItemViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         return Response({"error": "Keyword parameter is required."}, status=400)
 
+    @swagger_auto_schema(
+        operation_summary="Получить статистику сложности заданий",
+        operation_description="Возвращает статистику количества заданий по уровням сложности.",
+    )
+    @action(detail=False, methods=["get"], url_path="complexity-stats")
+    def complexity_stats(self, request):
+        """Метод для получения статистики количества заданий по уровням сложности."""
+        stats = TaskItem.objects.values("complexity").annotate(count=Count("complexity"))
+        return Response(stats)
 
+    @swagger_auto_schema(
+        operation_summary="Получить список уникальных сложностей",
+        operation_description="Возвращает список уникальных уровней сложности, используемых в заданиях.",
+    )
+    @action(detail=False, methods=["get"], url_path="unique-complexities")
+    def unique_complexities(self, request):
+        """Метод для получения уникальных уровней сложности."""
+        complexities = TaskItem.objects.values_list("complexity", flat=True).distinct()
+        return Response(complexities)
+
+    @swagger_auto_schema(
+        operation_summary="Сумма сложности всех заданий",
+        operation_description="Возвращает сумму значений сложности для всех заданий в базе.",
+    )
+    @action(detail=False, methods=["get"], url_path="total-complexity")
+    def total_complexity(self, request):
+        """Метод для получения суммы сложности всех заданий."""
+        total = TaskItem.objects.aggregate(total_complexity=Sum("complexity"))
+        return Response(total)
 
 
 
