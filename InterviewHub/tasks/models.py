@@ -10,7 +10,7 @@ class TaskItemQuerySet(models.QuerySet):
 
     def contains_keyword(self, keyword):
         """Ищет задания, содержащие ключевое слово в названии или условии."""
-        return self.filter(models.Q(title__icontains=keyword) | models.Q(task_condition__icontains=keyword))
+        return self.filter(models.Q(title__contains=keyword) | models.Q(task_condition__icontains=keyword))
 
 
 # Кастомный менеджер
