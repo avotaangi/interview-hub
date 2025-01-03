@@ -6,8 +6,18 @@
     <title>Удалить интервью</title>
 </head>
 <body>
+    {% load interview_tags %}
     <h1>Вы уверены, что хотите удалить интервью?</h1>
     <p>Интервью: {{ interview }}</p>
+    <h2>Ближайшие интервью:</h2>
+    <ul>
+        {% get_upcoming_interviews 5 as upcoming_interviews %}
+        {% for upcoming in upcoming_interviews %}
+        <li>{{ upcoming.start_time|date:"%d.%m.%Y %H:%M" }} - {{ upcoming.selection.resume.candidate.user.email }}</li>
+        {% empty %}
+        <li>Нет запланированных интервью.</li>
+        {% endfor %}
+    </ul>
     <form method="post">
         {% csrf_token %}
         <button type="submit">Удалить</button>

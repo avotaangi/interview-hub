@@ -62,7 +62,6 @@ INSTALLED_APPS = [
     "tasks",
     "selections",
     "test_tasks",
-    "testlab",
 
     'debug_toolbar',
 ]

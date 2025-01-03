@@ -6,8 +6,11 @@
     <title>Список интервью</title>
 </head>
 <body>
+    {% load interview_tags %}
     <h1>Список интервью</h1>
+    <p>Сегодняшняя дата: {% current_date "%d.%m.%Y" %}</p> <!-- Простой тег для текущей даты -->
     <a href="{% url 'interview_create' %}">Создать интервью</a>
+    <h2>Запланированные интервью: {% get_interviews_by_status "Запланировано" as planned_interviews %} {{ planned_interviews|length }}</h2>
     <table border="1">
         <thead>
             <tr>
