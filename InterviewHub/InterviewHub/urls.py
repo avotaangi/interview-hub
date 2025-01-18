@@ -41,7 +41,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", lambda request: redirect("swagger/", permanent=False)),
+    path("", lambda request: redirect("login/", permanent=False)),
 
     path("", include("users.urls")),
     path("", include("resumes.urls")),

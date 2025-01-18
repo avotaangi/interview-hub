@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from ..models import Candidate
 from ..serializers.candidate_serializer import CandidateSerializer
 from django.shortcuts import get_object_or_404
-from ..forms import CandidateForm
+from ..forms.candidate_form import CandidateForm
 
 
 class StandardResultsSetPagination(PageNumberPagination):

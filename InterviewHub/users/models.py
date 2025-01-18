@@ -110,9 +110,9 @@ class Interviewer(models.Model):
         User, on_delete=models.CASCADE, verbose_name="Пользователь"
     )
     company = models.ForeignKey(
-        Company, on_delete=models.CASCADE, verbose_name="Компания"
+        Company, on_delete=models.CASCADE, verbose_name="Компания", null=True, blank=True
     )
-    position = models.CharField(max_length=255, verbose_name="Должность")
+    position = models.CharField(max_length=255, verbose_name="Должность",  null=True, blank=True)
 
     class Meta:
         verbose_name = "Интервьюер"  # Название в единственном числе
