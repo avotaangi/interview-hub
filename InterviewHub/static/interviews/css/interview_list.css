@@ -1,0 +1,115 @@
+/* Общие стили */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f4f8;
+    margin: 50px;
+    padding: 0;
+    color: #333;
+}
+
+/* Стиль контейнера */
+.container {
+    width: 85%;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* Стили заголовков */
+h1 {
+    font-size: 2.5em;
+    text-align: center;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 1.8em;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+/* Стили для параграфа с датой */
+p {
+    font-size: 1.2em;
+    color: #555;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Стили для таблицы */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+th, td {
+    padding: 12px 20px;
+    text-align: left;
+    border: 1px solid #e2e8f0;
+    font-size: 1em;
+}
+
+th {
+    background-color: #4CAF50;
+    color: #fff;
+    font-weight: bold;
+}
+
+td {
+    background-color: #fafafa;
+}
+
+/* Чередование цветов строк таблицы */
+tr:nth-child(even) td {
+    background-color: #f9f9f9;
+}
+
+tr:hover td {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+/* Стили для ссылок */
+a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Стили для кнопки создания интервью */
+a[href="{% url 'interview_create' %}"] {
+    display: inline-block;
+    margin: 20px auto;
+    padding: 15px 30px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1.2em;
+    transition: background-color 0.3s ease;
+}
+
+a[href="{% url 'interview_create' %}"]:hover {
+    background-color: #218838;
+}
+
+/* Стиль для пустой строки в таблице */
+td[colspan="6"] {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+}
+
+/* Добавление плавных переходов для действий */
+a, td {
+    transition: all 0.3s ease;
+}

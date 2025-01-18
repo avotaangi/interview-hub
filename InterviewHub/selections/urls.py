@@ -4,7 +4,6 @@ from .views.company_selection_views import CompanySelectionViewSet
 from .views.template_company_selection import company_selection_create, company_selection_view, \
     company_selection_success
 
-# Создаем роутер для ViewSet
 router = DefaultRouter()
 router.register(
     r"company-selections", CompanySelectionViewSet, basename="company-selection"

@@ -1,0 +1,121 @@
+/* interview_confirm_delete.css */
+
+/* Общие стили для страницы */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+/* Заголовки */
+h1 {
+    color: #e74c3c;
+    text-align: center;
+    margin-top: 50px;
+}
+
+h2 {
+    color: #333;
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Список интервью */
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+li {
+    background-color: #fff;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+li:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+/* Стиль для кнопок и ссылок */
+button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #c0392b;
+}
+
+
+/* Форма */
+form {
+    text-align: center;
+    margin-top: 20px;
+}
+
+form button {
+    margin-top: 10px;
+}
+
+/* Стиль для ссылок */
+a {
+    display: inline-block;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 16px;
+    color: #3498db;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a:hover {
+    background-color: #ecf0f1;
+    color: #2980b9;
+}
+
+/* Стиль для абзацев */
+p {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.6;
+    text-align: center;
+    margin: 10px auto;
+    max-width: 600px;
+}
+
+
+/* Для небольших экранов */
+@media (max-width: 600px) {
+    body {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    ul {
+        padding: 0 10px;
+    }
+
+    li {
+        font-size: 14px;
+    }
+}

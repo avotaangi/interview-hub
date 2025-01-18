@@ -1,0 +1,98 @@
+/* Основной стиль для формы */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+form {
+    width: 50%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+form p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+form button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+form button:hover {
+    background-color: #45a049;
+}
+
+/* Стиль для кнопки "Назад к списку" */
+.btn-back {
+    display: block;
+    width: 97%;  /* Ограничиваем ширину, чтобы она не выходила за пределы */
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center; /* Текст по центру */
+    margin-top: 15px; /* Отступ сверху */
+    margin-left: auto; /* Выравнивание по центру */
+    margin-right: auto; /* Выравнивание по центру */
+}
+
+.btn-back:hover {
+    background-color: #0056b3;
+}
+
+form a {
+    display: inline-block;
+    margin-top: 20px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+form a:hover {
+    text-decoration: underline;
+}
+
+/* Стиль для ошибок (только после отправки формы) */
+.is-invalid {
+    border-color: red;
+}
+
+.is-invalid:focus {
+    outline-color: red;
+}
+
+/* Для улучшения пользовательского интерфейса */
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input[type="file"] {
+    padding: 5px;
+}
