@@ -51,12 +51,12 @@ export_users_to_pdf.short_description = "Экспортировать выбра
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ("email", "first_name", "last_name", "gender", "phone", "is_active")
-    actions = [export_users_to_pdf]
+   # actions = []
     search_fields = ("email", "first_name", "last_name")
     list_filter = ("gender", "is_active")  # Фильтрация по полу и статусу
     readonly_fields = ("last_login",)  # Поле для чтения (последний вход)
     date_hierarchy = "date_joined"  # Иерархия по дате регистрации
-    actions = [make_active]  # Добавляем действие
+    actions = [make_active, export_users_to_pdf]  # Добавляем действие
 
 @admin.register(Candidate)
 class CandidateAdmin(admin.ModelAdmin):
