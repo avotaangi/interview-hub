@@ -875,3 +875,23 @@ class InterviewViewSet(viewsets.ModelViewSet):
         )
 
         return Response(data)
+
+    @action(detail=True, methods=["patch"], url_path="update-status")
+    def update_status(self, request, pk=None):
+        """
+        Обновление статуса и комментария интервью.
+        """
+        interview = self.get_object()
+        status_value = request.data.get("status")
+        feedback = request.data.get("feedback")
+
+        if status_value:
+            interview.result = status_value
+        if feedback:
+            interview.feedback = feedback
+
+        interview.save()
+        return Response(
+            {"status": interview.result, "feedback": interview.feedback},
+            status=status.HTTP_200_OK,
+        )

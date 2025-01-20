@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система собеседований</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'interviewer/css/home_interviewer.css' %}">
+</head>
+<body>
+
+<div class="container">
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Выйти</button>
+    </form>
+    <button class="schedule-button" id="openModalButton">Запланировать собеседование</button>
+    <h1>Система собеседований</h1>
+
+    <div class="modal" id="scheduleModal">
+        <div class="modal-content">
+            <button class="close-button" id="closeModalButton">&times;</button>
+            <h2>Запланировать собеседование</h2>
+            <form id="scheduleForm">
+                <label for="candidateName">ФИО кандидата:</label>
+                <input type="text" id="candidateName" name="candidateName" required>
+
+                <label for="date">Дата:</label>
+                <input type="date" id="date" name="date" required>
+
+                <label for="time">Время:</label>
+                <input type="time" id="time" name="time" required>
+
+                <label for="tasks">Назначить задания:</label>
+                <textarea id="tasks" name="tasks" placeholder="Введите задания" required></textarea>
+
+                <label for="link">Ссылка на подключение:</label>
+                <input type="url" id="link" name="link" placeholder="https://" required>
+
+                <button type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Предстоящие собеседования</h2>
+        {% for interview in upcoming_interviews %}
+        <div class="card_one">
+            <p><strong>Дата:</strong> {{ interview.start_time|date:"Y-m-d" }}</p>
+            <p><strong>Время:</strong> {{ interview.start_time|time:"H:i" }}</p>
+            <p><strong>Кандидат:</strong> {{ interview.selection.resume.candidate.user.get_full_name }}</p>
+            <p><strong>Назначенные задания:</strong>
+                {% for task in interview.interviewtaskitem_set.all %}
+                {{ task.task_item.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>Ссылка на подключение:</strong>
+                <a href="{{ interview.additional_url }}" target="_blank">{{ interview.additional_url }}</a>
+            </p>
+            <a href="{{ interview.selection.resume.file.url }}" download>
+                <button>Скачать резюме</button>
+            </a>
+        </div>
+        {% empty %}
+        <p>Нет предстоящих собеседований.</p>
+        {% endfor %}
+    </div>
+
+    <div class="section">
+        <h2>Проведенные собеседования</h2>
+        {% for interview in completed_interviews %}
+        <div data-id="{{ interview.id }}" class="card" data-status="{{ interview.result|lower }}"
+             data-comment="{{ interview.feedback|default:'Комментарий отсутствует.' }}">
+            <p><strong>Дата:</strong> {{ interview.start_time|date:"Y-m-d" }}</p>
+            <p><strong>Время:</strong> {{ interview.start_time|time:"H:i" }}</p>
+            <p><strong>Кандидат:</strong> {{ interview.selection.resume.candidate.user.get_full_name }}</p>
+            <p><strong>Решенные задания:</strong>
+                {% for task in interview.interviewtaskitem_set.all %}
+                {{ task.task_item.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>Комментарии интервьюера:</strong>
+                <span class="comment-text">{{ interview.feedback|default:'Комментарий отсутствует.' }}</span>
+            </p>
+            <p><strong>Статус:</strong>
+                {% if interview.result|lower == "на рассмотрении" %}
+                <span class="status pending">{{ interview.result }}</span>
+                {% elif interview.result|lower == "одобрено" %}
+                <span class="status approved">{{ interview.result }}</span>
+                {% elif interview.result|lower == "не одобрено" %}
+                <span class="status rejected">{{ interview.result }}</span>
+                {% endif %}
+            </p>
+            <a href="#" download>
+                <button>Посмотреть решение заданий кандидата</button>
+            </a>
+            <form class="update-status-form" >
+            <label >Изменить статус:</label>
+            <select class="status-select">
+                <option value="approved|одобрено" {% if interview.result|lower == "одобрено" %}selected{% endif %}>Одобрено</option>
+                <option value="rejected|не одобрено" {% if interview.result|lower == "не одобрено" %}selected{% endif %}>Не одобрено</option>
+                <option value="pending|на рассмотрении" {% if interview.result|lower == "на рассмотрении" %}selected{% endif %}>На рассмотрении</option>
+            </select>
+
+            <label>Комментарий:</label>
+            <textarea class="comments" rows="4" placeholder="Добавьте комментарий...">{{ interview.feedback|default:'' }}</textarea>
+            <button type="submit">Сохранить изменения</button>
+        </form>
+
+        </div>
+        {% empty %}
+        <p>Нет проведенных собеседований.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="{% static 'interviewer/js/home_interviewer.js' %}"></script>
+
+</body>
+</html>

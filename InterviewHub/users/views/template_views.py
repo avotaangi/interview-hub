@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from ..forms.auth_form import RegisterForm, LoginForm
 from ..models import Candidate, Interviewer
+from interviews.models import Interview
 
 
 def register_view(request):
@@ -40,17 +41,29 @@ def register_view(request):
 
 @login_required
 def home_candidate_view(request):
-    return render(request, 'users/home_candidate.html')
+    return render(request, 'candidate/home_candidate.html')
 
 @login_required
 def home_interviewer_view(request):
-    return render(request, 'users/home_interviewer.html')
+    user = request.user
+    upcoming_interviews = Interview.objects.filter(
+        selection__interviewer__user=user, status="Запланировано"
+    ).order_by("start_time")
+    completed_interviews = Interview.objects.filter(
+        selection__interviewer__user=user, status="Завершено"
+    ).order_by("-start_time")
+
+
+    context = {
+        "upcoming_interviews": upcoming_interviews,
+        "completed_interviews": completed_interviews,
+    }
+    return render(request, "interviewer/home_interviewer.html", context)
 
 @login_required
 def home_view(request):
     user = request.user
     try:
-        # Проверяем, является ли пользователь кандидатом
         candidate = Candidate.objects.get(user=user)
         return redirect('home_candidate')  # Перенаправляем на страницу кандидата
     except Candidate.DoesNotExist:

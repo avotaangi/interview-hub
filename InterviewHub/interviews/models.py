@@ -32,13 +32,14 @@ class Interview(models.Model):
     soft_skills_rate = models.IntegerField(
         null=True, blank=True, verbose_name="Оценка софт скиллов"
     )
-    result_choices = [("Принято", "Принято"), ("Отклонено", "Отклонено")]
+    result_choices = [("На рассмотрении", "На рассмотрении"), ("Одобрено", "Одобрено"), ("Не одобрено", "Не одобрено")]
     result = models.CharField(
         max_length=20,
         null=True,
         blank=True,
         choices=result_choices,
         verbose_name="Результат",
+        default="На рассмотрении"
     )
     recording_url = models.URLField(null=True, blank=True, verbose_name="URL записи")
     file = models.FileField(
