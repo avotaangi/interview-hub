@@ -12,7 +12,11 @@ class Interview(models.Model):
     ]
 
     selection = models.ForeignKey(
-        CompanySelection, on_delete=models.CASCADE, verbose_name="Отбор"
+        CompanySelection,
+        on_delete=models.CASCADE,
+        verbose_name="Отбор",
+        null=False,  # Поле обязательно
+        blank=False
     )
     start_time = models.DateTimeField(verbose_name="Время начала")
     end_time = models.DateTimeField(verbose_name="Время окончания")
@@ -96,7 +100,7 @@ class InterviewTaskItem(models.Model):
     task_item = models.ForeignKey(
         TaskItem, on_delete=models.CASCADE, verbose_name="Задание"
     )
-    candidate_answer = models.TextField(verbose_name="Ответ кандидата")
+    candidate_answer = models.TextField(verbose_name="Ответ кандидата", null=True, blank=True)
     history = HistoricalRecords()
 
     class Meta:

@@ -23,7 +23,18 @@
             <h2>Запланировать собеседование</h2>
             <form id="scheduleForm">
                 <label for="candidateName">ФИО кандидата:</label>
-                <input type="text" id="candidateName" name="candidateName" required>
+                <select id="candidateName" name="candidateName" required>
+                    <option value="" disabled selected>Выберите кандидата</option>
+                    {% for resume in resumes %}
+                    <option value="{{ resume.id }}" data-id="{{ resume.interviewer.id }}">
+                        {{ resume.candidate.user.last_name }} {{ resume.candidate.user.first_name }} – {{ resume.desired_position }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <label for="type">Тип интервью:</label>
+                <input type="text" id="type" name="type" placeholder="Техническое" required>
+
 
                 <label for="date">Дата:</label>
                 <input type="date" id="date" name="date" required>
@@ -31,9 +42,26 @@
                 <label for="time">Время:</label>
                 <input type="time" id="time" name="time" required>
 
-                <label for="tasks">Назначить задания:</label>
-                <textarea id="tasks" name="tasks" placeholder="Введите задания" required></textarea>
+                <label for="duration">Продолжительность (минут):</label>
+                <input type="number" id="duration" name="duration" required>
 
+                <label for="tasks-container">Назначить задания:</label>
+                <div id="tasks-container">
+                    <div class="task-row">
+                        <select name="tasks[]" class="task-select" required>
+                            <option value="" disabled selected>Выберите задание</option>
+                            {% for task in tasks %}
+                            <option value="{{ task.id }}">
+                                {{ task.title|truncatechars:30 }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <button type="button" class="remove-task-button" onclick="removeTask(this)">✖</button>
+                    </div>
+                </div>
+                <button type="button" id="add-task-button">Добавить еще</button>
+
+                <br> <br>
                 <label for="link">Ссылка на подключение:</label>
                 <input type="url" id="link" name="link" placeholder="https://" required>
 
@@ -45,27 +73,30 @@
     <div class="section">
         <h2>Предстоящие собеседования</h2>
         {% for interview in upcoming_interviews %}
-        <div class="card_one">
+        <div class="card_one" data-id="{{ interview.id }}">
             <p><strong>Дата:</strong> {{ interview.start_time|date:"Y-m-d" }}</p>
             <p><strong>Время:</strong> {{ interview.start_time|time:"H:i" }}</p>
             <p><strong>Кандидат:</strong> {{ interview.selection.resume.candidate.user.get_full_name }}</p>
-            <p><strong>Назначенные задания:</strong>
-                {% for task in interview.interviewtaskitem_set.all %}
-                {{ task.task_item.name }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </p>
+            <p><strong>Тип интервью:</strong> {{ interview.type }}</p>
+            {% if interview.interviewtaskitem_set.count > 0 %}
+                <p><strong>Назначенные задания:</strong>
+                    {% for task in interview.interviewtaskitem_set.all %}
+                    {{ task.task_item.title }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+            {% endif %}
             <p><strong>Ссылка на подключение:</strong>
                 <a href="{{ interview.additional_url }}" target="_blank">{{ interview.additional_url }}</a>
             </p>
             <a href="{{ interview.selection.resume.file.url }}" download>
-                <button>Скачать резюме</button>
+                <button>Посмотреть резюме</button>
             </a>
+            <button class="cancel-interview-button red-button">Отменить собеседование</button>
         </div>
         {% empty %}
         <p>Нет предстоящих собеседований.</p>
         {% endfor %}
     </div>
-
     <div class="section">
         <h2>Проведенные собеседования</h2>
         {% for interview in completed_interviews %}
@@ -74,6 +105,7 @@
             <p><strong>Дата:</strong> {{ interview.start_time|date:"Y-m-d" }}</p>
             <p><strong>Время:</strong> {{ interview.start_time|time:"H:i" }}</p>
             <p><strong>Кандидат:</strong> {{ interview.selection.resume.candidate.user.get_full_name }}</p>
+            <p><strong>Тип интервью:</strong> {{ interview.type }}</p>
             <p><strong>Решенные задания:</strong>
                 {% for task in interview.interviewtaskitem_set.all %}
                 {{ task.task_item.name }}{% if not forloop.last %}, {% endif %}
@@ -94,18 +126,18 @@
             <a href="#" download>
                 <button>Посмотреть решение заданий кандидата</button>
             </a>
-            <form class="update-status-form" >
-            <label >Изменить статус:</label>
-            <select class="status-select">
-                <option value="approved|одобрено" {% if interview.result|lower == "одобрено" %}selected{% endif %}>Одобрено</option>
-                <option value="rejected|не одобрено" {% if interview.result|lower == "не одобрено" %}selected{% endif %}>Не одобрено</option>
-                <option value="pending|на рассмотрении" {% if interview.result|lower == "на рассмотрении" %}selected{% endif %}>На рассмотрении</option>
-            </select>
+            <form class="update-status-form">
+                <label>Изменить статус:</label>
+                <select class="status-select">
+                    <option value="approved|одобрено" {% if interview.result|lower == "одобрено" %}selected{% endif %}>Одобрено</option>
+                    <option value="rejected|не одобрено" {% if interview.result|lower == "не одобрено" %}selected{% endif %}>Не одобрено</option>
+                    <option value="pending|на рассмотрении" {% if interview.result|lower == "на рассмотрении" %}selected{% endif %}>На рассмотрении</option>
+                </select>
 
-            <label>Комментарий:</label>
-            <textarea class="comments" rows="4" placeholder="Добавьте комментарий...">{{ interview.feedback|default:'' }}</textarea>
-            <button type="submit">Сохранить изменения</button>
-        </form>
+                <label>Комментарий:</label>
+                <textarea class="comments" rows="4" placeholder="Добавьте комментарий...">{{ interview.feedback|default:'' }}</textarea>
+                <button type="submit">Сохранить изменения</button>
+            </form>
 
         </div>
         {% empty %}
@@ -115,6 +147,8 @@
 </div>
 
 <script src="{% static 'interviewer/js/home_interviewer.js' %}"></script>
-
+<script>
+    const AUTH_USER_ID = {{ request.user.id }};
+</script>
 </body>
 </html>

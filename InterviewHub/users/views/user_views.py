@@ -4,7 +4,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from drf_yasg.utils import swagger_auto_schema
+
+from ..models import Candidate, Interviewer
+from ..serializers.candidate_serializer import CandidateSerializer
 from ..serializers.user_serializer import UserSerializer
+from ..serializers.inteview_serializer import InterviewerSerializer
 
 
 class UserViewSet(ViewSet):
@@ -67,3 +71,66 @@ class UserViewSet(ViewSet):
             serializer.save()
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
+
+    @action(detail=True, methods=["get"], url_path="user-data")
+    @swagger_auto_schema(
+        operation_summary="Получение интервью или кандидата по user_id",
+        operation_description="Эндпоинт возвращает данные интервью, кандидата или пустые значения, если ничего не найдено.",
+        responses={
+            200: openapi.Response(
+                description="Данные успешно найдены.",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "interview": openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            description="Информация об интервью",
+                            properties={
+                                "id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                "start_time": openapi.Schema(type=openapi.TYPE_STRING),
+                                "end_time": openapi.Schema(type=openapi.TYPE_STRING),
+                            },
+                        ),
+                        "candidate": openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            description="Информация о кандидате",
+                            properties={
+                                "id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                "full_name": openapi.Schema(type=openapi.TYPE_STRING),
+                                "email": openapi.Schema(type=openapi.TYPE_STRING),
+                            },
+                        ),
+                    },
+                ),
+            ),
+            404: openapi.Response(description="Пользователь не найден."),
+        },
+    )
+    def user_data(self, request, pk=None):
+        """
+        Возвращает интервью или кандидата для указанного user_id.
+        """
+        try:
+            # Проверяем наличие пользователя
+            user_id = pk
+            interview = Interviewer.objects.filter(user_id=user_id).first()
+
+            # Поиск кандидата, связанного с данным пользователем
+            candidate = Candidate.objects.filter(user_id=user_id).first()
+
+            # Подготавливаем данные для ответа
+            interview_data = InterviewerSerializer(interview).data if interview else None
+            candidate_data = CandidateSerializer(candidate).data if candidate else None
+
+            response_data = {
+                "interview": interview_data,
+                "candidate": candidate_data,
+            }
+
+            return Response(response_data, status=200)
+
+        except Exception as e:
+            return Response(
+                {"detail": f"Ошибка: {str(e)}"}, status=400
+            )
+

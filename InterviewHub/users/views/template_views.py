@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.utils.timezone import now
+
 from ..forms.auth_form import RegisterForm, LoginForm
 from ..models import Candidate, Interviewer
 
@@ -13,6 +15,9 @@ from django.contrib import messages
 from ..forms.auth_form import RegisterForm, LoginForm
 from ..models import Candidate, Interviewer
 from interviews.models import Interview
+
+from resumes.models import Resume
+from tasks.models import TaskItem
 
 
 def register_view(request):
@@ -46,17 +51,33 @@ def home_candidate_view(request):
 @login_required
 def home_interviewer_view(request):
     user = request.user
+    current_date = now()  # Текущая дата и время с учётом временной зоны
+
+    # Запланированные собеседования: start_time позже текущего времени
     upcoming_interviews = Interview.objects.filter(
-        selection__interviewer__user=user, status="Запланировано"
+        selection__interviewer__user=user,
+        start_time__gte=current_date,  # Только будущие собеседования
     ).order_by("start_time")
+
+    # Завершенные собеседования: start_time раньше текущего времени
     completed_interviews = Interview.objects.filter(
-        selection__interviewer__user=user, status="Завершено"
+        selection__interviewer__user=user,
+        start_time__lt=current_date,  # Только прошлые собеседования
     ).order_by("-start_time")
 
+    # Все резюме, отсортированные по ФИО кандидатов
+    resumes = Resume.objects.select_related("candidate__user").order_by(
+        "candidate__user__last_name", "candidate__user__first_name"
+    )
+
+    # Все задания, отсортированные по названию
+    tasks = TaskItem.objects.all().order_by("title")
 
     context = {
         "upcoming_interviews": upcoming_interviews,
         "completed_interviews": completed_interviews,
+        "resumes": resumes,
+        "tasks": tasks,
     }
     return render(request, "interviewer/home_interviewer.html", context)
 
