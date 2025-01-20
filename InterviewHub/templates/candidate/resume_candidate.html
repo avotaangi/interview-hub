@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои резюме</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f7f8fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #fff;
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            padding: 40px;
+            font-size: 36px;
+            margin: 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .resume-card {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .resume-card h2 {
+            color: #4b6cb7;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .details {
+            margin: 15px 0;
+        }
+        .details label {
+            font-size: 14px;
+            color: #555;
+            font-weight: 600;
+        }
+        .details input, .details select, .details textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 6px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background-color: #fafafa;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+        .details input:focus, .details select:focus, .details textarea:focus {
+            border-color: #4b6cb7;
+            background-color: #fff;
+        }
+        .details textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .job-experiences, .skills {
+            margin: 30px 0;
+        }
+        .job, .skill {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .job label, .skill label {
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .job input, .skill input, .job textarea, .skill textarea {
+            width: 100%;
+        }
+        .remove-btn {
+            background-color: #ff4747;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .remove-btn:hover {
+            background-color: #e63535;
+        }
+        .add-job-btn {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        .add-job-btn:hover {
+            background-color: #45a049;
+        }
+        .resume-form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+        .resume-form button {
+            background-color: #4b6cb7;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .resume-form button:hover {
+            background-color: #3a5b88;
+        }
+
+        /* Кнопка "Добавить новое резюме" */
+        .btn {
+            display: block;
+            background-color: #4caf50;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            margin-top: 20px;
+            width: 300px;              /* Ограничиваем ширину кнопки */
+            margin: 20px auto;         /* Центрируем кнопку с отступом сверху и снизу */
+        }
+        .btn:hover {
+            background-color: #45a049;
+            box-shadow: 0 12px 18px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            background-color: #398439;
+            transform: translateY(2px);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Мои резюме</h1>
+
+    <div class="container" id="resumes-container">
+        <!-- Здесь будут отображаться добавленные резюме -->
+    </div>
+
+    <!-- Кнопка для добавления нового резюме -->
+    <a href="#" class="btn" id="add-resume-btn">Добавить новое резюме</a>
+
+    <script>
+        // Функция для создания нового резюме
+        function createResumeForm(desiredPosition, desiredSalary, shortSkills, shortJobExperiences) {
+            const container = document.getElementById('resumes-container');
+
+            const resumeCard = document.createElement('div');
+            resumeCard.classList.add('resume-card');
+            resumeCard.innerHTML = `
+                <h2>Резюме для позиции "${desiredPosition}"</h2>
+
+                <div class="details">
+                    <label for="desired_position">Желаемая должность</label>
+                    <input type="text" id="desired_position" value="${desiredPosition}">
+                </div>
+                <div class="details">
+                    <label for="desired_salary">Желаемая зарплата</label>
+                    <input type="text" id="desired_salary" value="${desiredSalary}">
+                </div>
+
+                <div class="details">
+                    <label for="short_skills">Навыки</label>
+                    <input type="text" id="short_skills" value="${shortSkills}">
+                </div>
+
+                <div class="details">
+                    <label for="short_job_experiences">Опыт работы</label>
+                    <input type="text" id="short_job_experiences" value="${shortJobExperiences}">
+                </div>
+
+                <!-- Опыт работы -->
+                <div class="job-experiences">
+                    <h3>Опыт работы</h3>
+                    <div class="job">
+                        <label for="company">Компания</label>
+                        <input type="text" id="company" value="Компания">
+                        <label for="position">Должность</label>
+                        <input type="text" id="position" value="Должность">
+                        <label for="start_date">Дата начала</label>
+                        <input type="date" id="start_date" value="2021-01-01">
+                        <label for="end_date">Дата окончания</label>
+                        <input type="date" id="end_date" value="2022-12-31">
+                        <label for="responsibilities">Обязанности</label>
+                        <textarea id="responsibilities">Обязанности на данной должности</textarea>
+                        <button class="remove-btn">Удалить</button>
+                    </div>
+
+                    <!-- Кнопка для добавления новой работы -->
+                    <button class="add-job-btn">Добавить работу</button>
+                </div>
+            `;
+
+            // Добавляем резюме в контейнер
+            container.appendChild(resumeCard);
+
+            // Обработчик для кнопки "Добавить работу"
+            const addJobBtn = resumeCard.querySelector('.add-job-btn');
+            addJobBtn.addEventListener('click', function () {
+                const jobExperiences = resumeCard.querySelector('.job-experiences');
+                const newJob = document.createElement('div');
+                newJob.classList.add('job');
+                newJob.innerHTML = `
+                    <label for="company">Компания</label>
+                    <input type="text" id="company" value="">
+                    <label for="position">Должность</label>
+                    <input type="text" id="position" value="">
+                    <label for="start_date">Дата начала</label>
+                    <input type="date" id="start_date" value="">
+                    <label for="end_date">Дата окончания</label>
+                    <input type="date" id="end_date" value="">
+                    <label for="responsibilities">Обязанности</label>
+                    <textarea id="responsibilities"></textarea>
+                    <button class="remove-btn">Удалить</button>
+                `;
+                jobExperiences.appendChild(newJob);
+
+                // Перемещаем кнопку "Добавить работу" в конец блока
+                jobExperiences.appendChild(addJobBtn);
+
+                // Обработчик для кнопки "Удалить"
+                const removeBtn = newJob.querySelector('.remove-btn');
+                removeBtn.addEventListener('click', function () {
+                    jobExperiences.removeChild(newJob);
+                });
+            });
+
+            // Обработчик для кнопки "Удалить" в уже существующей работе
+            const removeBtns = resumeCard.querySelectorAll('.remove-btn');
+            removeBtns.forEach(removeBtn => {
+                removeBtn.addEventListener('click', function () {
+                    resumeCard.removeChild(removeBtn.closest('.job'));
+                });
+            });
+        }
+
+        // Добавление двух изначальных резюме
+        createResumeForm('Должность 1', '80,000 руб.', 'Навыки 1', 'Опыт работы 1');
+        createResumeForm('Должность 2', '90,000 руб.', 'Навыки 2', 'Опыт работы 2');
+
+        // Добавление нового резюме при нажатии на кнопку
+        const addResumeBtn = document.getElementById('add-resume-btn');
+        addResumeBtn.addEventListener('click', function (event) {
+            event.preventDefault(); // Предотвращаем переход по ссылке
+            createResumeForm('Новая должность', '100,000 руб.', 'Навыки новой должности', 'Опыт работы');
+        });
+    </script>
+
+</body>
+</html>

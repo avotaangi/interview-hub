@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from ..models import Interview
@@ -35,4 +36,13 @@ def interview_delete_view(request, pk):
         interview.delete()
         return redirect('interview_list')
     return render(request, 'interviews/interview_confirm_delete.html', {'interview': interview})
+
+@login_required
+def interview_candidate_view(request):
+    """
+    Представление для отображения страницы с резюме интервьюера.
+    """
+    # Если вам нужно передать контекст, добавьте его сюда
+    context = {}
+    return render(request, "candidate/interview_candidate.html", context)
 

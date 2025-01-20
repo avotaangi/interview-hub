@@ -47,7 +47,26 @@ def register_view(request):
 
 @login_required
 def home_candidate_view(request):
-    return render(request, 'candidate/home_candidate.html')
+    user = request.user
+    current_date = now()
+
+    # Предстоящие собеседования
+    upcoming_interviews = Interview.objects.filter(
+        selection__resume__candidate__user=user,
+        start_time__gte=current_date,  # Только будущие собеседования
+    ).order_by("start_time")
+
+    # Пройденные собеседования
+    completed_interviews = Interview.objects.filter(
+        selection__resume__candidate__user=user,
+        start_time__lt=current_date,  # Только прошлые собеседования
+    ).order_by("-start_time")
+
+    context = {
+        "upcoming_interviews": upcoming_interviews,
+        "completed_interviews": completed_interviews,
+    }
+    return render(request, "candidate/home_candidate.html", context)
 
 @login_required
 def home_interviewer_view(request):
@@ -91,6 +110,7 @@ def home_interviewer_view(request):
         "completed_count": interview_counts['completed_count'],
     }
     return render(request, "interviewer/home_interviewer.html", context)
+
 
 @login_required
 def home_view(request):
