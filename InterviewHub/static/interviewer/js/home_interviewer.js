@@ -222,7 +222,7 @@ scheduleForm.addEventListener('submit', async function (e) {
             <p><strong>Ссылка на подключение:</strong>
                 <a href="${interviewData.additional_url}" target="_blank">${interviewData.additional_url}</a>
             </p>
-            <a href="${selectionData.resume.file}" download>
+            <a href="/resumedata/interviewer/">
                 <button>Посмотреть резюме</button>
             </a>
             <button class="cancel-interview-button red-button">Отменить собеседование</button>

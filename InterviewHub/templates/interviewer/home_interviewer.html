@@ -71,7 +71,7 @@
     </div>
 
     <div class="section">
-        <h2>Предстоящие собеседования</h2>
+        <h2>Предстоящие собеседования ({{ upcoming_count }})</h2>
         {% for interview in upcoming_interviews %}
         <div class="card_one" data-id="{{ interview.id }}">
             <p><strong>Дата:</strong> {{ interview.start_time|date:"Y-m-d" }}</p>
@@ -88,7 +88,7 @@
             <p><strong>Ссылка на подключение:</strong>
                 <a href="{{ interview.additional_url }}" target="_blank">{{ interview.additional_url }}</a>
             </p>
-            <a href="{{ interview.selection.resume.file.url }}" download>
+            <a href="/resumedata/interviewer/">
                 <button>Посмотреть резюме</button>
             </a>
             <button class="cancel-interview-button red-button">Отменить собеседование</button>
@@ -98,7 +98,7 @@
         {% endfor %}
     </div>
     <div class="section">
-        <h2>Проведенные собеседования</h2>
+        <h2>Проведенные собеседования ({{ completed_count }})</h2>
         {% for interview in completed_interviews %}
         <div data-id="{{ interview.id }}" class="card" data-status="{{ interview.result|lower }}"
              data-comment="{{ interview.feedback|default:'Комментарий отсутствует.' }}">

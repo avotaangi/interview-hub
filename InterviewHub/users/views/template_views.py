@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Q
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -53,17 +54,25 @@ def home_interviewer_view(request):
     user = request.user
     current_date = now()  # Текущая дата и время с учётом временной зоны
 
-    # Запланированные собеседования: start_time позже текущего времени
+    # Запланированные собеседования
     upcoming_interviews = Interview.objects.filter(
         selection__interviewer__user=user,
         start_time__gte=current_date,  # Только будущие собеседования
     ).order_by("start_time")
 
-    # Завершенные собеседования: start_time раньше текущего времени
+    # Завершенные собеседования
     completed_interviews = Interview.objects.filter(
         selection__interviewer__user=user,
         start_time__lt=current_date,  # Только прошлые собеседования
     ).order_by("-start_time")
+
+    # Подсчет количества собеседований
+    interview_counts = Interview.objects.filter(
+        selection__interviewer__user=user
+    ).aggregate(
+        upcoming_count=Count('id', filter=Q(start_time__gte=current_date)),
+        completed_count=Count('id', filter=Q(start_time__lt=current_date))
+    )
 
     # Все резюме, отсортированные по ФИО кандидатов
     resumes = Resume.objects.select_related("candidate__user").order_by(
@@ -78,6 +87,8 @@ def home_interviewer_view(request):
         "completed_interviews": completed_interviews,
         "resumes": resumes,
         "tasks": tasks,
+        "upcoming_count": interview_counts['upcoming_count'],
+        "completed_count": interview_counts['completed_count'],
     }
     return render(request, "interviewer/home_interviewer.html", context)
 

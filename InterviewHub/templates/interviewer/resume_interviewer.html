@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Резюме кандидата</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f7f8fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #fff;
+            background: linear-gradient(to right, #4b6cb7, #182848);
+            padding: 40px;
+            font-size: 36px;
+            margin: 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .resume-card {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .resume-card h2 {
+            color: #4b6cb7;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .resume-card .job-info {
+            margin-bottom: 20px;
+        }
+        .resume-card .job-info label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        .job-experience {
+            margin-top: 20px;
+        }
+        .job-experience label {
+            font-weight: normal;
+            display: block;
+            margin: 5px 0;
+        }
+        .compact-resume {
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 10px;
+            width: 300px;
+            text-align: center;
+        }
+        .compact-resume h3 {
+            color: #333;
+        }
+        .compact-resume p {
+            font-size: 14px;
+            color: #666;
+        }
+        .resumes-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 колонки одинаковой ширины */
+            gap: 20px; /* Отступ между блоками */
+        }
+        .section-title {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .indent {
+            font-size: 14px;
+            padding-left: 1em; /* Отступ, аналогичный одной табуляции */
+        }
+
+        .indent_one {
+            font-size: 14px;
+            padding-left: 2em; /* Отступ, аналогичный одной табуляции */
+        }
+
+        .view-more-btn {
+            background-color: #4b6cb7;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-more-btn:hover {
+            background-color: #3a5597;
+        }
+    </style>
+</head>
+<body>
+    <h1>Резюме кандидата</h1>
+
+    <div class="container">
+        <!-- Блок с главным интервью -->
+        <div class="resume-card">
+            <h2>Прилагаемое резюме</h2>
+            <div class="job-info">
+                <p><strong>Желаемая должность:</strong> Менеджер проекта</p>
+                <p><strong>Желаемая зарплата:</strong> 80,000 руб.</p>
+                <p><strong>Навыки:</strong> Управление проектами, коммуникации</p>
+            </div>
+            <div class="job-experience">
+                <p><strong>Опыт работы:</strong></p>
+                <div class="indent">
+                <p><strong>Компания:</strong> ООО "ИнноТех"</p>
+                    <div class="indent_one">
+                        <p><strong>Должность:</strong> Руководитель проектов</p>
+                        <p><strong>Дата начала:</strong> Март 2018</p>
+                        <p><strong>Дата окончания:</strong> Декабрь 2022</p>
+                        <p><strong>Обязанности:</strong> Разработка стратегии реализации проектов, управление проектными командами, оценка рисков, контроль бюджета и сроков, координация между клиентами и внутренними командами, ведение документации и отчетности.</p>
+                    </div>
+                </div>
+                <div class="indent">
+                    <p><strong>Компания:</strong> ООО "Техномир"</p>
+                    <div class="indent_one">
+                        <p><strong>Должность:</strong> Менеджер проектов</p>
+                        <p><strong>Дата начала:</strong> Январь 2020</p>
+                        <p><strong>Дата окончания:</strong> Сентябрь 2024</p>
+                        <p><strong>Обязанности:</strong> Управление проектами, координация команд, составление графиков, контроль выполнения задач и ресурсов, взаимодействие с клиентами, отчетность.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Блок "Все резюме кандидата" -->
+    <div class="container all-resumes">
+        <h2 class="section-title">Все резюме кандидата</h2>
+        <div class="resumes-container">
+            <div class="compact-resume">
+                <h3>Разработчик ПО</h3>
+                <p><strong>Компания:</strong> ООО "Техномир"</p>
+                <p><strong>Желаемая зарплата:</strong> 120,000 руб.</p>
+                <p><strong>Навыки:</strong> Python, Django, JavaScript</p>
+                <button class="view-more-btn">Посмотреть подробнее</button>
+            </div>
+            <div class="compact-resume">
+                <h3>Менеджер проектов</h3>
+                <p><strong>Компания:</strong> ООО "ПроектПро"</p>
+                <p><strong>Желаемая зарплата:</strong> 100,000 руб.</p>
+                <p><strong>Навыки:</strong> Agile, Scrum, PMBOK</p>
+                <button class="view-more-btn">Посмотреть подробнее</button>
+            </div>
+            <div class="compact-resume">
+                <h3>Аналитик данных</h3>
+                <p><strong>Желаемая должность:</strong> Аналитик данных</p>
+                <p><strong>Желаемая зарплата:</strong> 90,000 руб.</p>
+                <p><strong>Навыки:</strong> Анализ данных, SQL, Python</p>
+                <button class="view-more-btn">Посмотреть подробнее</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
