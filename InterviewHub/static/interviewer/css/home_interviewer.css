@@ -54,6 +54,8 @@ body {
     width: 400px;
     text-align: left;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    max-height: 95vh; /* Максимальная высота окна */
+    overflow-y: auto; /* Включение прокрутки по вертикали */
 }
 
 .modal-content h2 {

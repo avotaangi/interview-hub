@@ -100,7 +100,14 @@ scheduleForm.addEventListener('submit', async function (e) {
     const duration = document.getElementById('duration').value;
     const type = document.getElementById('type').value;
     const tasks = Array.from(document.querySelectorAll('.task-select')).map(task => task.value);
+
     const link = document.getElementById('link').value;
+
+
+    if (tasks.length === 0) {
+        alert('Пожалуйста, выберите минимум 1 задание для интервью');
+        return
+    }
 
     const getUserData = async (userId) => {
         try {
@@ -163,6 +170,7 @@ scheduleForm.addEventListener('submit', async function (e) {
             duration: parseInt(duration),
             type: type,
             status: "Запланировано",
+            result: "На рассмотрении",
             additional_url: link
         };
 
@@ -207,31 +215,36 @@ scheduleForm.addEventListener('submit', async function (e) {
             }
         }
 
-        // Формируем HTML для нового блока
-        const interviewCard = document.createElement('div');
-        interviewCard.classList.add('card_one');
+//        // Формируем HTML для нового блока
+//        const interviewCard = document.createElement('div');
+//        interviewCard.classList.add('card_one');
+//        interviewCard.dataset.id = interviewData.id;
+//        const tasksList = tasks_names.map(taskId => `<span>${taskId}</span>`).join(', '); // Модифицируйте отображение задач по необходимости
+//
+//        interviewCard.innerHTML = `
+//            <p><strong>Дата:</strong> ${new Date(interviewData.start_time).toISOString().split('T')[0]}</p>
+//            <p><strong>Время:</strong> ${new Date(interviewData.start_time).toISOString().split('T')[1].slice(0, 5)}</p>
+//            <p><strong>Кандидат:</strong> ${resumeId}</p>
+//            <p><strong>Тип интервью:</strong> ${interviewData.type}</p>
+//            <p><strong>Назначенные задания:</strong> ${tasksList}</p>
+//            <p><strong>Ссылка на подключение:</strong>
+//                <a href="${interviewData.additional_url}" target="_blank">${interviewData.additional_url}</a>
+//            </p>
+//            <a href="/resumedata/interviewer/">
+//                <button>Посмотреть резюме</button>
+//            </a>
+//            <a href="/interview/interview-tasks/?interview_id=${interviewData.id}">
+//                <button>Перейти к заданиям</button>
+//            </a>
+//            <button class="cancel-interview-button red-button">Отменить собеседование</button>
+//        `;
 
-        const tasksList = tasks.map(taskId => `<span>${taskId}</span>`).join(', '); // Модифицируйте отображение задач по необходимости
-
-        interviewCard.innerHTML = `
-            <p><strong>Дата:</strong> ${new Date(interviewData.start_time).toISOString().split('T')[0]}</p>
-            <p><strong>Время:</strong> ${new Date(interviewData.start_time).toISOString().split('T')[1].slice(0, 5)}</p>
-            <p><strong>Кандидат:</strong> ${resumeId}</p>
-            <p><strong>Тип интервью:</strong> ${interviewData.type}</p>
-            <p><strong>Назначенные задания:</strong> ${tasksList}</p>
-            <p><strong>Ссылка на подключение:</strong>
-                <a href="${interviewData.additional_url}" target="_blank">${interviewData.additional_url}</a>
-            </p>
-            <a href="/resumedata/interviewer/">
-                <button>Посмотреть резюме</button>
-            </a>
-            <button class="cancel-interview-button red-button">Отменить собеседование</button>
-        `;
-
-        const upcomingInterviewsContainer = document.querySelector('.section');
-
-        // Добавляем новый блок в раздел «Предстоящие собеседования»
-        upcomingInterviewsContainer.appendChild(interviewCard);
+//        const upcomingInterviewsContainer = document.querySelector('.section');
+//
+//        // Добавляем новый блок в раздел «Предстоящие собеседования»
+//        upcomingInterviewsContainer.appendChild(interviewCard);
+//
+//        initializeCancelInterviewButtons()
 
         // Уведомление об успешном создании
         alert('Интервью успешно запланировано.');
@@ -241,6 +254,11 @@ scheduleForm.addEventListener('submit', async function (e) {
 
         // Очищаем форму для следующего использования
         scheduleForm.reset();
+//        // Находим элемент для отображения количества предстоящих собеседований
+//        const upcomingCountElement = document.getElementById('upcomingCount');
+//        const currentUpcomingCount = parseInt(upcomingCountElement.textContent, 10) || 0;
+//        upcomingCountElement.textContent = currentUpcomingCount + 1;
+         location.reload();
     } catch (error) {
         console.error('Ошибка:', error);
         alert('Произошла ошибка при планировании интервью. Попробуйте снова.');
@@ -328,34 +346,50 @@ function removeTask(button) {
     tasksContainer.removeChild(taskRow);
 }
 
-// Функция для обработки клика на кнопку "Отменить собеседование"
-document.querySelectorAll('.cancel-interview-button').forEach(button => {
-    button.addEventListener('click', async function () {
-        const card = button.closest('.card_one');
-        const interviewId = card.getAttribute('data-id');
-        const csrfToken = getCookie('csrftoken'); // Убедитесь, что функция getCookie() определена
+// Определение функции для отмены собеседования
+async function cancelInterview(button) {
+    const card = button.closest('.card_one');
+    const interviewId = card.getAttribute('data-id');
+    const csrfToken = getCookie('csrftoken'); // Убедитесь, что функция getCookie() определена
 
-        if (confirm('Вы уверены, что хотите отменить это собеседование?')) {
-            try {
-                const response = await fetch(`/interviews/${interviewId}/`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRFToken': csrfToken,
-                    },
-                });
+    if (confirm('Вы уверены, что хотите отменить это собеседование?')) {
+        try {
+            const response = await fetch(`/interviews/${interviewId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                },
+            });
 
-                if (response.ok) {
-                    // Удаляем карточку из DOM
-                    card.remove();
-                    alert('Собеседование успешно отменено.');
-                } else {
-                    alert('Ошибка при отмене собеседования. Попробуйте снова.');
-                }
-            } catch (error) {
-                console.error('Ошибка при отмене собеседования:', error);
-                alert('Произошла ошибка. Попробуйте позже.');
+            if (response.ok) {
+                // Удаляем карточку из DOM
+                card.remove();
+                // Находим элемент для отображения количества предстоящих собеседований
+                const upcomingCountElement = document.getElementById('upcomingCount');
+
+                // Уменьшаем счётчик на 1
+                const currentUpcomingCount = parseInt(upcomingCountElement.textContent, 10) || 0;
+                upcomingCountElement.textContent = Math.max(0, currentUpcomingCount - 1);
+                alert('Собеседование успешно отменено.');
+            } else {
+                alert('Ошибка при отмене собеседования. Попробуйте снова.');
             }
+        } catch (error) {
+            console.error('Ошибка при отмене собеседования:', error);
+            alert('Произошла ошибка. Попробуйте позже.');
         }
+    }
+}
+
+function initializeCancelInterviewButtons() {
+    document.querySelectorAll('.cancel-interview-button:not([data-initialized])').forEach(button => {
+        button.addEventListener('click', function () {
+            cancelInterview(button);
+        });
+        button.setAttribute('data-initialized', 'true'); // Помечаем кнопку как обработанную
     });
-});
+}
+
+// Инициализация обработчиков событий при загрузке страницы
+document.addEventListener('DOMContentLoaded', initializeCancelInterviewButtons);
 
