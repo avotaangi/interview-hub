@@ -27,28 +27,28 @@ class ResumeAdmin(admin.ModelAdmin):
     filter_horizontal = ("job_experiences",)
     readonly_fields = ("created_at",)
 
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
-        """
-        Фильтрация Many-to-Many поля `job_experiences` на основе выбранного `candidate`.
-        """
-        if db_field.name == "job_experiences":
-            # Если объект редактируется, фильтруем опыт работы по кандидату
-            if request.resolver_match.args:
-                resume_id = request.resolver_match.args[0]
-                resume = Resume.objects.filter(pk=resume_id).first()
-                if resume and resume.candidate:
-                    kwargs["queryset"] = JobExperience.objects.filter(
-                        candidate=resume.candidate
-                    )
-            # Если объект создается, поле изначально пусто
-            elif "candidate" in request.POST:
-                candidate_id = request.POST.get("candidate")
-                kwargs["queryset"] = JobExperience.objects.filter(
-                    candidate_id=candidate_id
-                )
-            else:
-                kwargs["queryset"] = JobExperience.objects.none()
-        return super().formfield_for_manytomany(db_field, request, **kwargs)
+    # def formfield_for_manytomany(self, db_field, request, **kwargs):
+    #     """
+    #     Фильтрация Many-to-Many поля `job_experiences` на основе выбранного `candidate`.
+    #     """
+    #     if db_field.name == "job_experiences":
+    #         # Если объект редактируется, фильтруем опыт работы по кандидату
+    #         if request.resolver_match.args:
+    #             resume_id = request.resolver_match.args[0]
+    #             resume = Resume.objects.filter(pk=resume_id).first()
+    #             if resume and resume.candidate:
+    #                 kwargs["queryset"] = JobExperience.objects.filter(
+    #                     candidate=resume.candidate
+    #                 )
+    #         # Если объект создается, поле изначально пусто
+    #         elif "candidate" in request.POST:
+    #             candidate_id = request.POST.get("candidate")
+    #             kwargs["queryset"] = JobExperience.objects.filter(
+    #                 candidate_id=candidate_id
+    #             )
+    #         else:
+    #             kwargs["queryset"] = JobExperience.objects.none()
+    #     return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     @admin.display(description="Skills")
     def short_skills(self, obj):

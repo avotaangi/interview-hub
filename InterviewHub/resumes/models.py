@@ -41,7 +41,7 @@ class JobExperience(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return f"{self.position} в {self.company}"
+        return f"{self.position} в {self.company} от {self.candidate.user.first_name} {self.candidate.user.last_name}"
 
     class Meta:
         verbose_name = "Опыт работы"
