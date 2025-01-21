@@ -122,11 +122,14 @@ def home_interviewer_view(request):
     open_tasks = set(TaskItem.objects.filter(openquestion__isnull=False)[:5])
     code_tasks = set(TaskItem.objects.filter(codequestion__isnull=False)[:5])
 
+    tasks = TaskItem.objects.all()
+
     context = {
         "interviewer": interviewer,
         "upcoming_interviews": upcoming_interviews,
         "completed_interviews": completed_interviews,
         "resumes": resumes,
+        "tasks":tasks,
         "upcoming_count": interview_counts['upcoming_count'],
         "completed_count": interview_counts['completed_count'],
         "choice_tasks": choice_tasks,
