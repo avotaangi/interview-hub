@@ -118,7 +118,7 @@ def home_interviewer_view(request):
     )
 
     # Различные типы заданий
-    choice_tasks = set(TaskItem.objects.filter(multiplechoicequestion__isnull=False)[:5])
+    choice_tasks = list(set(TaskItem.objects.filter(multiplechoicequestion__isnull=False)))[:5]
     open_tasks = set(TaskItem.objects.filter(openquestion__isnull=False)[:5])
     code_tasks = set(TaskItem.objects.filter(codequestion__isnull=False)[:5])
 
