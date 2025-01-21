@@ -8,15 +8,15 @@
     <link rel="stylesheet" href="{% static 'interviewer/css/home_interviewer.css' %}">
 </head>
 <body>
-
+<div class="menu-container">
+    <form method="POST" action="{% url 'logout' %}" class="menu-item">
+        {% csrf_token %}
+        <button type="submit" class="menu-button">Выйти</button>
+    </form>
+    <button class="menu-button menu-item" onclick="window.location.href='{% url 'all_tasks' %}'">Список заданий</button>
+    <button class="menu-button menu-item" id="openModalButton">Запланировать собеседование</button>
+</div>
 <div class="container">
-    <div class="button-container">
-        <form method="POST" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="logout-button">Выйти</button>
-        </form>
-        <button class="schedule-button" id="openModalButton">Запланировать собеседование</button>
-    </div>
     <div class="card_one">
         <h2>Добро пожаловать, {{ interviewer.user.first_name }} {{ interviewer.user.last_name }}</h2>
         {% if interviewer.position %}

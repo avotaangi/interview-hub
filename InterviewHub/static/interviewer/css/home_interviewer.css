@@ -416,3 +416,55 @@ textarea {
 .schedule-button logout-button {
     background-color: #007bff;
 }
+.menu-container {
+    background-color: #007bff;
+    padding: 15px 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap; /* Для адаптивности */
+}
+
+/* Элементы меню */
+.menu-container .menu-item {
+    margin: 0;
+}
+
+/* Кнопки меню */
+.menu-button {
+    padding: 10px 20px;
+    background-color: white;
+    color: #007bff;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    text-align: center;
+    min-width: 150px; /* Для одинаковой ширины кнопок */
+}
+
+/* Эффекты наведения и нажатия */
+.menu-button:hover {
+    background-color: #0056b3;
+    color: white;
+    border-color: #0056b3;
+}
+.menu-button:active {
+    background-color: #004085;
+    border-color: #004085;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .menu-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .menu-button {
+        width: 100%;
+        text-align: center;
+    }
+}

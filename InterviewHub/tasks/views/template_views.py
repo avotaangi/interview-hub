@@ -36,6 +36,18 @@ def tasks_with_code_questions(request):
         'title': 'Задания с написанием кода',
         'tasks': set(tasks),
     })
+
+def all_tasks(request):
+    query = request.GET.get('query', '').strip()
+    tasks = TaskItem.objects.all()
+
+    if query:
+        tasks = tasks.filter(title__icontains=query)
+
+    return render(request, 'tasks/tasks_list.html', {
+        'title': 'Все задания',
+        'tasks': set(tasks),
+    })
 def task_detail(request, task_id):
     task = get_object_or_404(TaskItem, id=task_id)
     return render(request, 'tasks/task_detail.html', {'task': task})
