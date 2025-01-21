@@ -53,6 +53,30 @@
             margin-bottom: 20px;
             text-align: center;
         }
+        .search-form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .search-form input[type="text"] {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+            outline: none;
+        }
+        .search-form button {
+            padding: 10px 15px;
+            font-size: 14px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+        .search-form button:hover {
+            background-color: #0056b3;
+        }
         ol {
             list-style: none;
             padding: 0;
@@ -86,7 +110,7 @@
 </head>
 <body>
 <header>
-    <h1>Список заданий</h1>
+    <h1>{{ title }}</h1>
     <div class="button-group">
         <form method="POST" action="{% url 'logout' %}">
             {% csrf_token %}
@@ -99,13 +123,20 @@
 </header>
 
 <div class="container">
-    <h1>{{ title }}</h1>
+    <!-- Форма поиска -->
+    <form class="search-form" method="GET" action="">
+        <input type="text" name="query" placeholder="Введите текст для поиска" value="{{ request.GET.query }}">
+        <button type="submit">Найти</button>
+    </form>
+
     <ol>
         {% for task in tasks %}
         <li>
             <h3><a href="{% url 'task_detail' task.id %}">{{ task.title }}</a></h3>
             <p>{{ task.task_condition|truncatechars:100 }}</p>
         </li>
+        {% empty %}
+        <li>Нет заданий в данной категории.</li>
         {% endfor %}
     </ol>
 </div>

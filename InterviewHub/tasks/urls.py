@@ -23,4 +23,5 @@ urlpatterns = [
     path('tasks/open/', tasks_with_open_questions, name='tasks_with_open_questions'),
     path('tasks/code/', tasks_with_code_questions, name='tasks_with_code_questions'),
     path('tasks/<int:task_id>/', task_detail, name='task_detail'),
+
 ]
