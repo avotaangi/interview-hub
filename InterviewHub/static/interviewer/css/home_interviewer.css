@@ -16,25 +16,6 @@ body {
     position: relative;
 }
 
-/* Кнопка "Запланировать собеседование" в правом верхнем углу */
-.schedule-button {
-    position: absolute;
-    top: 45px;
-    right: 20px;
-    background-color: #007bff;
-    color: #fff;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.schedule-button:hover {
-    background-color: #218838;
-}
-
 .modal {
     display: none;
     position: fixed;
@@ -415,4 +396,23 @@ textarea {
 }
 .details-button:hover {
     background-color: #0056b3;
+}
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.logout-button, .schedule-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+}
+
+.schedule-button logout-button {
+    background-color: #007bff;
 }

@@ -10,11 +10,22 @@
 <body>
 
 <div class="container">
-    <form method="POST" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Выйти</button>
-    </form>
-    <button class="schedule-button" id="openModalButton">Запланировать собеседование</button>
+    <div class="button-container">
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="logout-button">Выйти</button>
+        </form>
+        <button class="schedule-button" id="openModalButton">Запланировать собеседование</button>
+    </div>
+    <div class="card_one">
+        <h2>Добро пожаловать, {{ interviewer.user.first_name }} {{ interviewer.user.last_name }}</h2>
+        {% if interviewer.position %}
+        <p><strong>Должность:</strong> {{ interviewer.position }}</p>
+        {% endif %}
+        {% if interviewer.company %}
+        <p><strong>Компания:</strong> {{ interviewer.company.name }}</p>
+        {% endif %}
+    </div>
     <h1>Система собеседований</h1>
 
     <div class="modal" id="scheduleModal">

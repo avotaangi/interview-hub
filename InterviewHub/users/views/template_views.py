@@ -85,18 +85,23 @@ def home_candidate_view(request):
 @login_required
 def home_interviewer_view(request):
     user = request.user
-    current_date = now()  # Текущая дата и время с учётом временной зоны
+    current_date = now()
 
-    # Запланированные собеседования
+    # Получение информации об интервьюере
+    try:
+        interviewer = Interviewer.objects.select_related("company").get(user=user)
+    except Interviewer.DoesNotExist:
+        interviewer = None
+
+    # Запланированные и завершенные собеседования
     upcoming_interviews = Interview.objects.filter(
         selection__interviewer__user=user,
-        start_time__gte=current_date,  # Только будущие собеседования
+        start_time__gte=current_date,
     ).order_by("start_time")
 
-    # Завершенные собеседования
     completed_interviews = Interview.objects.filter(
         selection__interviewer__user=user,
-        start_time__lt=current_date,  # Только прошлые собеседования
+        start_time__lt=current_date,
     ).order_by("-start_time")
 
     # Подсчет количества собеседований
@@ -107,27 +112,18 @@ def home_interviewer_view(request):
         completed_count=Count('id', filter=Q(start_time__lt=current_date))
     )
 
-    # Все резюме, отсортированные по ФИО кандидатов
+    # Все резюме
     resumes = Resume.objects.select_related("candidate__user").order_by(
         "candidate__user__last_name", "candidate__user__first_name"
     )
 
-    # Задания с вариантами ответов
-    choice_tasks = set(
-        TaskItem.objects.filter(multiplechoicequestion__isnull=False)[:5]
-    )
-
-    # Задания с открытыми вопросами
-    open_tasks = set(
-        TaskItem.objects.filter(openquestion__isnull=False)[:5]
-    )
-
-    # Задания с написанием кода
-    code_tasks = set(
-        TaskItem.objects.filter(codequestion__isnull=False)[:5]
-    )
+    # Различные типы заданий
+    choice_tasks = set(TaskItem.objects.filter(multiplechoicequestion__isnull=False)[:5])
+    open_tasks = set(TaskItem.objects.filter(openquestion__isnull=False)[:5])
+    code_tasks = set(TaskItem.objects.filter(codequestion__isnull=False)[:5])
 
     context = {
+        "interviewer": interviewer,
         "upcoming_interviews": upcoming_interviews,
         "completed_interviews": completed_interviews,
         "resumes": resumes,
