@@ -144,3 +144,11 @@ h2 {
 .card-actions button:focus {
     outline: none;
 }
+
+.disabled {
+    background-color: #ccc!important; /* Серый цвет */
+    color: #666!important; /* Текст серого цвета */
+    cursor: not-allowed!important; /* Запрещающий курсор */
+    pointer-events: none!important; /* Отключение событий */
+    border: 1px solid #aaa!important; /* Граница */
+}

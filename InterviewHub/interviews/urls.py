@@ -15,5 +15,5 @@ urlpatterns += [
     path('interviews/new', interview_create_view, name='interview_create'),
     path('interviews/<int:pk>/edit', interview_edit_view, name='interview_edit'),
     path('interviews/<int:pk>/delete', interview_delete_view, name='interview_delete'),
-    path('interview/candidate/', interview_candidate_view, name='interview_candidate')
+    path('interview/interview-tasks/', interview_candidate_view, name='interview_candidate')
 ]

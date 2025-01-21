@@ -27,9 +27,17 @@
             <p><strong>Время:</strong> {{ interview.start_time|time:"H:i" }}</p>
             <p><strong>Компания:</strong> {{ interview.selection.interviewer.company.name }}</p>
             <p><strong>Интервьюер:</strong> {{ interview.selection.interviewer.user.get_full_name }}</p>
+            <p><strong>Ссылка на подключение:</strong>
+                <a href="{{ interview.additional_url }}" target="_blank">{{ interview.additional_url }}</a>
+            </p>
             <div class="card-actions">
-                <button onclick="window.location.href='/interview/candidate/'">Посмотреть детали</button>
+                {% if interview.start_time <= current_date %}
+                <button onclick="window.location.href='/interview/interview-tasks/?interview_id={{interview.id}}'">Перейти к решению</button>
+                {% else %}
+                <button class="disabled" disabled>Перейти к решению</button>
+                {% endif %}
             </div>
+
         </div>
         {% empty %}
         <p>Нет предстоящих собеседований.</p>
@@ -48,7 +56,7 @@
             <p><strong>Интервьюер:</strong> {{ interview.selection.interviewer.user.get_full_name }}</p>
             <p><strong>Комментарии интервьюера:</strong> {{ interview.feedback|default:"Комментарий отсутствует." }}</p>
             <div class="card-actions">
-                <button onclick="window.location.href='/interview/candidate/'">Посмотреть решение</button>
+                <button onclick="window.location.href='/interview/interview-tasks/?interview_id={{interview.id}}'">Посмотреть решение</button>
             </div>
         </div>
         {% empty %}

@@ -1,5 +1,7 @@
+from datetime import timedelta
+
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Q
+from django.db.models import Count, Q, ExpressionWrapper, F, DurationField
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -50,21 +52,30 @@ def home_candidate_view(request):
     user = request.user
     current_date = now()
 
-    # Предстоящие собеседования
-    upcoming_interviews = Interview.objects.filter(
+    upcoming_interviews = Interview.objects.annotate(
+        end_time_calc=ExpressionWrapper(
+            F("start_time") + F("duration") * timedelta(minutes=1),
+            output_field=DurationField()
+        )
+    ).filter(
         selection__resume__candidate__user=user,
-        start_time__gte=current_date,  # Только будущие собеседования
+        end_time_calc__gte=current_date,  # Если окончание собеседования >= текущего времени
     ).order_by("start_time")
 
-    # Пройденные собеседования
-    completed_interviews = Interview.objects.filter(
+    completed_interviews = Interview.objects.annotate(
+        end_time_calc=ExpressionWrapper(
+            F("start_time") + F("duration") * timedelta(minutes=1),
+            output_field=DurationField()
+        )
+    ).filter(
         selection__resume__candidate__user=user,
-        start_time__lt=current_date,  # Только прошлые собеседования
+        end_time_calc__lt=current_date,  # Если окончание собеседования < текущего времени
     ).order_by("-start_time")
 
     context = {
         "upcoming_interviews": upcoming_interviews,
         "completed_interviews": completed_interviews,
+        "current_date": current_date,  # Передаем текущее время
     }
     return render(request, "candidate/home_candidate.html", context)
 

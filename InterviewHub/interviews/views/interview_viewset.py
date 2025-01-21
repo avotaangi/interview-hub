@@ -896,3 +896,4 @@ class InterviewViewSet(viewsets.ModelViewSet):
             {"status": interview.result, "feedback": interview.feedback},
             status=status.HTTP_200_OK,
         )
+

@@ -326,3 +326,93 @@ class InterviewTaskItemViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """Удаляет элемент задания к интервью по его ID."""
         return super().destroy(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        method='post',
+        operation_summary="Сохранить данные заданий интервью",
+        operation_description=(
+                "Принимает список задач с ответами кандидатов и обновляет или создает записи в базе данных."
+        ),
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "tasks": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            "interview_id": openapi.Schema(
+                                type=openapi.TYPE_INTEGER,
+                                description="ID интервью",
+                            ),
+                            "task_id": openapi.Schema(
+                                type=openapi.TYPE_INTEGER,
+                                description="ID задания",
+                            ),
+                            "candidate_answer": openapi.Schema(
+                                type=openapi.TYPE_STRING,
+                                description="Ответ кандидата",
+                            ),
+                        },
+                    ),
+                )
+            }
+        ),
+        responses={
+            200: openapi.Response(
+                description="Успешное сохранение ответов",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "status": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            description="Статус сохранения"
+                        ),
+                        "updated": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="Количество обновленных записей"
+                        ),
+                        "created": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                            description="Количество новых записей"
+                        )
+                    }
+                ),
+            ),
+            400: "Ошибка в запросе",
+        }
+    )
+    @action(detail=False, methods=["post"], url_path="save-tasks")
+    def save_tasks(self, request):
+        """
+        Сохранение данных заданий интервью.
+        """
+        tasks = request.data.get("tasks", [])
+        updated, created = 0, 0
+
+        for task in tasks:
+            interview_id = task.get("interview_id")
+            task_id = task.get("task_id")
+            candidate_answer = task.get("candidate_answer")
+
+            if not (interview_id and task_id):
+                return Response(
+                    {"error": "interview_id и task_id обязательны."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            obj, is_created = InterviewTaskItem.objects.update_or_create(
+                interview_id=interview_id,
+                task_item_id=task_id,
+                defaults={"candidate_answer": candidate_answer}
+            )
+
+            if is_created:
+                created += 1
+            else:
+                updated += 1
+
+        return Response(
+            {"status": "success", "updated": updated, "created": created},
+            status=status.HTTP_200_OK
+        )
