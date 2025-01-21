@@ -1,7 +1,10 @@
 import json
+from datetime import timedelta
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.timezone import now
+
 from ..forms import InterviewForm
 from ..models import Interview, InterviewTaskItem
 from tasks.models import TaskItem, CodeQuestion, OpenQuestion, MultipleChoiceQuestion
@@ -51,7 +54,7 @@ def interview_candidate_view(request):
     # Проверка возможности редактирования
     current_time = now()
     end_time = interview.start_time + timedelta(minutes=interview.duration)
-    is_editable = request.user != interview.selection.interviewer and current_time <= end_time
+    is_editable = request.user != interview.selection.interviewer.user and current_time <= end_time
 
     tasks_data = []
     for task in TaskItem.objects.filter(interviewtaskitem__interview=interview):

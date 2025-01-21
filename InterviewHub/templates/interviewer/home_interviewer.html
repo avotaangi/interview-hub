@@ -111,7 +111,7 @@
             <p><strong>Тип интервью:</strong> {{ interview.type }}</p>
             <p><strong>Решенные задания:</strong>
                 {% for task in interview.interviewtaskitem_set.all %}
-                {{ task.task_item.name }}{% if not forloop.last %}, {% endif %}
+                {{ task.task_item.title }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
             </p>
             <p><strong>Комментарии интервьюера:</strong>
@@ -126,7 +126,7 @@
                 <span class="status rejected">{{ interview.result }}</span>
                 {% endif %}
             </p>
-            <a href="#" download>
+            <a href="/interview/interview-tasks/?interview_id={{interview.id}}">
                 <button>Посмотреть решение заданий кандидата</button>
             </a>
             <form class="update-status-form">

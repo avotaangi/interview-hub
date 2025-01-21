@@ -52,7 +52,7 @@
         <div class="buttons">
             <div class="timer" id="timer"></div>
             <button id="run-code" style="display: none;">Запустить</button>
-            <button id="submit-code">Отправить</button>
+            <button id="submit-code"></button>
         </div>
     </div>
 </div>
@@ -61,7 +61,7 @@
     const initialData = {
         duration: {{ duration|safe }},
         tasks: {{ tasks|safe }},
-        isEditable: {{ is_editable|yesno:"true,false" }},
+        isEditable: {{ is_editable|yesno:"true,false" }}
     };
 </script>
 <script src="{% static 'candidate/js/interview_candidate.js' %}"></script>

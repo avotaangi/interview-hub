@@ -1,23 +1,55 @@
 let currentTaskIndex = 0;
 const timerElement = document.getElementById('timer');
 const tasks = initialData.tasks;
+const isEditable = initialData.isEditable;
 let timeLeft = initialData.duration * 60;
 
-// Обновление таймера
+// Таймер: обновление и запуск
 function updateTimer() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
     timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    if (timeLeft > 0) {
+    if (isEditable && timeLeft > 0) {
         timeLeft--;
-    } else {
+    } else if (timeLeft === 0) {
         clearInterval(timerInterval);
         alert("Время истекло!");
-        submitAllTasks(); // Автоматическое сохранение всех задач
+        submitAllTasks();
     }
 }
 
-const timerInterval = setInterval(updateTimer, 1000);
+// Запуск таймера, если редактирование разрешено
+if (isEditable) {
+    timerElement.style.display = "block"; // Показываем таймер
+    const timerInterval = setInterval(updateTimer, 1000);
+} else {
+    timerElement.style.display = "none"; // Скрываем таймер
+    updateTimer(); // Просто отображаем оставшееся время
+}
+
+
+// Изменение кнопки отправки
+function configureSubmitButton() {
+    const submitButton = document.getElementById('submit-code');
+    if (isEditable) {
+        submitButton.textContent = "Отправить";
+        submitButton.disabled = false;
+        submitButton.style.cursor = "pointer";
+        submitButton.addEventListener('click', async () => {
+            await submitAllTasks();
+        });
+    } else {
+        submitButton.textContent = "Вернуться в меню";
+        submitButton.disabled = false;
+        submitButton.style.cursor = "pointer";
+        submitButton.addEventListener('click', () => {
+            window.location.href = "/account/";
+        });
+    }
+}
+
+// Настройка кнопки отправки
+configureSubmitButton();
 
 // Обновление текущего задания
 function updateTask() {
@@ -31,8 +63,10 @@ function updateTask() {
     document.getElementById('open-question-pane').style.display = task.type === "open-question" ? "block" : "none";
 
     if (task.type === "code") {
-        document.getElementById('code-editor').value = task.code || "";
-        document.getElementById('run-code').style.display = "inline-block";
+        const codeEditor = document.getElementById('code-editor');
+        codeEditor.value = task.code || "";
+        codeEditor.disabled = !isEditable;
+        document.getElementById('run-code').style.display = isEditable ? "inline-block" : "none";
     } else {
         document.getElementById('run-code').style.display = "none";
     }
@@ -40,30 +74,32 @@ function updateTask() {
     if (task.type === "multiple-choice") {
         const optionsList = document.getElementById('options-list');
         optionsList.innerHTML = '';
-
-        // Разделяем сохраненные ответы
         const selectedAnswers = task.selected_option ? task.selected_option.split(" | ") : [];
-        console.log(task.selected_option)
+
         task.options.forEach((option, index) => {
             const isChecked = selectedAnswers.includes(index.toString()) ? "checked" : "";
+            const disabled = !isEditable ? "disabled" : "";
             const li = document.createElement('li');
             li.innerHTML = `<label>
-                <input type="checkbox" name="option" value="${index}" ${isChecked}>
+                <input type="checkbox" name="option" value="${index}" ${isChecked} ${disabled}>
                 ${option.text}
             </label>`;
             optionsList.appendChild(li);
         });
     } else if (task.type === "open-question") {
-        document.getElementById('open-answer').value = task.answer || "";
+        const openAnswer = document.getElementById('open-answer');
+        openAnswer.value = task.answer || "";
+        openAnswer.disabled = !isEditable;
     }
 
-    // Управление видимостью кнопок
     document.getElementById('prev-task').style.display = currentTaskIndex === 0 ? "none" : "inline-block";
     document.getElementById('next-task').style.display = currentTaskIndex === tasks.length - 1 ? "none" : "inline-block";
 }
 
 // Сохранение текущего задания
 async function saveTask() {
+    if (!isEditable) return;
+
     const task = tasks[currentTaskIndex];
     const payload = {
         interview_id: task.interview_id,
@@ -76,7 +112,6 @@ async function saveTask() {
     } else if (task.type === "open-question") {
         payload.candidate_answer = document.getElementById('open-answer').value;
     } else if (task.type === "multiple-choice") {
-        // Собираем выбранные варианты ответа
         const selectedOptions = Array.from(
             document.querySelectorAll('input[name="option"]:checked')
         ).map(option => option.value);
@@ -84,7 +119,7 @@ async function saveTask() {
     }
 
     task.candidate_answer = payload.candidate_answer;
-    console.log(payload);
+    console.log(payload.candidate_answer);
     try {
         await fetch("/interview-tasks/save-tasks/", {
             method: "POST",
@@ -101,31 +136,12 @@ async function saveTask() {
 
 // Сохранение всех заданий
 async function submitAllTasks() {
-    const payload = tasks.map(task => ({
-        interview_id: task.interview_id,
-        task_id: task.id,
-        candidate_answer: task.candidate_answer || ""
-    }));
+    if (!isEditable) return;
 
-    try {
-        const response = await fetch("/interview-tasks/save-tasks/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCookie('csrftoken')
-            },
-            body: JSON.stringify({ tasks: payload })
-        });
+    await saveTask();
+    alert("Все задачи успешно сохранены!");
+    window.location.href = "/account/";
 
-        if (response.ok) {
-            alert("Все задачи успешно сохранены!");
-            window.location.href = "/account/"
-        } else {
-            alert("Ошибка при сохранении задач.");
-        }
-    } catch (error) {
-        console.error("Ошибка сохранения всех данных:", error);
-    }
 }
 
 // Навигация между заданиями
@@ -150,12 +166,7 @@ document.getElementById('run-code').addEventListener('click', () => {
     alert("Код выполнен! Проверьте консоль.");
 });
 
-// Отправка всех данных
-document.getElementById('submit-code').addEventListener('click', async () => {
-    await submitAllTasks();
-});
-
-// Инициализация первого задания
+// Инициализация
 updateTask();
 
 // Функция для получения CSRF токена
