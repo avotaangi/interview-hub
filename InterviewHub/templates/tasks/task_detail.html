@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ task.title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+        header .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        header .button-group button {
+            padding: 5px 15px;
+            background-color: white;
+            color: #007bff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        header .button-group button:hover {
+            background-color: #e6e6e6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .container h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .container p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+        }
+        .container img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .task-info {
+            margin-top: 20px;
+        }
+        .task-info h2 {
+            font-size: 20px;
+        }
+        .task-info ul {
+            padding-left: 20px;
+            list-style: disc;
+        }
+        .task-info ul li {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Детали задания</h1>
+    <div class="button-group">
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Выйти</button>
+        </form>
+        <a href="{% url 'account' %}">
+            <button type="button">Главная страница</button>
+        </a>
+    </div>
+</header>
+
+<div class="container">
+    <h1>{{ task.title }}</h1>
+    <p>{{ task.task_condition }}</p>
+    {% if task.image %}
+    <img src="{{ task.image.url }}" alt="{{ task.title }}">
+    {% endif %}
+
+    <div class="task-info">
+        {% if task.multiplechoicequestion_set.exists %}
+        <h3>Варианты ответов:</h3>
+        <ul>
+            {% for option in task.multiplechoicequestion_set.all %}
+            <li>{{ option.answer_text }}{% if option.is_correct_answer %} (Правильный ответ){% endif %}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if task.openquestion_set.exists %}
+        <h3>Правильный ответ:</h3>
+        <ul>
+            {% for question in task.openquestion_set.all %}
+            <li>{{ question.correct_answer }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if task.codequestion_set.exists %}
+        <h3>Информация для задания с кодом:</h3>
+        <ul>
+            {% for code in task.codequestion_set.all %}
+            <li><strong>Входные данные:</strong> {{ code.input_data|default:"Нет входных данных" }}</li>
+            <li><strong>Ожидаемый вывод:</strong> {{ code.output_data|default:"Нет ожидаемого вывода" }}</li>
+            {% if code.is_code_run %}
+            <li><strong>Можно запускать код:</strong> Да</li>
+            {% else %}
+            <li><strong>Можно запускать код:</strong> Нет</li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

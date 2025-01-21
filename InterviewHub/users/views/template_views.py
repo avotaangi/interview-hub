@@ -20,6 +20,7 @@ from ..models import Candidate, Interviewer
 from interviews.models import Interview
 
 from resumes.models import Resume
+
 from tasks.models import TaskItem
 
 
@@ -46,6 +47,7 @@ def register_view(request):
         form = RegisterForm()
 
     return render(request, 'users/register.html', {'form': form})
+
 
 @login_required
 def home_candidate_view(request):
@@ -79,6 +81,7 @@ def home_candidate_view(request):
     }
     return render(request, "candidate/home_candidate.html", context)
 
+
 @login_required
 def home_interviewer_view(request):
     user = request.user
@@ -109,16 +112,30 @@ def home_interviewer_view(request):
         "candidate__user__last_name", "candidate__user__first_name"
     )
 
-    # Все задания, отсортированные по названию
-    tasks = TaskItem.objects.all().order_by("title")
+    # Задания с вариантами ответов
+    choice_tasks = set(
+        TaskItem.objects.filter(multiplechoicequestion__isnull=False)[:5]
+    )
+
+    # Задания с открытыми вопросами
+    open_tasks = set(
+        TaskItem.objects.filter(openquestion__isnull=False)[:5]
+    )
+
+    # Задания с написанием кода
+    code_tasks = set(
+        TaskItem.objects.filter(codequestion__isnull=False)[:5]
+    )
 
     context = {
         "upcoming_interviews": upcoming_interviews,
         "completed_interviews": completed_interviews,
         "resumes": resumes,
-        "tasks": tasks,
         "upcoming_count": interview_counts['upcoming_count'],
         "completed_count": interview_counts['completed_count'],
+        "choice_tasks": choice_tasks,
+        "open_tasks": open_tasks,
+        "code_tasks": code_tasks,
     }
     return render(request, "interviewer/home_interviewer.html", context)
 

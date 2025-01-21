@@ -35,7 +35,6 @@
                 <label for="type">Тип интервью:</label>
                 <input type="text" id="type" name="type" placeholder="Техническое" required>
 
-
                 <label for="date">Дата:</label>
                 <input type="date" id="date" name="date" required>
 
@@ -141,13 +140,52 @@
                 <textarea class="comments" rows="4" placeholder="Добавьте комментарий...">{{ interview.feedback|default:'' }}</textarea>
                 <button type="submit">Сохранить изменения</button>
             </form>
-
         </div>
         {% empty %}
         <p>Нет проведенных собеседований.</p>
         {% endfor %}
     </div>
+    <div class="task-container">
+        <h2><a href="{% url 'tasks_with_choices' %}">Задания с вариантами ответов</a></h2>
+        <ol>
+            {% for task in choice_tasks %}
+            <li>
+                <h3><a href="{% url 'task_detail' task.id %}">{{ task.title }}</a></h3>
+                <p>{{ task.task_condition|truncatechars:100 }}</p>
+                <a class="details-button" href="{% url 'task_detail' task.id %}">Подробнее</a>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+
+    <div class="task-container">
+        <h2><a href="{% url 'tasks_with_open_questions' %}">Задания с открытыми вопросами</a></h2>
+        <ol>
+            {% for task in open_tasks %}
+            <li>
+                <h3><a href="{% url 'task_detail' task.id %}">{{ task.title }}</a></h3>
+                <p>{{ task.task_condition|truncatechars:100 }}</p>
+                <a class="details-button" href="{% url 'task_detail' task.id %}">Подробнее</a>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+
+    <div class="task-container">
+        <h2><a href="{% url 'tasks_with_code_questions' %}">Задания с написанием кода</a></h2>
+        <ol>
+            {% for task in code_tasks %}
+            <li>
+                <h3><a href="{% url 'task_detail' task.id %}">{{ task.title }}</a></h3>
+                <p>{{ task.task_condition|truncatechars:100 }}</p>
+                <a class="details-button" href="{% url 'task_detail' task.id %}">Подробнее</a>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
 </div>
+
+
 
 <script src="{% static 'interviewer/js/home_interviewer.js' %}"></script>
 <script>
