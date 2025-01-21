@@ -18,7 +18,7 @@ router.register(r"code-questions", CodeQuestionViewSet, basename="codequestion")
 
 urlpatterns = router.urls
 
-urlpatterns = [
+urlpatterns += [
     path('tasks/choices/', tasks_with_choices, name='tasks_with_choices'),
     path('tasks/open/', tasks_with_open_questions, name='tasks_with_open_questions'),
     path('tasks/code/', tasks_with_code_questions, name='tasks_with_code_questions'),

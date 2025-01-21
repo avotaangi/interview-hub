@@ -333,6 +333,7 @@ function createTaskRow(tasks) {
 // Добавление нового задания при клике на кнопку
 addTaskButton.addEventListener("click", async function () {
     const tasks = await fetchTasks(); // Загружаем задачи через API
+    console.log(tasks);
     if (tasks.count > 0) {
         const taskRow = createTaskRow(tasks.results);
         tasksContainer.appendChild(taskRow);
