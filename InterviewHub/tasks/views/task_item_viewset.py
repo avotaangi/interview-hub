@@ -20,7 +20,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 class TaskItemViewSet(viewsets.ModelViewSet):
     queryset = TaskItem.objects.all()
     serializer_class = TaskItemSerializer
-    pagination_class = StandardResultsSetPagination
+    # pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ["complexity"]
     search_fields = ["title", "task_condition"]

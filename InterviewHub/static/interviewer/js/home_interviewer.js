@@ -334,8 +334,8 @@ function createTaskRow(tasks) {
 addTaskButton.addEventListener("click", async function () {
     const tasks = await fetchTasks(); // Загружаем задачи через API
     console.log(tasks);
-    if (tasks.count > 0) {
-        const taskRow = createTaskRow(tasks.results);
+    if (tasks.length > 0) {
+        const taskRow = createTaskRow(tasks);
         tasksContainer.appendChild(taskRow);
     } else {
         alert("Нет доступных задач для выбора.");
